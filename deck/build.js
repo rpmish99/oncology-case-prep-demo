@@ -57,7 +57,7 @@ pres.addSection({ title: "Setup" });
       { text: "Who does the work", options: { bold: true, color: "9FD8CF", breakLine: true } },
       { text: "Breast medical oncologists and nurse navigators, before the weekly tumor board.", options: { breakLine: true, paraSpaceAfter: 14 } },
       { text: "The problem", options: { bold: true, color: "9FD8CF", breakLine: true } },
-      { text: "For each case, someone reads pathology, imaging, genomics, clinic notes and the problem list in separate places, then checks the institution's treatment pathway. It is slow, and a disagreement between two sources is easy to miss.", options: {} },
+      { text: "For each case, someone reads pathology, imaging, genomics, clinic notes and the problem list in separate places, then checks the institution's Oncology Care Guidelines. It is slow, and a disagreement between two sources is easy to miss.", options: {} },
     ],
     { x: 0.6, y: 1.8, w: 6.6, h: 4.8, fontSize: 18, color: C.background1, valign: "top", margin: 0, isTextBox: true, objectName: "Customer text" }
   );
@@ -82,8 +82,8 @@ pres.addSection({ title: "Setup" });
   const s = pres.addSlide({ masterName: "LIGHT", sectionTitle: "Setup" });
   s.addText("The workflow, before and after", { placeholder: "title" });
 
-  const before = ["Open pathology, imaging, genomics and notes one by one", "Copy the key facts into a summary", "Look up the current treatment pathway", "Compare sources by eye and chase gaps", "Present from memory and the summary"];
-  const after = ["Oncologist asks for the case to be prepared", "Specialists read each record and the pathway documents", "A draft lists facts, pathway text and inference separately", "A second check flags conflicts and unsupported claims", "The oncologist reviews and approves before anything is saved"];
+  const before = ["Open pathology, imaging, genomics and notes one by one", "Copy the key facts into a summary", "Look up the current Oncology Care Guidelines", "Compare sources by eye and chase gaps", "Present from memory and the summary"];
+  const after = ["Oncologist asks for the case to be prepared", "Specialists read each record and the Oncology Care Guidelines", "A draft lists facts, guideline text and inference separately", "A second check flags conflicts and unsupported claims", "The oncologist reviews and approves before anything is saved"];
 
   [["Today", before, 0.6, C.text1], ["With the OpenAI API", after, 6.85, C.accent1]].forEach(([head, items, x, col]) => {
     card(s, x, 1.6, 5.9, 4.1, `${head} card`);
@@ -98,7 +98,7 @@ pres.addSection({ title: "Setup" });
   s.addText(
     [
       { text: "Product surface: OpenAI Platform and APIs. ", options: { bold: true } },
-      { text: "Responses API for the model calls, Agents SDK for the case coordinator and specialists, File Search for pathway documents, MCP for the patient record, tracing for review." },
+      { text: "Responses API for the model calls, Agents SDK for the case coordinator and specialists, File Search for the Oncology Care Guidelines, MCP for the patient record, tracing for review." },
     ],
     { x: 0.85, y: 6.0, w: 11.65, h: 0.85, fontSize: 16, color: C.background1, valign: "middle", margin: 0, isTextBox: true, objectName: "Surface text" }
   );
@@ -114,8 +114,8 @@ pres.addSection({ title: "Demo" });
   s.addText("Runs in the customer's AWS account: Cognito sign-in, AgentCore Runtime, an MCP server for the record, and DynamoDB for run state and the audit trail.", { x: 0.6, y: 6.2, w: 7.3, h: 0.7, fontSize: 14, color: C.accent4, margin: 0, valign: "top", isTextBox: true, objectName: "Graph caption" });
 
   const steps = [
-    ["1", "Three specialists start together and read the record and the pathway documents"],
-    ["2", "The coordinator drafts a packet that keeps patient facts, pathway text and inference apart"],
+    ["1", "Three specialists start together and read the record and the Oncology Care Guidelines"],
+    ["2", "The coordinator drafts a packet that keeps patient facts, guideline text and inference apart"],
     ["3", "A separate verifier checks every claim against its source"],
     ["4", "The run pauses. Nothing is saved until the oncologist approves"],
   ];
@@ -127,7 +127,7 @@ pres.addSection({ title: "Demo" });
     s.addText(n, { x: 8.55, y, w: 0.45, h: 0.45, fontSize: 14, bold: true, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true, objectName: `Step number ${n}` });
     s.addText(d, { x: 9.2, y: y - 0.05, w: 3.4, h: 1.0, fontSize: 14, color: C.text1, margin: 0, valign: "top", isTextBox: true, objectName: `Step text ${n}` });
   });
-  s.addNotes("This slide is the OpenAI side. A case coordinator agent on gpt-6.1-sol starts three specialists together. The patient data and history specialists read the record through an MCP server. The evidence specialist searches the pathway documents with File Search and looks up PubMed. The specialists use gpt-6.1-terra, which is faster and cheaper, because they are reading and extracting. A separate verifier checks the draft. Then the run pauses for the oncologist. Everything runs in the customer's own AWS account; only model calls and pathway search go to OpenAI.");
+  s.addNotes("This slide is the OpenAI side. A case coordinator agent on gpt-6.1-sol starts three specialists together. The patient data and history specialists read the record through an MCP server. The evidence specialist searches the Oncology Care Guidelines with File Search and looks up PubMed. The specialists use gpt-6.1-terra, which is faster and cheaper, because they are reading and extracting. A separate verifier checks the draft. Then the run pauses for the oncologist. Everything runs in the customer's own AWS account; only model calls and the guideline search go to OpenAI.");
 }
 
 // ---------- 4. Expected value ----------
@@ -136,7 +136,8 @@ pres.addSection({ title: "Value" });
   const ev = JSON.parse(require("fs").readFileSync(path.resolve(__dirname, "../docs/eval-results.json"), "utf8"));
   const secs = Math.round(ev.runs.reduce((a, r) => a + r.seconds, 0) / ev.runs.length);
   const cost = ev.runs.reduce((a, r) => a + r.costUsd, 0) / ev.runs.length;
-  const perfect = ev.rows.filter((r) => r.passed === r.total).length;
+  const passedChecks = ev.rows.reduce((a, r) => a + r.passed, 0);
+  const totalChecks = ev.rows.reduce((a, r) => a + r.total, 0);
   const s = pres.addSlide({ masterName: "LIGHT", sectionTitle: "Value" });
   s.addText("Expected value", { placeholder: "title" });
 
@@ -152,7 +153,7 @@ pres.addSection({ title: "Value" });
   const stats = [
     [`${secs} seconds`, `of agent work per case, measured over ${ev.runs.length} runs`],
     [`About ${Math.round(cost * 100)} cents`, "of model cost per case at list prices, measured"],
-    [`${perfect} of ${ev.rows.length} checks`, `on the planted problems passed in all ${ev.runs.length} runs`],
+    [`${passedChecks} of ${totalChecks} checks`, `on the planted problems passed across ${ev.runs.length} runs`],
     ["About 33 hours a month", "of clinician time saved (assumed: 40 cases, 75 down to 25 min)"],
   ];
   stats.forEach(([big, small], i) => {
@@ -162,7 +163,7 @@ pres.addSection({ title: "Value" });
     s.addText(small, { x: 6.85, y: y + 0.58, w: 5.65, h: 0.45, fontSize: 14, color: C.text1, margin: 0, valign: "top", isTextBox: true, objectName: `Value label ${i + 1}` });
   });
   s.addText("Time and cost are measured on the synthetic case. Hours saved is an assumption, editable in the value model. A pilot would measure real preparation times.", { x: 0.6, y: 6.35, w: 12.1, h: 0.55, fontSize: 12, color: C.accent4, margin: 0, isTextBox: true, objectName: "Value footnote" });
-  s.addNotes("Separate measured from assumed. Measured on the synthetic case: about 88 seconds of agent work and under ten cents of model cost per case, and the checks on the planted problems passed in every one of ten runs. Assumed: forty cases a month and preparation dropping from seventy-five minutes to twenty-five, which gives about thirty-three hours a month. The dollar value of that time is modest. The bigger reason is catching conflicts before the meeting, which a pilot would measure.");
+  s.addNotes("Separate measured from assumed. Measured on the synthetic case: about 88 seconds of agent work and under ten cents of model cost per case, and 59 of 60 checks on the planted problems passed across ten runs. The one miss was a run that did not mention the old bone density scan. Assumed: forty cases a month and preparation dropping from seventy-five minutes to twenty-five, which gives about thirty-three hours a month. The dollar value of that time is modest. The bigger reason is catching conflicts before the meeting, which a pilot would measure.");
 }
 
 // ---------- 5. Governance, assumptions, next steps ----------

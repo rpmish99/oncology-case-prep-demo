@@ -1,5 +1,5 @@
 ---
-title: Early-stage ER-positive, HER2-negative breast cancer pathway
+title: Oncology Care Guidelines, early-stage ER-positive, HER2-negative breast cancer
 publisher: Lakeview Cancer Institute (synthetic institutional document)
 version: 2022.1
 effective_date: 2022-01-15

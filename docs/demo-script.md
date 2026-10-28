@@ -18,12 +18,12 @@ A live run takes about 90 seconds, so start it early and talk while it works.
 | 0:00 | Camera | Short hello and what you will show. |
 | 0:15 | Slide 1 | Customer, who does the work, the problem. |
 | 0:45 | Slide 2 | Before and after, and the product surface. At about 0:55, switch to the app, click **Prepare case**, return to the slides. |
-| 1:10 | App | Narrate the live feed: specialists reading the record and searching the pathway documents. |
+| 1:10 | App | Narrate the live feed: specialists reading the record and searching the Oncology Care Guidelines. |
 | 1:40 | Slide 3 | The agent graph in 20 seconds, then back to the app. |
 | 2:00 | App, packet | The board summary and attention chips. Then the conflict box. |
 | 2:25 | App | Click a citation tag to show the source text. Close it. |
 | 2:40 | App | The verifier findings in the activity panel. |
-| 2:55 | App | Click the follow-up chip **What does the pathway say about extending endocrine therapy?** (about 5 seconds). |
+| 2:55 | App | Click the follow-up chip **What do the Oncology Care Guidelines say about extending endocrine therapy?** (about 5 seconds). |
 | 3:10 | App | Paste the change request, click **Send back for changes**. While it works (about 15 seconds), say why the clinician stays in control. |
 | 3:35 | App | Click **Approve**. Point out the audit trail. |
 | 3:45 | App | Point at the run stats (time, tokens, cost) and click **View the trace in OpenAI**. |
@@ -38,17 +38,17 @@ If you are running behind, skip the trace and the change request. The "what if H
 "Hi, I'm [name]. In five minutes I'll show how the OpenAI API can help a breast cancer team get cases ready for tumor board."
 
 **0:15. Slide 1, customer and problem**
-"The customer is Lakeview Cancer Institute, a fictional regional cancer center. The people doing this work are breast oncologists and nurse navigators. Before each tumor board, someone reads pathology, imaging, genomics, clinic notes and the problem list in separate places, then checks the institution's treatment pathway. That takes an hour or more per case, and when two sources disagree it is easy to miss."
+"The customer is Lakeview Cancer Institute, a fictional regional cancer center. The people doing this work are breast oncologists and nurse navigators. Before each tumor board, someone reads pathology, imaging, genomics, clinic notes and the problem list in separate places, then checks the institution's Oncology Care Guidelines, which is the written standard for how a case like this is handled. That takes an hour or more per case, and when two sources disagree it is easy to miss."
 
 **0:45. Slide 2, before and after**
-"Today it's manual. In the new workflow the oncologist asks for the case to be prepared. Specialists read each record and the pathway documents, a draft keeps facts and inference apart, a second check looks for problems, and the oncologist approves before anything is saved. This runs on the OpenAI Platform: the Responses API, the Agents SDK, File Search and MCP."
+"Today it's manual. In the new workflow the oncologist asks for the case to be prepared. Specialists read each record and the Oncology Care Guidelines, a draft keeps facts and inference apart, a second check looks for problems, and the oncologist approves before anything is saved. This runs on the OpenAI Platform: the Responses API, the Agents SDK, File Search and MCP."
 *(Click Prepare case, return to the slides.)*
 
 **1:10. App, while it runs**
-"This is the live run. Three specialists started together. Two of them read the patient record through an MCP server that stands in for the hospital's record system. The third is searching the institution's pathway documents with File Search, and PubMed for recent studies."
+"This is the live run. Three specialists started together. Two of them read the patient record through an MCP server that stands in for the hospital's record system. The third is searching the institution's Oncology Care Guidelines with File Search, and PubMed for recent studies."
 
 **1:40. Slide 3, agent graph**
-"A case coordinator agent on the stronger model coordinates three specialists on a faster, cheaper model. A separate verifier checks the draft. Then the run pauses for the oncologist. All of it runs in the customer's own AWS account. Only model calls and the pathway search go to OpenAI."
+"A case coordinator agent on the stronger model coordinates three specialists on a faster, cheaper model. A separate verifier checks the draft. Then the run pauses for the oncologist. All of it runs in the customer's own AWS account. Only model calls and the guideline search go to OpenAI."
 *(Back to the app.)*
 
 **2:00. Packet**
@@ -61,7 +61,7 @@ If you are running behind, skip the trace and the change request. The "what if H
 "On the left, the verifier's findings, such as claims that were missing a source. The draft was fixed before I saw it."
 
 **2:55. Follow-up question**
-"A clinician can also ask questions. I'll click one: what does the pathway say about extending endocrine therapy? It answers from the packet and the pathway, says which source each statement comes from, and keeps its own inference separate. It doesn't change the packet."
+"A clinician can also ask questions. I'll click one: what do the Oncology Care Guidelines say about extending endocrine therapy? It answers from the packet and the Oncology Care Guidelines, says which source each statement comes from, and keeps its own inference separate. It doesn't change the packet."
 
 **3:10. Request changes**
 "The oncologist stays in control. I'll ask for a bone density plan on the aromatase inhibitor option."
@@ -74,7 +74,7 @@ If you are running behind, skip the trace and the change request. The "what if H
 "This run took about a minute and a half and cost roughly ten cents in model calls. And here is the full trace in OpenAI, so anyone can see what each agent did."
 
 **4:00. Slides 4 and 5**
-"On value: agent time and cost are measured on this case, and the checks for the planted problems passed in all ten test runs. The hours saved are my assumption, forty cases a month and preparation dropping from seventy-five minutes to twenty-five, so about thirty-three hours a month. A pilot would measure the real numbers. For safety, a clinician approves everything, nothing is written to the patient record, and before using real data we would confirm the contract terms. The next step is a four-week run on de-identified past cases."
+"On value: agent time and cost are measured on this case, and 59 of 60 checks for the planted problems passed across ten test runs. The hours saved are my assumption, forty cases a month and preparation dropping from seventy-five minutes to twenty-five, so about thirty-three hours a month. A pilot would measure the real numbers. For safety, a clinician approves everything, nothing is written to the patient record, and before using real data we would confirm the contract terms. The next step is a four-week run on de-identified past cases."
 
 **4:50. Close**
 "Thanks for watching. Happy to take questions."

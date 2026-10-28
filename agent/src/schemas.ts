@@ -2,13 +2,13 @@ import { z } from "zod";
 
 const sourced = z.object({
   text: z.string(),
-  sources: z.array(z.string()).describe("Source tags, for example pathology_report, clinic_note, pathway v2025.2"),
+  sources: z.array(z.string()).describe("Source tags, for example pathology_report, clinic_note, Oncology Care Guidelines v2025.2"),
 });
 
 export const candidateOption = z.object({
   option: z.string().describe("Treatment option for the tumor board to consider"),
   patient_facts: z.array(sourced).describe("Facts taken from this patient's record"),
-  guideline_facts: z.array(sourced).describe("Statements taken from a guideline or pathway document"),
+  guideline_facts: z.array(sourced).describe("Statements taken from an Oncology Care Guidelines document"),
   model_inference: z.string().describe("Reasoning that combines the facts. Clearly an inference, not a fact."),
   cautions: z.array(z.string()),
 });

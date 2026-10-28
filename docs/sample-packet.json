@@ -1,293 +1,260 @@
 {
   "board_summary": [
-    "Postmenopausal node-negative ER/PR-positive disease, score 22: discuss endocrine therapy without routine chemotherapy [pathology; assay; pathway v2025.2].",
-    "Prior DVT constrains tamoxifen; AI discussion needs an explicit bone-density plan [c-3,c-4; pathway v2025.2].",
-    "Correct conflicting HER2 label and discuss post-lumpectomy radiation [clinic note; pathology; pathway v2025.2]."
+    "pT1c pN0 ER/PR-positive cancer; signed pathology HER2-negative overrides intake note [Pathology 2026-09-14; Clinic note 2026-10-05].",
+    "Postmenopausal, recurrence score 22: discuss endocrine therapy without routine chemotherapy [Patient record; Assay 2026-09-28; Guidelines v2025.2].",
+    "Prior DVT complicates tamoxifen; discuss post-lumpectomy radiation and confirm age before omission review [Problem list; Procedure record; Guidelines v2025.2; Evidence specialist]."
   ],
   "attention_flags": [
     {
       "kind": "conflict",
-      "label": "HER2 intake discrepancy"
+      "label": "HER2 discrepancy [Pathology; Intake]"
     },
     {
       "kind": "contraindication",
-      "label": "DVT: tamoxifen"
+      "label": "Tamoxifen/DVT [Problem list; Guidelines]"
     },
     {
       "kind": "missing_test",
-      "label": "Bone-risk reassessment"
+      "label": "Fracture risk [Evidence specialist]"
+    },
+    {
+      "kind": "other",
+      "label": "Age unavailable [Evidence specialist]"
     },
     {
       "kind": "stale_source",
-      "label": "Superseded pathway excluded"
-    },
-    {
-      "kind": "other",
-      "label": "Confirm local guidance"
-    },
-    {
-      "kind": "other",
-      "label": "Radiation age unverified"
+      "label": "2022.1 excluded [Evidence specialist]"
     }
   ],
-  "patient_snapshot": "Postmenopausal since 52, ECOG 0; lumpectomy/sentinel biopsy 2026-09-09 with negative margins; no chemotherapy to date [patient record; procedure p-1; pathology 2026-09-14; clinic note 2026-10-05].",
+  "patient_snapshot": "Naturally postmenopausal since 52; right lumpectomy/sentinel biopsy September 2026; no chemotherapy as of October 5 [Patient record; Procedure record; Clinic note 2026-10-05].",
   "disease_characterization": {
     "histology": {
-      "text": "Right invasive ductal carcinoma NST, grade 2, with low-grade DCIS.",
+      "text": "1.9 cm grade 2 invasive ductal carcinoma, 15% low-grade DCIS, negative margins (closest 3 mm), no lymphovascular invasion.",
       "sources": [
-        "pathology 2026-09-14"
+        "Surgical pathology 2026-09-14"
       ]
     },
     "stage": {
-      "text": "1.9 cm, pT1c pN0(sn), 0/3 nodes; stage group undocumented.",
+      "text": "pT1c pN0(sn), 0/3 nodes; stage group not stated.",
       "sources": [
-        "pathology 2026-09-14"
+        "Surgical pathology 2026-09-14"
       ]
     },
     "er_pr_her2": {
-      "text": "ER 95%, PR 70%, HER2 IHC 1+ negative; pathology governs intake discrepancy.",
+      "text": "ER 95%, PR 70%, HER2 IHC 1+ negative; ISH not performed.",
       "sources": [
-        "pathology 2026-09-14",
-        "clinic note 2026-10-05"
+        "Surgical pathology 2026-09-14"
       ]
     },
     "other_markers": {
-      "text": "Ki-67 18%; 21-gene score 22.",
+      "text": "Ki-67 18%; 21-gene score 22; germline and somatic testing not performed.",
       "sources": [
-        "pathology 2026-09-14",
-        "assay 2026-09-28"
+        "Surgical pathology 2026-09-14",
+        "Genomic assay 2026-09-28"
       ]
     }
   },
   "clinically_relevant_history": [
     {
-      "text": "DVT in 2019 treated six months; provocation unknown.",
+      "text": "DVT in 2019, resolved after six months anticoagulation; provoking factor unknown.",
       "sources": [
-        "c-3",
-        "clinical history specialist"
+        "Problem list"
       ]
     },
     {
-      "text": "DEXA −2.1 on 2024-11-05; calcium/vitamin D active.",
+      "text": "Lumbar DEXA −2.1 on 2024-11-05; calcium/vitamin D active.",
       "sources": [
-        "c-4",
-        "m-2"
+        "Problem list",
+        "Medication list"
       ]
     },
     {
-      "text": "Hypertension, diet-controlled diabetes, mild coronary calcification.",
+      "text": "Hypertension on lisinopril, diet-controlled diabetes, mild coronary calcification; mother had breast cancer at 71.",
       "sources": [
-        "c-2",
-        "c-5",
-        "radiology 2026-09-21"
+        "Problem list",
+        "Medication list",
+        "Radiology 2026-09-21",
+        "Family history"
       ]
     }
   ],
   "evidence_reviewed": [
     {
-      "title": "Early-stage ER-positive, HER2-negative breast cancer pathway",
+      "title": "Oncology Care Guidelines: early-stage ER-positive, HER2-negative breast cancer",
       "version": "2025.2",
-      "status": "Current per evidence specialist",
+      "status": "Current per evidence specialist; clinical verification needed",
       "used": true
     },
     {
-      "title": "Endocrine therapy safety checklist",
+      "title": "Oncology Care Guidelines: endocrine therapy safety checklist",
       "version": "2025.1",
-      "status": "Current per evidence specialist",
+      "status": "Current per evidence specialist; clinical verification needed",
       "used": true
     },
     {
-      "title": "Early-stage ER-positive, HER2-negative breast cancer pathway",
+      "title": "Oncology Care Guidelines: early-stage breast cancer",
       "version": "2022.1",
-      "status": "Superseded per evidence specialist; excluded",
+      "status": "Superseded; excluded",
+      "used": false
+    },
+    {
+      "title": "PubMed 42738268 and 42783373",
+      "version": "2026",
+      "status": "Citation-only; study results unavailable",
       "used": false
     }
   ],
   "candidate_options": [
     {
-      "option": "Discuss AI for five years without routine chemotherapy; bone plan: assess fracture risk before starting, arrange repeat DEXA around November 2026, ensure calcium/vitamin D and then monitor DEXA every 1–2 years.",
+      "option": "Consider five-year aromatase inhibitor without routine chemotherapy.",
       "patient_facts": [
         {
-          "text": "Postmenopausal since 52.",
+          "text": "Postmenopausal with pT1c pN0 ER/PR-positive, HER2-negative disease and recurrence score 22.",
           "sources": [
-            "patient record"
-          ]
-        },
-        {
-          "text": "Node-negative ER-positive HER2-negative disease; recurrence score 22.",
-          "sources": [
-            "pathology 2026-09-14",
-            "assay 2026-09-28"
-          ]
-        },
-        {
-          "text": "DEXA −2.1 on 2024-11-05; calcium/vitamin D active.",
-          "sources": [
-            "c-4",
-            "m-2"
+            "Patient record",
+            "Surgical pathology 2026-09-14",
+            "Genomic assay 2026-09-28"
           ]
         }
       ],
       "guideline_facts": [
         {
-          "text": "AI for five years is preferred, with extension reviewed at year five; postmenopausal node-negative score 0–25 supports endocrine therapy without routine chemotherapy.",
+          "text": "Postmenopausal node-negative disease with score 0–25 supports endocrine therapy without routine chemotherapy.",
           "sources": [
-            "pathway v2025.2"
+            "Oncology Care Guidelines v2025.2"
           ]
         },
         {
-          "text": "Review fracture risk before AI, ensure calcium/vitamin D, repeat DEXA every 1–2 years and obtain if over 24 months old.",
+          "text": "A five-year aromatase inhibitor is preferred initially after menopause, with extension reviewed at year five.",
           "sources": [
-            "pathway v2025.2"
-          ]
-        },
-        {
-          "text": "Review adherence and adverse effects at three months, then every six months.",
-          "sources": [
-            "checklist v2025.1"
+            "Oncology Care Guidelines v2025.2"
           ]
         }
       ],
-      "model_inference": "This is a pathway-concordant discussion option; November 2026 repeat DEXA planning follows the two-year interval from the recorded scan [pathology; assay; c-4; pathway v2025.2].",
+      "model_inference": "Recorded menopause and score fit this discussion option [Patient record; Genomic assay 2026-09-28; Guidelines v2025.2].",
       "cautions": [
-        "Confirm local guidance and review bone, joint and cardiovascular baseline assessments [evidence specialist; checklist v2025.1]."
+        "Review bone and cardiovascular risks [Problem list; Radiology 2026-09-21; Safety checklist v2025.1]."
       ]
     },
     {
-      "option": "Consider tamoxifen if AI intolerant, after hematology review.",
+      "option": "Consider tamoxifen if an aromatase inhibitor is not tolerated.",
       "patient_facts": [
         {
-          "text": "Prior DVT treated six months.",
+          "text": "Prior DVT was treated in 2019; provocation is unknown.",
           "sources": [
-            "c-3"
+            "Problem list"
           ]
         }
       ],
       "guideline_facts": [
         {
-          "text": "Tamoxifen is an alternative for AI intolerance.",
+          "text": "Tamoxifen is an alternative for aromatase-inhibitor intolerance, but prior DVT is a relative contraindication requiring specialist review.",
           "sources": [
-            "pathway v2025.2"
+            "Oncology Care Guidelines v2025.2"
           ]
         },
         {
-          "text": "Prior DVT is a relative contraindication requiring hematology and documented risk discussion.",
+          "text": "Prior DVT warrants hematology involvement and a documented risk discussion.",
           "sources": [
-            "pathway v2025.2",
-            "checklist v2025.1"
+            "Oncology Care Guidelines safety checklist v2025.1"
           ]
         }
       ],
-      "model_inference": "DVT makes this a constrained fallback [c-3; pathway v2025.2].",
+      "model_inference": "Thrombosis makes this a complicated fallback, not an absolute prohibition [Problem list; Guidelines v2025.2].",
       "cautions": [
-        "Clarify DVT provocation [clinical history specialist]."
+        "Review uterine symptoms/history and drug interactions [Safety checklist v2025.1]."
       ]
     },
     {
-      "option": "Consider antiresorptive support if fracture-risk criteria are met.",
+      "option": "Pair aromatase-inhibitor consideration with bone-risk management.",
       "patient_facts": [
         {
-          "text": "Recorded DEXA T-score is −2.1.",
+          "text": "Lumbar T-score −2.1 from November 2024; calcium/vitamin D active.",
           "sources": [
-            "c-4"
+            "Problem list",
+            "Medication list"
           ]
         }
       ],
       "guideline_facts": [
+        {
+          "text": "Repeat baseline DEXA if over 24 months old; T-score −2.0 to −2.5 on an aromatase inhibitor warrants calcium/vitamin D and DEXA every 1–2 years.",
+          "sources": [
+            "Oncology Care Guidelines v2025.2"
+          ]
+        },
         {
           "text": "Consider bisphosphonate or denosumab for T-score ≤−2.5 or high fracture risk.",
           "sources": [
-            "pathway v2025.2"
-          ]
-        },
-        {
-          "text": "Review baseline joint symptoms and cardiovascular risks, including lipids.",
-          "sources": [
-            "checklist v2025.1"
+            "Oncology Care Guidelines v2025.2"
           ]
         }
       ],
-      "model_inference": "Recorded osteopenia alone does not establish an antiresorptive indication under this pathway [c-4; pathway v2025.2].",
+      "model_inference": "Monitoring is supported; medication depends on fracture risk, and this DEXA is not yet over 24 months old at the October 2026 visit [Problem list; Clinic note 2026-10-05; Guidelines v2025.2].",
       "cautions": [
-        "Formal fracture risk is undocumented [evidence specialist]."
+        "Do not infer an automatic antiresorptive indication from this T-score alone [Guidelines v2025.2]."
       ]
     },
     {
-      "option": "Radiation oncology review for whole-breast radiation.",
+      "option": "Discuss whole-breast radiation after lumpectomy.",
       "patient_facts": [
         {
-          "text": "Lumpectomy with negative margins.",
+          "text": "Lumpectomy achieved negative margins for a 1.9 cm node-negative ER-positive tumor.",
           "sources": [
-            "procedure p-1",
-            "pathology 2026-09-14"
+            "Procedure record",
+            "Surgical pathology 2026-09-14"
           ]
         }
       ],
       "guideline_facts": [
         {
-          "text": "Whole-breast radiation is recommended after lumpectomy; omission may be considered in selected patients ≥70 with small low-risk ER-positive tumors.",
+          "text": "Whole-breast radiation is recommended after lumpectomy; omission may be considered in selected low-risk ER-positive patients age 70 or older.",
           "sources": [
-            "pathway v2025.2"
+            "Oncology Care Guidelines v2025.2"
           ]
         }
       ],
-      "model_inference": "Discuss radiation; omission eligibility cannot independently be established without current age [patient/history outputs; pathway v2025.2].",
+      "model_inference": "Radiation is supported; the specialist says recorded age is below the omission threshold, but supplied no numerical age [Evidence specialist; Guidelines v2025.2].",
       "cautions": [
-        "Evidence specialist states age criterion is unmet but supplies no age [evidence specialist]."
+        "Confirm age before omission review; citation-only partial-breast evidence was not used [Evidence specialist]."
       ]
     }
   ],
   "contraindication_candidates": [
     {
-      "text": "Prior DVT is a relative contraindication to tamoxifen, not automatic exclusion.",
+      "text": "Prior DVT is a relative contraindication to tamoxifen requiring specialist review, not automatic exclusion.",
       "sources": [
-        "c-3",
-        "pathway v2025.2",
-        "checklist v2025.1"
+        "Problem list",
+        "Oncology Care Guidelines v2025.2",
+        "Oncology Care Guidelines safety checklist v2025.1"
       ]
     }
   ],
   "missing_information": [
-    "Formal fracture-risk assessment and repeat DEXA planning [history; evidence specialist].",
-    "DVT provoking circumstances [history specialist].",
-    "Verified current age for radiation omission assessment [patient/history outputs; evidence specialist].",
-    "Baseline joint symptoms and cardiovascular/lipid assessment [checklist v2025.1; evidence specialist]."
+    "Complete fracture-risk assessment to inform bone medication [Evidence specialist; Guidelines v2025.2].",
+    "Whether prior DVT was provoked, to inform tamoxifen review [Clinical-history specialist].",
+    "Numerical age was not supplied; confirm before radiation omission assessment [Evidence specialist]."
   ],
   "conflicts": [
     {
-      "description": "Intake HER2-positive conflicts with negative signed pathology and assay; pathology governs.",
+      "description": "Intake says HER2-positive; signed pathology says IHC 1+ negative and assay agrees; use pathology and request note correction.",
       "sources": [
-        "clinic note 2026-10-05",
-        "pathology 2026-09-14",
-        "assay 2026-09-28"
+        "Clinic note 2026-10-05",
+        "Surgical pathology 2026-09-14",
+        "Genomic assay 2026-09-28"
       ]
     },
     {
-      "description": "Ultrasound 1.8 cm versus pathology 1.9 cm; use pathology for pathologic size.",
+      "description": "Ultrasound 1.8 cm versus surgical size 1.9 cm; use pathology for postoperative characterization.",
       "sources": [
-        "radiology 2026-08-12",
-        "pathology 2026-09-14"
-      ]
-    },
-    {
-      "description": "Superseded pathway differs on chemotherapy thresholds and endocrine framing; excluded.",
-      "sources": [
-        "evidence specialist",
-        "pathway v2025.2"
-      ]
-    },
-    {
-      "description": "Evidence specialist says radiation age criterion unmet but patient/history summaries supply no current age; unverified.",
-      "sources": [
-        "evidence specialist",
-        "patient data specialist",
-        "clinical history specialist"
+        "Radiology 2026-08-12",
+        "Surgical pathology 2026-09-14"
       ]
     }
   ],
   "uncertainty_notes": [
-    "Confirm guidance against actual current institutional guidance [evidence specialist].",
-    "Stage group not recorded and not inferred [patient data specialist]."
+    "Guideline status is specialist-reported; independently confirm clinical guidance before treatment [Evidence specialist].",
+    "Recent citations lack study results and support no additional treatment claims [Evidence specialist; PubMed 42738268, 42783373]."
   ],
-  "verifier_summary": "The verifier flagged unsupported details and missing citations; the clinician then requested a bone-density plan within the AI option. Removed unsupported details, added citations, and incorporated fracture-risk assessment, repeat DEXA timing and calcium/vitamin D into that option."
+  "verifier_summary": "The verifier flagged missing citations in summaries, flags, inferences, cautions and uncertainty statements. Source tags were added throughout; no clinical-content changes were requested."
 }

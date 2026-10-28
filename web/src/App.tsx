@@ -4,9 +4,9 @@ import radiologyText from "../../data/case/radiology_report.txt?raw";
 import genomicsText from "../../data/case/genomics_report.txt?raw";
 import clinicText from "../../data/case/clinic_note.txt?raw";
 import patientJson from "../../data/case/patient.json?raw";
-import pathwayText from "../../data/guidelines/pathway-er-pos-her2-neg-early-v2025-2.md?raw";
-import pathwayOldText from "../../data/guidelines/pathway-er-pos-her2-neg-early-v2022-1-SUPERSEDED.md?raw";
-import checklistText from "../../data/guidelines/endocrine-therapy-safety-checklist-v2025-1.md?raw";
+import guidelinesText from "../../data/guidelines/care-guidelines-er-pos-her2-neg-early-v2025-2.md?raw";
+import guidelinesOldText from "../../data/guidelines/care-guidelines-er-pos-her2-neg-early-v2022-1-SUPERSEDED.md?raw";
+import checklistText from "../../data/guidelines/care-guidelines-endocrine-therapy-safety-checklist-v2025-1.md?raw";
 import { invoke } from "./api";
 import type { DemoEvent, Packet, Sourced } from "./types";
 
@@ -22,9 +22,9 @@ const RECORDS: [string, string, string][] = [
   ["Problem list, medications, allergies", "current", "patient record"],
 ];
 
-const PATHWAYS: [string, string, string][] = [
-  ["Pathway", "v2025.2, current", "pathway 2025.2"],
-  ["Pathway", "v2022.1, superseded", "2022.1"],
+const GUIDELINE_DOCS: [string, string, string][] = [
+  ["Oncology Care Guidelines", "v2025.2, current", "guidelines 2025.2"],
+  ["Oncology Care Guidelines", "v2022.1, superseded", "2022.1"],
   ["Endocrine therapy checklist", "v2025.1", "checklist"],
 ];
 
@@ -41,7 +41,7 @@ const TOOL_LABEL: Record<string, string> = {
   consult_clinical_history: "asks the history specialist",
   consult_evidence: "asks the evidence specialist",
   verify_draft: "sends the draft to the verifier",
-  file_search_call: "searches the pathway documents",
+  file_search_call: "searches the Oncology Care Guidelines",
   search_pubmed: "searches PubMed",
   search_clinical_trials: "searches ClinicalTrials.gov",
 };
@@ -76,9 +76,9 @@ const SourceCtx = createContext<(tag: string) => void>(() => {});
 
 function resolveSource(tag: string): Doc {
   const t = tag.toLowerCase();
-  if (/checklist/.test(t)) return { title: "Endocrine therapy safety checklist, version 2025.1", text: checklistText };
-  if (/2022/.test(t)) return { title: "Pathway, version 2022.1 (superseded)", text: pathwayOldText };
-  if (/pathway|guideline|v20|2025/.test(t)) return { title: "Pathway, version 2025.2", text: pathwayText };
+  if (/checklist/.test(t)) return { title: "Oncology Care Guidelines, endocrine therapy safety checklist, version 2025.1", text: checklistText };
+  if (/2022/.test(t)) return { title: "Oncology Care Guidelines, version 2022.1 (superseded)", text: guidelinesOldText };
+  if (/care guideline|guideline|v20|2025/.test(t)) return { title: "Oncology Care Guidelines, version 2025.2", text: guidelinesText };
   if (/pathology|biops/.test(t)) return { title: "Surgical pathology report, 2026-09-14", text: pathologyText };
   if (/radiolog|imaging|ultrasound|mammo|\bct\b/.test(t)) return { title: "Radiology reports", text: radiologyText };
   if (/genom|assay|recurrence|oncotype|21-gene/.test(t)) return { title: "Genomic assay report, 2026-09-28", text: genomicsText };
@@ -157,7 +157,7 @@ function PacketView({ p }: { p: Packet }) {
                 <ul>{o.patient_facts.map((x, j) => <Fact key={j} item={x} />)}</ul>
               </div>
               <div>
-                <span className="label guideline">From the pathway documents</span>
+                <span className="label guideline">From the Oncology Care Guidelines</span>
                 <ul>{o.guideline_facts.map((x, j) => <Fact key={j} item={x} />)}</ul>
               </div>
             </div>
@@ -450,9 +450,9 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
               </li>
             ))}
           </ul>
-          <p className="muted small">Pathway documents the evidence specialist searches:</p>
+          <p className="muted small">Oncology Care Guidelines the evidence specialist searches:</p>
           <ul className="records">
-            {PATHWAYS.map(([name, date, key]) => (
+            {GUIDELINE_DOCS.map(([name, date, key]) => (
               <li key={key}>
                 <button className="rec" onClick={() => setDoc(resolveSource(key))}>
                   {name}
@@ -548,10 +548,10 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
                   <p className="a">{x.a.replace(/\*\*/g, "")}</p>
                 </div>
               ))}
-              {asking && <p className="muted">Looking it up in the record and the pathway documents...</p>}
+              {asking && <p className="muted">Looking it up in the record and the Oncology Care Guidelines...</p>}
               <div className="suggest">
                 {[
-                  "What does the pathway say about extending endocrine therapy?",
+                  "What do the Oncology Care Guidelines say about extending endocrine therapy?",
                   "Is the prior DVT a hard contraindication to tamoxifen?",
                   "What would change if the tumor were HER2-positive?",
                 ].map((q) => (
@@ -572,7 +572,7 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
                   Ask
                 </button>
               </div>
-              <p className="muted">Answers use the packet, the record and the pathway documents. They do not change the packet.</p>
+              <p className="muted">Answers use the packet, the record and the Oncology Care Guidelines. They do not change the packet.</p>
             </div>
           )}
           {status === "review" && (
