@@ -7,6 +7,7 @@ export type DemoEvent =
   | { type: "interruption"; runId: string; tool: string; packet: unknown }
   | { type: "approved"; runId: string; noteId: string }
   | { type: "final"; runId: string; message: string }
+  | { type: "answer"; text: string }
   | { type: "trace"; traceId: string; url: string }
   | { type: "stats"; seconds: number; inputTokens: number; outputTokens: number; costUsd: number }
   | { type: "error"; message: string };

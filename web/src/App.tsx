@@ -14,16 +14,22 @@ type Status = "idle" | "running" | "review" | "saving" | "done" | "error";
 
 const QUESTION = "Prepare this case for tumor board. What endocrine and supportive-care options should we discuss?";
 
-const RECORDS = [
-  ["Pathology report", "2026-09-14"],
-  ["Radiology reports", "2026-08-12, 2026-09-21"],
-  ["Genomic assay", "2026-09-28"],
-  ["Navigator clinic note", "2026-10-05"],
-  ["Problem list, medications, allergies", "current"],
+const RECORDS: [string, string, string][] = [
+  ["Pathology report", "2026-09-14", "pathology"],
+  ["Radiology reports", "2026-08-12, 2026-09-21", "radiology"],
+  ["Genomic assay", "2026-09-28", "genomic"],
+  ["Navigator clinic note", "2026-10-05", "clinic note"],
+  ["Problem list, medications, allergies", "current", "patient record"],
+];
+
+const PATHWAYS: [string, string, string][] = [
+  ["Pathway", "v2025.2, current", "pathway 2025.2"],
+  ["Pathway", "v2022.1, superseded", "2022.1"],
+  ["Endocrine therapy checklist", "v2025.1", "checklist"],
 ];
 
 const AGENT_LABEL: Record<string, string> = {
-  "Treatment planning manager": "Manager",
+  "Case coordinator": "Coordinator",
   "Patient data specialist": "Patient data",
   "Clinical history specialist": "History",
   "Evidence specialist": "Evidence",
@@ -45,6 +51,27 @@ const toolName = (t: string) => TOOL_LABEL[t] ?? `reads ${t.replace(/^get_/, "")
 const clock = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
 type Doc = { title: string; text: string };
+function formatPatient(json: string): string {
+  const entries = (JSON.parse(json).entry as { resource: any }[]).map((e) => e.resource);
+  const of = (t: string) => entries.filter((r) => r.resourceType === t);
+  const lines: string[] = ["SYNTHETIC PATIENT RECORD (fictional, for demonstration only)", ""];
+  const pt = of("Patient")[0];
+  lines.push(`Patient: ${pt?.name?.[0]?.text}, ${pt?.gender}, born ${pt?.birthDate}`);
+  lines.push(`Menopausal status: ${pt?.extension?.[0]?.valueString}`, "", "PROBLEM LIST");
+  of("Condition").forEach((c) =>
+    lines.push(`- ${c.code.text} (${c.clinicalStatus}, since ${String(c.onsetDateTime).slice(0, 10)})${c.note ? ". " + c.note : ""}`),
+  );
+  lines.push("", "MEDICATIONS");
+  of("MedicationStatement").forEach((m) => lines.push(`- ${m.medicationCodeableConcept.text} (${m.status})`));
+  lines.push("", "ALLERGIES");
+  of("AllergyIntolerance").forEach((a) => lines.push(`- ${a.code.text}: ${a.reaction}`));
+  lines.push("", "OBSERVATIONS");
+  of("Observation").forEach((o) => lines.push(`- ${o.code.text}: ${o.valueString ?? o.valueInteger}`));
+  lines.push("", "PROCEDURES");
+  of("Procedure").forEach((p) => lines.push(`- ${p.code.text} on ${String(p.performedDateTime).slice(0, 10)}`));
+  return lines.join("\n");
+}
+
 const SourceCtx = createContext<(tag: string) => void>(() => {});
 
 function resolveSource(tag: string): Doc {
@@ -56,7 +83,7 @@ function resolveSource(tag: string): Doc {
   if (/radiolog|imaging|ultrasound|mammo|\bct\b/.test(t)) return { title: "Radiology reports", text: radiologyText };
   if (/genom|assay|recurrence|oncotype|21-gene/.test(t)) return { title: "Genomic assay report, 2026-09-28", text: genomicsText };
   if (/clinic|intake|navigator|note/.test(t)) return { title: "Navigator clinic note, 2026-10-05", text: clinicText };
-  return { title: "Patient record: problem list, medications, allergies, observations", text: patientJson };
+  return { title: "Patient record: problem list, medications, allergies, observations", text: formatPatient(patientJson) };
 }
 
 function SourceTags({ sources }: { sources: string[] }) {
@@ -245,6 +272,9 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
   const [audit, setAudit] = useState<{ at: string; event: string; reviewer?: string; feedback?: string }[]>([]);
   const feedEnd = useRef<HTMLDivElement>(null);
   const [doc, setDoc] = useState<Doc | null>(null);
+  const [qa, setQa] = useState<{ q: string; a: string }[]>([]);
+  const [followQ, setFollowQ] = useState("");
+  const [asking, setAsking] = useState(false);
   const lastDecision = useRef<"approve" | "request_changes" | null>(null);
 
   useEffect(() => {
@@ -322,6 +352,7 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
     setStats({ seconds: 0, inputTokens: 0, outputTokens: 0, costUsd: 0 });
     setTraceUrl("");
     setAudit([]);
+    setQa([]);
     lastDecision.current = null;
     setStatus("running");
     void consume({ action: "start", question, caseId: "case-001" });
@@ -335,6 +366,39 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
     setFeedback("");
   }
 
+  async function ask(q: string) {
+    if (!packet || !q.trim() || asking) return;
+    setAsking(true);
+    setFollowQ("");
+    let answered = false;
+    try {
+      for await (const e of invoke({ action: "ask", runId, question: q, packet, history: qa })) {
+        if (e.type === "tool_call") setEvents((prev) => [...prev, e]);
+        if (e.type === "trace") setTraceUrl(e.url);
+        if (e.type === "stats")
+          setStats((s0) => ({
+            seconds: s0.seconds + e.seconds,
+            inputTokens: s0.inputTokens + e.inputTokens,
+            outputTokens: s0.outputTokens + e.outputTokens,
+            costUsd: s0.costUsd + e.costUsd,
+          }));
+        if (e.type === "answer") {
+          answered = true;
+          setQa((prev) => [...prev, { q, a: e.text }]);
+        }
+        if (e.type === "error") {
+          answered = true;
+          setQa((prev) => [...prev, { q, a: `Could not answer: ${e.message}` }]);
+        }
+      }
+      if (!answered) setQa((prev) => [...prev, { q, a: "No answer came back. Try asking again." }]);
+    } catch (err) {
+      setQa((prev) => [...prev, { q, a: `Could not answer: ${err instanceof Error ? err.message : String(err)}` }]);
+    } finally {
+      setAsking(false);
+    }
+  }
+
   function reset() {
     setEvents([]);
     setPacket(null);
@@ -344,6 +408,7 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
     setTraceUrl("");
     setAudit([]);
     setRunId("");
+    setQa([]);
     setStatus("idle");
   }
 
@@ -374,11 +439,24 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
       <main>
         <aside className="panel">
           <h2>Case 001</h2>
-          <p className="muted">Synthetic patient, right breast, after lumpectomy. Records the agents can read:</p>
+          <p className="muted">Synthetic patient, right breast, after lumpectomy. Click any record to read it:</p>
           <ul className="records">
-            {RECORDS.map(([name, date]) => (
+            {RECORDS.map(([name, date, key]) => (
               <li key={name}>
-                <span>{name}</span>
+                <button className="rec" onClick={() => setDoc(resolveSource(key))}>
+                  {name}
+                </button>
+                <span className="muted">{date}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="muted small">Pathway documents the evidence specialist searches:</p>
+          <ul className="records">
+            {PATHWAYS.map(([name, date, key]) => (
+              <li key={key}>
+                <button className="rec" onClick={() => setDoc(resolveSource(key))}>
+                  {name}
+                </button>
                 <span className="muted">{date}</span>
               </li>
             ))}
@@ -461,6 +539,42 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
           </div>
           {!packet && status !== "done" && <p className="muted">The packet appears here when the verifier has checked it.</p>}
           {packet && <PacketView p={packet} />}
+          {packet && (status === "review" || status === "done") && (
+            <div className="followup">
+              <h3>Ask a follow-up question</h3>
+              {qa.map((x, i) => (
+                <div key={i} className="qa">
+                  <p className="q">{x.q}</p>
+                  <p className="a">{x.a.replace(/\*\*/g, "")}</p>
+                </div>
+              ))}
+              {asking && <p className="muted">Looking it up in the record and the pathway documents...</p>}
+              <div className="suggest">
+                {[
+                  "What does the pathway say about extending endocrine therapy?",
+                  "Is the prior DVT a hard contraindication to tamoxifen?",
+                  "What would change if the tumor were HER2-positive?",
+                ].map((q) => (
+                  <button key={q} className="chip-btn" disabled={asking} onClick={() => void ask(q)}>
+                    {q}
+                  </button>
+                ))}
+              </div>
+              <div className="askrow">
+                <input
+                  value={followQ}
+                  onChange={(e) => setFollowQ(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && void ask(followQ)}
+                  placeholder="Ask about this case"
+                  disabled={asking}
+                />
+                <button className="secondary" disabled={asking || !followQ.trim()} onClick={() => void ask(followQ)}>
+                  Ask
+                </button>
+              </div>
+              <p className="muted">Answers use the packet, the record and the pathway documents. They do not change the packet.</p>
+            </div>
+          )}
           {status === "review" && (
             <div className="decision">
               <p>
