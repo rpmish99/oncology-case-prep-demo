@@ -1,0 +1,202 @@
+const pptxgen = require("pptxgenjs");
+const path = require("path");
+const { applyTheme } = require(
+  "/Users/rupeshmishra/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin/f7f26c42-0bcf-42bb-82c9-cefc9e4a4c4b/c49ac775-14da-419a-9e23-a2d67fb542e1/skills/pptx/scripts/apply_theme.js"
+);
+
+const THEME = {
+  name: "Case prep",
+  headFontFace: "Cambria",
+  bodyFontFace: "Calibri",
+  colors: {
+    dk1: "17212B", lt1: "FFFFFF", dk2: "0B3D3A", lt2: "EEF4F2",
+    accent1: "0F766E", accent2: "C2410C", accent3: "534AB7",
+    accent4: "5F6B76", accent5: "B45309", accent6: "2563EB",
+    hlink: "0F766E", folHlink: "5F6B76",
+  },
+};
+
+const pres = new pptxgen();
+pres.layout = "LAYOUT_WIDE"; // 13.33 x 7.5
+pres.theme = { headFontFace: THEME.headFontFace, bodyFontFace: THEME.bodyFontFace };
+pres.title = "Preparing breast cancer cases for tumor board";
+const C = pres.SchemeColor;
+
+pres.defineSlideMaster({
+  title: "DARK",
+  background: { color: C.text2 },
+  slideNumber: { x: 12.4, y: 7.0, w: 0.5, h: 0.3, color: "A9C7C2", fontSize: 10 },
+  objects: [
+    { placeholder: { options: { name: "title", type: "title", x: 0.6, y: 0.5, w: 12.1, h: 1.2, fontSize: 36, bold: true, color: C.background1, valign: "top", align: "left", margin: 0 }, text: "" } },
+  ],
+});
+pres.defineSlideMaster({
+  title: "LIGHT",
+  background: { color: C.background1 },
+  slideNumber: { x: 12.4, y: 7.0, w: 0.5, h: 0.3, color: "5F6B76", fontSize: 10 },
+  objects: [
+    { placeholder: { options: { name: "title", type: "title", x: 0.6, y: 0.5, w: 12.1, h: 0.9, fontSize: 34, bold: true, color: C.text1, valign: "top", align: "left", margin: 0 }, text: "" } },
+  ],
+});
+
+const card = (slide, x, y, w, h, name) =>
+  slide.addShape(pres.shapes.ROUNDED_RECTANGLE, {
+    x, y, w, h, rectRadius: 0.12, fill: { color: C.background2 }, line: { color: C.background2 }, objectName: name,
+  });
+
+// ---------- 1. Customer and problem ----------
+pres.addSection({ title: "Setup" });
+{
+  const s = pres.addSlide({ masterName: "DARK", sectionTitle: "Setup" });
+  s.addText("Preparing breast cancer cases for tumor board", { placeholder: "title" });
+
+  s.addText(
+    [
+      { text: "Customer", options: { bold: true, color: "9FD8CF", breakLine: true } },
+      { text: "Lakeview Cancer Institute, a fictional regional cancer center with about 500 new breast cancer cases a year.", options: { breakLine: true, paraSpaceAfter: 14 } },
+      { text: "Who does the work", options: { bold: true, color: "9FD8CF", breakLine: true } },
+      { text: "Breast medical oncologists and nurse navigators, before the weekly tumor board.", options: { breakLine: true, paraSpaceAfter: 14 } },
+      { text: "The problem", options: { bold: true, color: "9FD8CF", breakLine: true } },
+      { text: "For each case, someone reads pathology, imaging, genomics, clinic notes and the problem list in separate places, then checks the institution's treatment pathway. It is slow, and a disagreement between two sources is easy to miss.", options: {} },
+    ],
+    { x: 0.6, y: 1.8, w: 6.6, h: 4.8, fontSize: 18, color: C.background1, valign: "top", margin: 0, isTextBox: true, objectName: "Customer text" }
+  );
+
+  const stats = [
+    ["60 to 90 min", "to prepare one case today"],
+    ["5", "places a reviewer reads for each case"],
+    ["1", "wrong HER2 label hidden in the demo case"],
+  ];
+  stats.forEach(([big, small], i) => {
+    const y = 1.8 + i * 1.65;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 7.9, y, w: 4.8, h: 1.45, rectRadius: 0.12, fill: { color: C.accent1 }, line: { color: C.accent1 }, objectName: `Stat card ${i + 1}` });
+    s.addText(big, { x: 8.15, y: y + 0.12, w: 4.3, h: 0.75, fontSize: 36, bold: true, color: C.background1, margin: 0, valign: "middle", isTextBox: true, objectName: `Stat ${i + 1}` });
+    s.addText(small, { x: 8.15, y: y + 0.85, w: 4.3, h: 0.45, fontSize: 14, color: C.background1, margin: 0, valign: "top", isTextBox: true, objectName: `Stat label ${i + 1}` });
+  });
+  s.addText("Prep time is an assumption to confirm in a pilot. All patient data in the demo is synthetic.", { x: 0.6, y: 6.75, w: 11, h: 0.35, fontSize: 12, color: "A9C7C2", margin: 0, isTextBox: true, objectName: "Footnote" });
+  s.addNotes("Introduce the customer and the two users. The point is not that charts are hard to read. It is that the reviewer has to look in five places and compare them by eye. In this demo case the navigator's note says HER2 positive, while the signed pathology report says HER2 negative. That kind of mismatch is what we want caught before the meeting.");
+}
+
+// ---------- 2. Workflow ----------
+{
+  const s = pres.addSlide({ masterName: "LIGHT", sectionTitle: "Setup" });
+  s.addText("The workflow, before and after", { placeholder: "title" });
+
+  const before = ["Open pathology, imaging, genomics and notes one by one", "Copy the key facts into a summary", "Look up the current treatment pathway", "Compare sources by eye and chase gaps", "Present from memory and the summary"];
+  const after = ["Oncologist asks for the case to be prepared", "Specialists read each record and the pathway documents", "A draft lists facts, pathway text and inference separately", "A second check flags conflicts and unsupported claims", "The oncologist reviews and approves before anything is saved"];
+
+  [["Today", before, 0.6, C.text1], ["With the OpenAI API", after, 6.85, C.accent1]].forEach(([head, items, x, col]) => {
+    card(s, x, 1.6, 5.9, 4.1, `${head} card`);
+    s.addText(head, { x: x + 0.3, y: 1.75, w: 5.3, h: 0.5, fontSize: 20, bold: true, color: col, margin: 0, isTextBox: true, objectName: `${head} heading` });
+    s.addText(
+      items.map((t, i) => ({ text: t, options: { bullet: { type: "number", numberStartAt: i + 1 }, breakLine: i < items.length - 1, paraSpaceAfter: 10 } })),
+      { x: x + 0.3, y: 2.35, w: 5.3, h: 3.2, fontSize: 16, color: C.text1, valign: "top", margin: 0, isTextBox: true, objectName: `${head} steps` }
+    );
+  });
+
+  s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.6, y: 5.95, w: 12.15, h: 0.95, rectRadius: 0.12, fill: { color: C.accent3 }, line: { color: C.accent3 }, objectName: "Surface banner" });
+  s.addText(
+    [
+      { text: "Product surface: OpenAI Platform and APIs. ", options: { bold: true } },
+      { text: "Responses API for the model calls, Agents SDK for the manager and specialists, File Search for pathway documents, MCP for the patient record, tracing for review." },
+    ],
+    { x: 0.85, y: 6.0, w: 11.65, h: 0.85, fontSize: 16, color: C.background1, valign: "middle", margin: 0, isTextBox: true, objectName: "Surface text" }
+  );
+  s.addNotes("Left side is what the team does now. Right side is what the demo does. Stress that the oncologist is still the decision maker: the tool prepares and checks, and a person approves. The product surface is the OpenAI Platform. Everything you will see is built from the Responses API and the Agents SDK, with File Search and MCP as the tools.");
+}
+
+// ---------- 3. Demo flow and architecture ----------
+pres.addSection({ title: "Demo" });
+{
+  const s = pres.addSlide({ masterName: "LIGHT", sectionTitle: "Demo" });
+  s.addText("What the demo shows", { placeholder: "title" });
+  s.addImage({ path: path.resolve(__dirname, "../docs/architecture.png"), x: 0.6, y: 1.55, w: 7.4, h: 4.35, altText: "Architecture: React app on Amplify, Cognito, AgentCore Runtime, MCP server and DynamoDB in the customer AWS account, calling the OpenAI Platform and public APIs", objectName: "Architecture diagram" });
+  s.addText("The agents run in the customer's AWS account. Only model calls and pathway search go to OpenAI.", { x: 0.6, y: 6.05, w: 7.4, h: 0.7, fontSize: 14, color: C.accent4, margin: 0, valign: "top", isTextBox: true, objectName: "Diagram caption" });
+
+  const steps = [
+    ["0:00", "The case and the oncologist's request"],
+    ["0:30", "Specialists read the record through MCP and search the pathways"],
+    ["1:30", "The draft keeps patient facts, pathway text and inference apart"],
+    ["2:30", "The verifier flags problems; the HER2 conflict is shown"],
+    ["3:30", "The oncologist reviews and approves"],
+    ["4:15", "Value and next steps"],
+  ];
+  card(s, 8.3, 1.55, 4.45, 5.2, "Run of show card");
+  s.addText("Five-minute run of show", { x: 8.55, y: 1.7, w: 4.0, h: 0.45, fontSize: 18, bold: true, color: C.text1, margin: 0, isTextBox: true, objectName: "Run of show heading" });
+  steps.forEach(([t, d], i) => {
+    const y = 2.3 + i * 0.7;
+    s.addText(t, { x: 8.55, y, w: 0.7, h: 0.6, fontSize: 14, bold: true, color: C.accent1, margin: 0, valign: "top", isTextBox: true, objectName: `Time ${i + 1}` });
+    s.addText(d, { x: 9.3, y, w: 3.3, h: 0.6, fontSize: 14, color: C.text1, margin: 0, valign: "top", isTextBox: true, objectName: `Step ${i + 1}` });
+  });
+  s.addNotes("A live run takes about two and a half minutes, so start it before you begin the walkthrough and narrate while it works. The architecture: the browser app signs in with Cognito and calls the agent running on AgentCore. The agent reads the patient record through an MCP server, searches pathway documents with File Search, and calls the model through the Responses API. Run state and the audit trail are in DynamoDB.");
+}
+
+// ---------- 4. Expected value ----------
+pres.addSection({ title: "Value" });
+{
+  const s = pres.addSlide({ masterName: "LIGHT", sectionTitle: "Value" });
+  s.addText("Expected value", { placeholder: "title" });
+
+  s.addChart(pres.charts.BAR, [{ name: "Minutes per case", labels: ["Today", "With the assistant"], values: [75, 25] }], {
+    x: 0.6, y: 1.6, w: 6.2, h: 4.5, barDir: "col", chartColors: ["5F6B76", "0F766E"], showTitle: true, title: "Preparation time per case, minutes (assumption)",
+    titleFontSize: 14, titleColor: "17212B", titleFontFace: "+mn-lt",
+    showValue: true, dataLabelPosition: "outEnd", dataLabelFontSize: 14, dataLabelColor: "17212B", dataLabelFontFace: "+mn-lt",
+    catAxisLabelColor: "17212B", catAxisLabelFontSize: 14, catAxisLabelFontFace: "+mn-lt",
+    valAxisLabelColor: "5F6B76", valAxisLabelFontSize: 12, valAxisLabelFontFace: "+mn-lt", valAxisMaxVal: 100, valAxisMinVal: 0,
+    valGridLine: { color: "DDE3E7", size: 0.5 }, catGridLine: { style: "none" }, showLegend: false, invertedColors: ["5F6B76"],
+  });
+
+  const stats = [
+    ["About 33 hours a month", "of clinician and navigator time, at 40 cases a month"],
+    ["About $4,000 a month", "at a blended $120 an hour. Small next to the other benefits"],
+    ["Fewer missed conflicts", "to measure: sources that disagree, caught before the meeting"],
+  ];
+  stats.forEach(([big, small], i) => {
+    const y = 1.6 + i * 1.55;
+    card(s, 7.2, y, 5.55, 1.4, `Value card ${i + 1}`);
+    s.addText(big, { x: 7.45, y: y + 0.12, w: 5.05, h: 0.55, fontSize: 24, bold: true, color: C.accent1, margin: 0, valign: "middle", isTextBox: true, objectName: `Value ${i + 1}` });
+    s.addText(small, { x: 7.45, y: y + 0.7, w: 5.05, h: 0.6, fontSize: 14, color: C.text1, margin: 0, valign: "top", isTextBox: true, objectName: `Value label ${i + 1}` });
+  });
+  s.addText("Assumptions are illustrative and editable in the value model spreadsheet. A pilot would replace them with measured times.", { x: 0.6, y: 6.4, w: 12.1, h: 0.5, fontSize: 12, color: C.accent4, margin: 0, isTextBox: true, objectName: "Value footnote" });
+  s.addNotes("Be plain about the numbers. These are assumptions: 40 cases a month, 75 minutes of preparation today, 25 minutes of review with the assistant, and a blended 120 dollars an hour. That gives about 33 hours a month. The dollar figure is modest. The bigger reason to do this is quality: catching a mismatch between sources before the meeting. We would measure that in a pilot.");
+}
+
+// ---------- 5. Governance, assumptions, next steps ----------
+{
+  const s = pres.addSlide({ masterName: "LIGHT", sectionTitle: "Value" });
+  s.addText("Guardrails and next steps", { placeholder: "title" });
+
+  card(s, 0.6, 1.6, 5.9, 5.1, "Guardrails card");
+  s.addText("Guardrails", { x: 0.9, y: 1.75, w: 5.3, h: 0.5, fontSize: 20, bold: true, color: C.text1, margin: 0, isTextBox: true, objectName: "Guardrails heading" });
+  s.addText(
+    [
+      "A clinician approves before anything is saved",
+      "No write to the patient record",
+      "Every run and approval is logged",
+      "The agent sees patient data only through scoped record tools",
+      "Synthetic data only in this demo",
+      "Before real patient data: confirm the business associate agreement and data retention terms with OpenAI",
+    ].map((t, i, a) => ({ text: t, options: { bullet: true, breakLine: i < a.length - 1, paraSpaceAfter: 8 } })),
+    { x: 0.9, y: 2.35, w: 5.3, h: 4.2, fontSize: 16, color: C.text1, valign: "top", margin: 0, isTextBox: true, objectName: "Guardrails list" }
+  );
+
+  card(s, 6.85, 1.6, 5.9, 5.1, "Next steps card");
+  s.addText("Next steps", { x: 7.15, y: 1.75, w: 5.3, h: 0.5, fontSize: 20, bold: true, color: C.accent1, margin: 0, isTextBox: true, objectName: "Next steps heading" });
+  s.addText(
+    [
+      "Weeks 1 to 4: run on 50 de-identified past cases and compare with the tumor board notes",
+      "Weeks 5 to 8: read-only connection to the record system, with oncologist feedback",
+      "Measure prep time, conflicts caught and how often clinicians edit the draft",
+      "Then decide whether to add more cancer types or trial matching",
+    ].map((t, i, a) => ({ text: t, options: { bullet: { type: "number", numberStartAt: i + 1 }, breakLine: i < a.length - 1, paraSpaceAfter: 10 } })),
+    { x: 7.15, y: 2.35, w: 5.3, h: 4.2, fontSize: 16, color: C.text1, valign: "top", margin: 0, isTextBox: true, objectName: "Next steps list" }
+  );
+  s.addNotes("Close on safety first, then the plan. The tool prepares and checks. A clinician decides. Nothing is written to a record. For real patient data we would first confirm the contract terms and run on de-identified past cases, so we can compare the assistant against what the tumor board actually concluded.");
+}
+
+(async () => {
+  const out = path.resolve(__dirname, "case-prep-deck.pptx");
+  await pres.writeFile({ fileName: out });
+  await applyTheme(out, THEME);
+  console.log("wrote", out);
+})();
