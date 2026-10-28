@@ -91,3 +91,19 @@ button.tag:hover { border-color: var(--accent); color: var(--accent); }
   .packetpanel { max-height: none; overflow: visible; border: none; padding: 0; }
   .app { padding: 0; }
 }
+
+.followup { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+.qa { margin-bottom: 10px; }
+.qa .q { font-weight: 600; font-size: 13px; margin: 0 0 4px; }
+.qa .a { font-size: 13px; line-height: 1.5; margin: 0; white-space: pre-wrap; background: var(--bg); border-radius: 8px; padding: 8px 10px; }
+.suggest { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.chip-btn { font-size: 12px; padding: 4px 10px; border-radius: 14px; background: var(--panel); color: var(--text); }
+.chip-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.askrow { display: flex; gap: 8px; margin: 6px 0; }
+.askrow input { flex: 1; font: inherit; font-size: 13px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--text); }
+.askrow .secondary { width: auto; margin-top: 0; }
+@media print { .followup { display: none !important; } }
+
+.rec { background: none; border: none; padding: 0; text-align: left; font: inherit; font-size: 13px; color: var(--accent); cursor: pointer; text-decoration: underline; text-decoration-color: transparent; }
+.rec:hover { text-decoration-color: var(--accent); }
+.small { font-size: 12px; margin-top: 8px; }

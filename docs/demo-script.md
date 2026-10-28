@@ -23,13 +23,14 @@ A live run takes about 90 seconds, so start it early and talk while it works.
 | 2:00 | App, packet | The board summary and attention chips. Then the conflict box. |
 | 2:25 | App | Click a citation tag to show the source text. Close it. |
 | 2:40 | App | The verifier findings in the activity panel. |
-| 3:00 | App | Paste the change request, click **Send back for changes**. While it works (about 15 seconds), say why the clinician stays in control. |
-| 3:25 | App | Click **Approve**. Point out the audit trail. |
-| 3:40 | App | Point at the run stats (time, tokens, cost) and click **View the trace in OpenAI**. |
-| 3:55 | Slides 4 and 5 | Value, guardrails, next steps. |
+| 2:55 | App | Click the follow-up chip **What does the pathway say about extending endocrine therapy?** (about 5 seconds). |
+| 3:10 | App | Paste the change request, click **Send back for changes**. While it works (about 15 seconds), say why the clinician stays in control. |
+| 3:35 | App | Click **Approve**. Point out the audit trail. |
+| 3:45 | App | Point at the run stats (time, tokens, cost) and click **View the trace in OpenAI**. |
+| 4:00 | Slides 4 and 5 | Value, guardrails, next steps. |
 | 4:50 | Camera | One-line close. |
 
-If you are running behind, skip the change request and the trace. If the run fails, switch to your fallback recording and say so.
+If you are running behind, skip the trace and the change request. The "what if HER2-positive" follow-up chip takes about 30 seconds, so avoid it on camera. If the run fails, switch to your fallback recording and say so.
 
 ## Script
 
@@ -47,7 +48,7 @@ If you are running behind, skip the change request and the trace. If the run fai
 "This is the live run. Three specialists started together. Two of them read the patient record through an MCP server that stands in for the hospital's record system. The third is searching the institution's pathway documents with File Search, and PubMed for recent studies."
 
 **1:40. Slide 3, agent graph**
-"A manager agent on the stronger model coordinates three specialists on a faster, cheaper model. A separate verifier checks the draft. Then the run pauses for the oncologist. All of it runs in the customer's own AWS account. Only model calls and the pathway search go to OpenAI."
+"A case coordinator agent on the stronger model coordinates three specialists on a faster, cheaper model. A separate verifier checks the draft. Then the run pauses for the oncologist. All of it runs in the customer's own AWS account. Only model calls and the pathway search go to OpenAI."
 *(Back to the app.)*
 
 **2:00. Packet**
@@ -59,17 +60,20 @@ If you are running behind, skip the change request and the trace. If the run fai
 **2:40. Verifier**
 "On the left, the verifier's findings, such as claims that were missing a source. The draft was fixed before I saw it."
 
-**3:00. Request changes**
+**2:55. Follow-up question**
+"A clinician can also ask questions. I'll click one: what does the pathway say about extending endocrine therapy? It answers from the packet and the pathway, says which source each statement comes from, and keeps its own inference separate. It doesn't change the packet."
+
+**3:10. Request changes**
 "The oncologist stays in control. I'll ask for a bone density plan on the aromatase inhibitor option."
 *(Paste, send. Fifteen seconds later:)* "The agents revised the draft and sent it back for review."
 
-**3:25. Approve**
+**3:35. Approve**
 "Nothing is saved until the oncologist approves. I'll approve, and the audit trail shows each step: started, awaiting review, changes requested, approved."
 
-**3:40. Stats and trace**
+**3:45. Stats and trace**
 "This run took about a minute and a half and cost roughly ten cents in model calls. And here is the full trace in OpenAI, so anyone can see what each agent did."
 
-**3:55. Slides 4 and 5**
+**4:00. Slides 4 and 5**
 "On value: agent time and cost are measured on this case, and the checks for the planted problems passed in all ten test runs. The hours saved are my assumption, forty cases a month and preparation dropping from seventy-five minutes to twenty-five, so about thirty-three hours a month. A pilot would measure the real numbers. For safety, a clinician approves everything, nothing is written to the patient record, and before using real data we would confirm the contract terms. The next step is a four-week run on de-identified past cases."
 
 **4:50. Close**

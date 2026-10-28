@@ -7,7 +7,7 @@ demonstration, not a medical device, and it does not give treatment advice.
 ![Architecture](docs/architecture.png)
 
 ## What it does
-A manager agent asks three specialists (patient data, clinical history, evidence) for sourced findings, drafts a
+A case coordinator agent asks three specialists (patient data, clinical history, evidence) for sourced findings, drafts a
 structured packet, has a separate verifier agent check it, then pauses for a clinician to approve or request
 changes. Nothing is written to a patient record.
 
@@ -16,9 +16,9 @@ pathology says HER2-negative, a prior blood clot that matters for tamoxifen, an 
 genetic testing, and a superseded pathway document that should not be used.
 
 ## What the UI shows
-A patient banner and case timeline, a live feed of what each agent is doing, a board summary with attention chips,
+A patient banner and case timeline, a viewer for every synthetic record and pathway document (including the superseded one),  a live feed of what each agent is doing, a board summary with attention chips,
 conflicts between sources, options with patient facts and pathway text kept apart, a source viewer behind every
-citation, the verifier findings, a clinician review step (approve or request changes), an audit trail, run stats with
+citation, the verifier findings, follow-up questions answered from the packet, the record and the pathways, a clinician review step (approve or request changes), an audit trail, run stats with
 a link to the OpenAI trace, and a printable board brief.
 
 ## Results

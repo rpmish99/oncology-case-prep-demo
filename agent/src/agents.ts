@@ -9,7 +9,7 @@ export const SPECIALIST_MODEL = process.env.SPECIALIST_MODEL ?? "gpt-6.1-terra";
 const EFFORT = (process.env.REASONING_EFFORT ?? "low") as "low" | "medium" | "high";
 const SETTINGS = { reasoning: { effort: EFFORT } };
 const SPECIALIST_SETTINGS = { reasoning: { effort: EFFORT } };
-const MANAGER_SETTINGS = { reasoning: { effort: EFFORT }, parallelToolCalls: true };
+const COORDINATOR_SETTINGS = { reasoning: { effort: EFFORT }, parallelToolCalls: true };
 
 export function createEhrServer() {
   return new MCPServerStreamableHttp({
@@ -45,7 +45,7 @@ const nested = (agentName: string) => ({
   },
 });
 
-export function buildAgents(ehr: MCPServerStreamableHttp, vectorStoreId: string) {
+function makeSpecialists(ehr: MCPServerStreamableHttp, vectorStoreId: string) {
   const patientData = new Agent({
     name: "Patient data specialist",
     model: SPECIALIST_MODEL,
@@ -109,10 +109,16 @@ You have no tools. Check every claim for:
 Be specific: quote the claim. If everything checks out, return an empty findings list.`,
   });
 
-  const manager = new Agent({
-    name: "Treatment planning manager",
+  return { patientData, history, evidence, verifier };
+}
+
+export function buildAgents(ehr: MCPServerStreamableHttp, vectorStoreId: string) {
+  const { patientData, history, evidence, verifier } = makeSpecialists(ehr, vectorStoreId);
+
+  const coordinator = new Agent({
+    name: "Case coordinator",
     model: MODEL,
-    modelSettings: MANAGER_SETTINGS,
+    modelSettings: COORDINATOR_SETTINGS,
     tools: [
       patientData.asTool({
         toolName: "consult_patient_data",
@@ -164,5 +170,44 @@ Keep the packet short enough to read in two minutes before a meeting:
 If the clinician returns feedback instead of approving, revise the packet and submit again.`,
   });
 
-  return manager;
+  return coordinator;
+}
+
+/** Answers an oncologist's follow-up question about a prepared case. It never changes the packet. */
+export function buildQaAgent(ehr: MCPServerStreamableHttp, vectorStoreId: string) {
+  const { patientData, history, evidence } = makeSpecialists(ehr, vectorStoreId);
+  return new Agent({
+    name: "Case coordinator",
+    model: MODEL,
+    modelSettings: COORDINATOR_SETTINGS,
+    tools: [
+      patientData.asTool({
+        toolName: "consult_patient_data",
+        toolDescription: "Look up current disease and biomarker facts in the record.",
+        ...nested("Patient data specialist"),
+      }),
+      history.asTool({
+        toolName: "consult_clinical_history",
+        toolDescription: "Look up history, comorbidities and missing or stale tests in the record.",
+        ...nested("Clinical history specialist"),
+      }),
+      evidence.asTool({
+        toolName: "consult_evidence",
+        toolDescription: "Look up pathway guidance and recent evidence. Give it the specific question.",
+        ...nested("Evidence specialist"),
+      }),
+    ],
+    instructions: `You answer an oncologist's follow-up question about one prepared tumor board case.
+You are given the prepared packet. Answer from the packet when it already contains the answer. Otherwise call the
+specialists in one step for what you need, using the smallest set that answers the question.
+
+Rules:
+- Answer in a short paragraph or a few bullets. Say which source each statement comes from.
+- Keep patient facts, pathway text and your own inference clearly separate, and label inference as inference.
+- If the sources do not answer the question, say so plainly. Do not guess.
+- You do not choose treatment. For "what should we do" questions, lay out the considerations and who should decide.
+- Never use a pathway document that is marked superseded.
+- If the question asks about a hypothetical (for example, a different receptor status), say what the pathway says
+  for that case and state clearly that it is hypothetical and not this patient.`,
+  });
 }

@@ -98,7 +98,7 @@ pres.addSection({ title: "Setup" });
   s.addText(
     [
       { text: "Product surface: OpenAI Platform and APIs. ", options: { bold: true } },
-      { text: "Responses API for the model calls, Agents SDK for the manager and specialists, File Search for pathway documents, MCP for the patient record, tracing for review." },
+      { text: "Responses API for the model calls, Agents SDK for the case coordinator and specialists, File Search for pathway documents, MCP for the patient record, tracing for review." },
     ],
     { x: 0.85, y: 6.0, w: 11.65, h: 0.85, fontSize: 16, color: C.background1, valign: "middle", margin: 0, isTextBox: true, objectName: "Surface text" }
   );
@@ -110,12 +110,12 @@ pres.addSection({ title: "Demo" });
 {
   const s = pres.addSlide({ masterName: "LIGHT", sectionTitle: "Demo" });
   s.addText("How it works", { placeholder: "title" });
-  s.addImage({ path: path.resolve(__dirname, "../docs/agent-graph.png"), x: 0.6, y: 1.5, w: 7.3, h: 4.59, altText: "Agent graph: the oncologist's request goes to a manager agent, which starts three specialists together (patient data, clinical history, evidence). A verifier checks the draft, a clinician approves, and the note is saved with an audit trail.", objectName: "Agent graph" });
+  s.addImage({ path: path.resolve(__dirname, "../docs/agent-graph.png"), x: 0.6, y: 1.5, w: 7.3, h: 4.59, altText: "Agent graph: the oncologist's request goes to a case coordinator agent, which starts three specialists together (patient data, clinical history, evidence). A verifier checks the draft, a clinician approves, and the note is saved with an audit trail.", objectName: "Agent graph" });
   s.addText("Runs in the customer's AWS account: Cognito sign-in, AgentCore Runtime, an MCP server for the record, and DynamoDB for run state and the audit trail.", { x: 0.6, y: 6.2, w: 7.3, h: 0.7, fontSize: 14, color: C.accent4, margin: 0, valign: "top", isTextBox: true, objectName: "Graph caption" });
 
   const steps = [
     ["1", "Three specialists start together and read the record and the pathway documents"],
-    ["2", "The manager drafts a packet that keeps patient facts, pathway text and inference apart"],
+    ["2", "The coordinator drafts a packet that keeps patient facts, pathway text and inference apart"],
     ["3", "A separate verifier checks every claim against its source"],
     ["4", "The run pauses. Nothing is saved until the oncologist approves"],
   ];
@@ -127,7 +127,7 @@ pres.addSection({ title: "Demo" });
     s.addText(n, { x: 8.55, y, w: 0.45, h: 0.45, fontSize: 14, bold: true, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true, objectName: `Step number ${n}` });
     s.addText(d, { x: 9.2, y: y - 0.05, w: 3.4, h: 1.0, fontSize: 14, color: C.text1, margin: 0, valign: "top", isTextBox: true, objectName: `Step text ${n}` });
   });
-  s.addNotes("This slide is the OpenAI side. A manager agent on gpt-6.1-sol starts three specialists together. The patient data and history specialists read the record through an MCP server. The evidence specialist searches the pathway documents with File Search and looks up PubMed. The specialists use gpt-6.1-terra, which is faster and cheaper, because they are reading and extracting. A separate verifier checks the draft. Then the run pauses for the oncologist. Everything runs in the customer's own AWS account; only model calls and pathway search go to OpenAI.");
+  s.addNotes("This slide is the OpenAI side. A case coordinator agent on gpt-6.1-sol starts three specialists together. The patient data and history specialists read the record through an MCP server. The evidence specialist searches the pathway documents with File Search and looks up PubMed. The specialists use gpt-6.1-terra, which is faster and cheaper, because they are reading and extracting. A separate verifier checks the draft. Then the run pauses for the oncologist. Everything runs in the customer's own AWS account; only model calls and pathway search go to OpenAI.");
 }
 
 // ---------- 4. Expected value ----------

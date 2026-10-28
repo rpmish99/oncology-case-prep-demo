@@ -6,6 +6,7 @@ export type DemoEvent =
   | { type: "approved"; runId: string; noteId: string }
   | { type: "final"; runId: string; message: string }
   | { type: "audit"; entries: { at: string; event: string; reviewer?: string; feedback?: string }[] }
+  | { type: "answer"; text: string }
   | { type: "trace"; traceId: string; url: string }
   | { type: "stats"; seconds: number; inputTokens: number; outputTokens: number; costUsd: number }
   | { type: "error"; message: string };

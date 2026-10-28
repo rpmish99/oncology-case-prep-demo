@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { RunState, Runner } from "@openai/agents";
-import { buildAgents, createEhrServer } from "./agents.js";
+import { buildAgents, buildQaAgent, createEhrServer } from "./agents.js";
 import { emit, preview, type DemoEvent, withEmitter } from "./events.js";
 import { audit, loadRunState, saveRunState } from "./store.js";
 import { usageFor } from "./usage.js";
@@ -8,27 +8,27 @@ import { usageFor } from "./usage.js";
 const MAX_TURNS = 30;
 
 async function drive(
-  manager: ReturnType<typeof buildAgents>,
+  coordinator: ReturnType<typeof buildAgents>,
   input: string | RunState<any, any>,
   runId: string,
 ) {
   const traceId = `trace_${randomUUID().replace(/-/g, "")}`;
   const t0 = Date.now();
   const runner = new Runner({ traceId, groupId: runId, workflowName: "Tumor board case prep" });
-  const stream = await runner.run(manager, input, { stream: true, maxTurns: MAX_TURNS });
-  emit({ type: "agent_started", agent: manager.name });
+  const stream = await runner.run(coordinator, input, { stream: true, maxTurns: MAX_TURNS });
+  emit({ type: "agent_started", agent: coordinator.name });
   emit({ type: "trace", traceId, url: `https://platform.openai.com/traces/trace?trace_id=${traceId}` });
 
   for await (const event of stream) {
     if (event.type !== "run_item_stream_event") continue;
     const raw: any = event.item.rawItem ?? {};
     if (event.name === "tool_called" && raw.name !== "submit_for_clinician_review") {
-      emit({ type: "tool_call", agent: manager.name, tool: raw.name ?? "tool", args: raw.arguments });
+      emit({ type: "tool_call", agent: coordinator.name, tool: raw.name ?? "tool", args: raw.arguments });
     }
     if (event.name === "tool_output") {
       emit({
         type: "tool_result",
-        agent: manager.name,
+        agent: coordinator.name,
         tool: raw.name ?? "tool",
         preview: preview((event.item as any).output, raw.name === "verify_draft" ? 8000 : 160),
       });
@@ -61,9 +61,9 @@ export async function startRun(question: string, caseId: string, onEvent: (e: De
     const ehr = createEhrServer();
     await ehr.connect();
     try {
-      const manager = buildAgents(ehr, process.env.VECTOR_STORE_ID!);
+      const coordinator = buildAgents(ehr, process.env.VECTOR_STORE_ID!);
       await audit({ runId, event: "started", caseId, question });
-      await drive(manager, `Case ${caseId}. Oncologist request: ${question}`, runId);
+      await drive(coordinator, `Case ${caseId}. Oncologist request: ${question}`, runId);
     } finally {
       await ehr.close();
     }
@@ -82,8 +82,8 @@ export async function decide(
     const ehr = createEhrServer();
     await ehr.connect();
     try {
-      const manager = buildAgents(ehr, process.env.VECTOR_STORE_ID!);
-      const state = await RunState.fromString(manager, await loadRunState(runId));
+      const coordinator = buildAgents(ehr, process.env.VECTOR_STORE_ID!);
+      const state = await RunState.fromString(coordinator, await loadRunState(runId));
       const pending = state.getInterruptions()[0];
       if (decision === "approve") {
         state.approve(pending);
@@ -98,7 +98,53 @@ export async function decide(
         });
         await audit({ runId, event: "changes_requested", reviewer, feedback });
       }
-      await drive(manager, state, runId);
+      await drive(coordinator, state, runId);
+    } finally {
+      await ehr.close();
+    }
+  });
+}
+
+/** Follow-up question about a prepared case. The packet is sent by the client, and nothing is changed or saved. */
+export async function ask(
+  runId: string,
+  question: string,
+  packet: unknown,
+  history: { q: string; a: string }[],
+  onEvent: (e: DemoEvent) => void,
+) {
+  await withEmitter(onEvent, async () => {
+    const ehr = createEhrServer();
+    await ehr.connect();
+    try {
+      const agent = buildQaAgent(ehr, process.env.VECTOR_STORE_ID!);
+      const traceId = `trace_${randomUUID().replace(/-/g, "")}`;
+      const t0 = Date.now();
+      await audit({ runId, event: "question_asked", question });
+      const prior = history.map((h) => `Earlier question: ${h.q}\nEarlier answer: ${h.a}`).join("\n\n");
+      const input =
+        `Prepared packet (JSON):\n${JSON.stringify(packet)}\n\n` +
+        (prior ? `${prior}\n\n` : "") +
+        `Oncologist's question: ${question}`;
+      const runner = new Runner({ traceId, groupId: runId, workflowName: "Tumor board follow-up question" });
+      const stream = await runner.run(agent, input, { stream: true, maxTurns: MAX_TURNS });
+      for await (const event of stream) {
+        if (event.type !== "run_item_stream_event") continue;
+        const raw: any = event.item.rawItem ?? {};
+        if (event.name === "tool_called")
+          onEvent({ type: "tool_call", agent: agent.name, tool: raw.name ?? "tool", args: raw.arguments });
+      }
+      await stream.completed;
+      const u = usageFor(traceId);
+      onEvent({
+        type: "stats",
+        seconds: Math.round((Date.now() - t0) / 1000),
+        inputTokens: u.input,
+        outputTokens: u.output,
+        costUsd: Number(u.costUsd.toFixed(4)),
+      });
+      onEvent({ type: "trace", traceId, url: `https://platform.openai.com/traces/trace?trace_id=${traceId}` });
+      onEvent({ type: "answer", text: String(stream.finalOutput ?? "") });
     } finally {
       await ehr.close();
     }
