@@ -10,6 +10,14 @@ import type { DemoEvent } from "./events.js";
 const app = express();
 app.use(express.json({ limit: "1mb" }));
 
+// Browsers call the runtime directly, and the local dev server from another port.
+app.use((req, res, next) => {
+  res.setHeader("access-control-allow-origin", "*");
+  res.setHeader("access-control-allow-headers", "authorization,content-type,x-amzn-bedrock-agentcore-runtime-session-id");
+  if (req.method === "OPTIONS") return void res.sendStatus(204);
+  next();
+});
+
 app.get("/ping", (_req, res) => void res.json({ status: "Healthy" }));
 
 app.post("/invocations", async (req, res) => {

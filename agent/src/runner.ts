@@ -25,7 +25,7 @@ async function drive(
         type: "tool_result",
         agent: manager.name,
         tool: raw.name ?? "tool",
-        preview: preview((event.item as any).output, raw.name === "verify_draft" ? 1200 : 160),
+        preview: preview((event.item as any).output, raw.name === "verify_draft" ? 8000 : 160),
       });
     }
   }

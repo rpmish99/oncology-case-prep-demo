@@ -22,6 +22,18 @@ const AGENT_LABEL: Record<string, string> = {
   Verifier: "Verifier",
 };
 
+const TOOL_LABEL: Record<string, string> = {
+  consult_patient_data: "asks the patient data specialist",
+  consult_clinical_history: "asks the history specialist",
+  consult_evidence: "asks the evidence specialist",
+  verify_draft: "sends the draft to the verifier",
+  file_search_call: "searches the pathway documents",
+  search_pubmed: "searches PubMed",
+  search_clinical_trials: "searches ClinicalTrials.gov",
+};
+const SHOW_RESULT = new Set(["search_pubmed", "search_clinical_trials", "consult_patient_data", "consult_clinical_history", "consult_evidence"]);
+const toolName = (t: string) => TOOL_LABEL[t] ?? `reads ${t.replace(/^get_/, "").replace(/_/g, " ")}`;
+
 const clock = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
 function SourceTags({ sources }: { sources: string[] }) {
@@ -152,7 +164,9 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
     return () => clearInterval(id);
   }, [status]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => feedEnd.current?.scrollIntoView({ behavior: "smooth", block: "end" }), [events]);
+  useEffect(() => {
+    feedEnd.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [events]);
 
   const verifier = useMemo(() => {
     const r = [...events].reverse().find((e) => e.type === "tool_result" && e.tool === "verify_draft");
@@ -210,7 +224,7 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
     setStatus("idle");
   }
 
-  const feed = events.filter((e) => e.type === "tool_call" || e.type === "tool_result");
+  const feed = events.filter((e) => e.type === "tool_call" || (e.type === "tool_result" && SHOW_RESULT.has(e.tool)));
 
   return (
     <div className="app">
@@ -259,7 +273,7 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
               e.type === "tool_call" ? (
                 <li key={i} className="call">
                   <span className="agent">{AGENT_LABEL[e.agent] ?? e.agent}</span>
-                  <span className="tool">{e.tool.replace(/_/g, " ")}</span>
+                  <span className="tool">{toolName(e.tool)}</span>
                 </li>
               ) : e.type === "tool_result" ? (
                 <li key={i} className="result">
@@ -308,7 +322,7 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
           )}
           {status === "done" && (
             <div className="done">
-              <b>Approved.</b> {message}
+              <b>Approved.</b> {message.replace(/\*\*/g, "")}
             </div>
           )}
           {status === "error" && <div className="error">Something went wrong: {message}</div>}
