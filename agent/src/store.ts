@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile, appendFile } from "node:fs/promises";
 import path from "node:path";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 
 /**
  * Run state, saved notes and the audit trail. With TABLE_NAME set they go to DynamoDB, so a paused run
@@ -50,4 +50,45 @@ export async function audit(entry: Record<string, unknown>) {
   const at = new Date().toISOString();
   if (ddb) return void (await put(`audit#${String(entry.runId ?? "none")}`, at, entry));
   await appendFile(file("audit.log.jsonl"), `${JSON.stringify({ at, ...entry })}\n`);
+}
+
+/** Audit entries for one run, oldest first. */
+export async function listAudit(runId: string): Promise<Record<string, unknown>[]> {
+  await ready;
+  if (ddb) {
+    const out = await ddb.send(
+      new QueryCommand({
+        TableName: TABLE,
+        KeyConditionExpression: "pk = :pk",
+        ExpressionAttributeValues: { ":pk": `audit#${runId}` },
+      }),
+    );
+    return (out.Items ?? []).map(({ pk: _pk, sk, expiresAt: _e, ...rest }) => ({ at: sk, ...rest }));
+  }
+  try {
+    const lines = (await readFile(file("audit.log.jsonl"), "utf8")).trim().split("\n");
+    return lines.map((l) => JSON.parse(l)).filter((e) => e.runId === runId);
+  } catch {
+    return [];
+  }
+}
+
+/** Daily limit on new runs, so a public link cannot run up model costs. Local runs are not limited. */
+export async function underDailyCap(limit = Number(process.env.DAILY_RUN_LIMIT ?? 40)): Promise<boolean> {
+  if (!ddb) return true;
+  const day = new Date().toISOString().slice(0, 10);
+  try {
+    await ddb.send(
+      new UpdateCommand({
+        TableName: TABLE,
+        Key: { pk: `cap#${day}`, sk: "runs" },
+        UpdateExpression: "ADD n :one SET expiresAt = :ttl",
+        ConditionExpression: "attribute_not_exists(n) OR n < :limit",
+        ExpressionAttributeValues: { ":one": 1, ":limit": limit, ":ttl": Math.floor(Date.now() / 1000) + 2 * 86400 },
+      }),
+    );
+    return true;
+  } catch {
+    return false;
+  }
 }

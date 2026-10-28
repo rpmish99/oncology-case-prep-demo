@@ -14,6 +14,10 @@ export const candidateOption = z.object({
 });
 
 export const packetSchema = z.object({
+  board_summary: z.array(z.string()).describe("Exactly three one-line points the board should know first"),
+  attention_flags: z
+    .array(z.object({ kind: z.enum(["conflict", "contraindication", "missing_test", "stale_source", "other"]), label: z.string() }))
+    .describe("Short labels for things that need attention, at most six"),
   patient_snapshot: z.string(),
   disease_characterization: z.object({
     histology: sourced,

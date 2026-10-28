@@ -110,7 +110,9 @@ export class CasePrepStack extends cdk.Stack {
       environmentVariables: {
         OPENAI_SECRET_ID: "case-prep-demo/secrets",
         OPENAI_MODEL: this.node.tryGetContext("model") ?? "gpt-6.1-sol",
+        SPECIALIST_MODEL: "gpt-6.1-terra",
         REASONING_EFFORT: "low",
+        DAILY_RUN_LIMIT: "40",
         VECTOR_STORE_ID: this.node.tryGetContext("vectorStoreId") ?? "",
         MCP_URL: `${ehrUrl.url}mcp`,
         TABLE_NAME: table.tableName,

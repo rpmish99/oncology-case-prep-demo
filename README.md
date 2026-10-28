@@ -15,6 +15,18 @@ The synthetic case has planted problems the agents should catch: a note that say
 pathology says HER2-negative, a prior blood clot that matters for tamoxifen, an old bone density scan, missing
 genetic testing, and a superseded pathway document that should not be used.
 
+## What the UI shows
+A patient banner and case timeline, a live feed of what each agent is doing, a board summary with attention chips,
+conflicts between sources, options with patient facts and pathway text kept apart, a source viewer behind every
+citation, the verifier findings, a clinician review step (approve or request changes), an audit trail, run stats with
+a link to the OpenAI trace, and a printable board brief.
+
+## Results
+- `docs/eval-results.md`: ten runs of the synthetic case. Six checks on the planted problems passed in all ten runs.
+  Average 88 seconds of agent work and about $0.10 of model cost per case at list prices.
+- `docs/sample-packet.json`: a real packet produced by the agents.
+- `docs/value-model.xlsx`: editable assumptions for the time saved. These are assumptions, not measurements.
+
 ## Layout
 - `agent/` agent code (TypeScript, OpenAI Agents SDK) and the HTTP server that runs on AgentCore Runtime
 - `mcp-server/` the mock patient record, exposed as an MCP server
@@ -24,6 +36,8 @@ genetic testing, and a superseded pathway document that should not be used.
 - `deck/` slide deck source and the built deck
 - `docs/` architecture diagram, value model, and the recording script
 - `scripts/` helper scripts
+
+Run the evaluation with `cd agent && npm run eval` (needs the local setup below).
 
 ## Run locally
 1. `cp agent/.env.example agent/.env` and fill in `OPENAI_API_KEY` (this file is git-ignored).

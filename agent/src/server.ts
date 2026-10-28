@@ -1,6 +1,7 @@
 import "./bootstrap.js";
 import express from "express";
 import { decide, startRun } from "./runner.js";
+import { listAudit, underDailyCap } from "./store.js";
 import type { DemoEvent } from "./events.js";
 
 /**
@@ -26,7 +27,9 @@ app.post("/invocations", async (req, res) => {
   const send = (e: DemoEvent) => res.write(`data: ${JSON.stringify(e)}\n\n`);
   try {
     const { action, question, caseId = "case-001", runId, decision, feedback, reviewer = "demo-oncologist" } = req.body ?? {};
-    if (action === "start") await startRun(question ?? "Prepare this case for tumor board.", caseId, send);
+    if (action === "start" && !(await underDailyCap())) send({ type: "error", message: "The daily limit for demo runs has been reached. Try again tomorrow." });
+    else if (action === "audit") res.write(`data: ${JSON.stringify({ type: "audit", entries: await listAudit(runId) })}\n\n`);
+    else if (action === "start") await startRun(question ?? "Prepare this case for tumor board.", caseId, send);
     else if (action === "decide") await decide(runId, decision, feedback, reviewer, send);
     else send({ type: "error", message: "Unknown action" });
   } catch (err) {

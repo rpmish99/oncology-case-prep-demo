@@ -29,6 +29,15 @@ export const searchPubmed = tool({
     "Search PubMed for recent literature. Query must describe the disease and question only. Never include patient identifiers.",
   parameters: z.object({ query: z.string(), max_results: z.number().int().min(1).max(8) }),
   async execute({ query, max_results }) {
+    try {
+      return await pubmed(query, max_results);
+    } catch {
+      return "PubMed is not available right now. Continue with the pathway documents.";
+    }
+  },
+});
+
+async function pubmed(query: string, max_results: number) {
     const base = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils";
     const search = await getJson(
       `${base}/esearch.fcgi?db=pubmed&retmode=json&sort=date&retmax=${max_results}&term=${encodeURIComponent(query)}`,
@@ -44,8 +53,7 @@ export const searchPubmed = tool({
         })
         .join("\n"),
     );
-  },
-});
+}
 
 export const searchTrials = tool({
   name: "search_clinical_trials",
