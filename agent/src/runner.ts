@@ -1,8 +1,9 @@
 import { randomUUID } from "node:crypto";
-import { RunState, run } from "@openai/agents";
+import { RunState, Runner } from "@openai/agents";
 import { buildAgents, createEhrServer } from "./agents.js";
 import { emit, preview, type DemoEvent, withEmitter } from "./events.js";
 import { audit, loadRunState, saveRunState } from "./store.js";
+import { usageFor } from "./usage.js";
 
 const MAX_TURNS = 30;
 
@@ -11,8 +12,12 @@ async function drive(
   input: string | RunState<any, any>,
   runId: string,
 ) {
-  const stream = await run(manager, input, { stream: true, maxTurns: MAX_TURNS });
+  const traceId = `trace_${randomUUID().replace(/-/g, "")}`;
+  const t0 = Date.now();
+  const runner = new Runner({ traceId, groupId: runId, workflowName: "Tumor board case prep" });
+  const stream = await runner.run(manager, input, { stream: true, maxTurns: MAX_TURNS });
   emit({ type: "agent_started", agent: manager.name });
+  emit({ type: "trace", traceId, url: `https://platform.openai.com/traces/trace?trace_id=${traceId}` });
 
   for await (const event of stream) {
     if (event.type !== "run_item_stream_event") continue;
@@ -30,6 +35,14 @@ async function drive(
     }
   }
   await stream.completed;
+  const u = usageFor(traceId);
+  emit({
+    type: "stats",
+    seconds: Math.round((Date.now() - t0) / 1000),
+    inputTokens: u.input,
+    outputTokens: u.output,
+    costUsd: Number(u.costUsd.toFixed(4)),
+  });
 
   if (stream.interruptions?.length) {
     const pending = stream.interruptions[0];
@@ -77,7 +90,12 @@ export async function decide(
         await audit({ runId, event: "approved", reviewer });
         onEvent({ type: "approved", runId, noteId: "pending" });
       } else {
-        state.reject(pending, { message: feedback ?? "Please revise." });
+        state.reject(pending, {
+          message:
+            `The clinician asked for changes: ${feedback ?? "please revise"}. ` +
+            "Revise the packet to address this, then call submit_for_clinician_review again with the full revised packet. " +
+            "Do not answer with text only.",
+        });
         await audit({ runId, event: "changes_requested", reviewer, feedback });
       }
       await drive(manager, state, runId);

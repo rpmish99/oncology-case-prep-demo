@@ -105,40 +105,43 @@ pres.addSection({ title: "Setup" });
   s.addNotes("Left side is what the team does now. Right side is what the demo does. Stress that the oncologist is still the decision maker: the tool prepares and checks, and a person approves. The product surface is the OpenAI Platform. Everything you will see is built from the Responses API and the Agents SDK, with File Search and MCP as the tools.");
 }
 
-// ---------- 3. Demo flow and architecture ----------
+// ---------- 3. How it works ----------
 pres.addSection({ title: "Demo" });
 {
   const s = pres.addSlide({ masterName: "LIGHT", sectionTitle: "Demo" });
-  s.addText("What the demo shows", { placeholder: "title" });
-  s.addImage({ path: path.resolve(__dirname, "../docs/architecture.png"), x: 0.6, y: 1.55, w: 7.4, h: 4.35, altText: "Architecture: React app on Amplify, Cognito, AgentCore Runtime, MCP server and DynamoDB in the customer AWS account, calling the OpenAI Platform and public APIs", objectName: "Architecture diagram" });
-  s.addText("The agents run in the customer's AWS account. Only model calls and pathway search go to OpenAI.", { x: 0.6, y: 6.05, w: 7.4, h: 0.7, fontSize: 14, color: C.accent4, margin: 0, valign: "top", isTextBox: true, objectName: "Diagram caption" });
+  s.addText("How it works", { placeholder: "title" });
+  s.addImage({ path: path.resolve(__dirname, "../docs/agent-graph.png"), x: 0.6, y: 1.5, w: 7.3, h: 4.59, altText: "Agent graph: the oncologist's request goes to a manager agent, which starts three specialists together (patient data, clinical history, evidence). A verifier checks the draft, a clinician approves, and the note is saved with an audit trail.", objectName: "Agent graph" });
+  s.addText("Runs in the customer's AWS account: Cognito sign-in, AgentCore Runtime, an MCP server for the record, and DynamoDB for run state and the audit trail.", { x: 0.6, y: 6.2, w: 7.3, h: 0.7, fontSize: 14, color: C.accent4, margin: 0, valign: "top", isTextBox: true, objectName: "Graph caption" });
 
   const steps = [
-    ["0:00", "The case and the oncologist's request"],
-    ["0:30", "Specialists read the record through MCP and search the pathways"],
-    ["1:30", "The draft keeps patient facts, pathway text and inference apart"],
-    ["2:30", "The verifier flags problems; the HER2 conflict is shown"],
-    ["3:30", "The oncologist reviews and approves"],
-    ["4:15", "Value and next steps"],
+    ["1", "Three specialists start together and read the record and the pathway documents"],
+    ["2", "The manager drafts a packet that keeps patient facts, pathway text and inference apart"],
+    ["3", "A separate verifier checks every claim against its source"],
+    ["4", "The run pauses. Nothing is saved until the oncologist approves"],
   ];
-  card(s, 8.3, 1.55, 4.45, 5.2, "Run of show card");
-  s.addText("Five-minute run of show", { x: 8.55, y: 1.7, w: 4.0, h: 0.45, fontSize: 18, bold: true, color: C.text1, margin: 0, isTextBox: true, objectName: "Run of show heading" });
-  steps.forEach(([t, d], i) => {
-    const y = 2.3 + i * 0.7;
-    s.addText(t, { x: 8.55, y, w: 0.7, h: 0.6, fontSize: 14, bold: true, color: C.accent1, margin: 0, valign: "top", isTextBox: true, objectName: `Time ${i + 1}` });
-    s.addText(d, { x: 9.3, y, w: 3.3, h: 0.6, fontSize: 14, color: C.text1, margin: 0, valign: "top", isTextBox: true, objectName: `Step ${i + 1}` });
+  card(s, 8.3, 1.5, 4.45, 5.4, "Steps card");
+  s.addText("What happens in a run", { x: 8.55, y: 1.65, w: 4.0, h: 0.45, fontSize: 18, bold: true, color: C.text1, margin: 0, isTextBox: true, objectName: "Steps heading" });
+  steps.forEach(([n, d], i) => {
+    const y = 2.35 + i * 1.12;
+    s.addShape(pres.shapes.OVAL, { x: 8.55, y, w: 0.45, h: 0.45, fill: { color: C.accent1 }, line: { color: C.accent1 }, objectName: `Step badge ${n}` });
+    s.addText(n, { x: 8.55, y, w: 0.45, h: 0.45, fontSize: 14, bold: true, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true, objectName: `Step number ${n}` });
+    s.addText(d, { x: 9.2, y: y - 0.05, w: 3.4, h: 1.0, fontSize: 14, color: C.text1, margin: 0, valign: "top", isTextBox: true, objectName: `Step text ${n}` });
   });
-  s.addNotes("A live run takes about two and a half minutes, so start it before you begin the walkthrough and narrate while it works. The architecture: the browser app signs in with Cognito and calls the agent running on AgentCore. The agent reads the patient record through an MCP server, searches pathway documents with File Search, and calls the model through the Responses API. Run state and the audit trail are in DynamoDB.");
+  s.addNotes("This slide is the OpenAI side. A manager agent on gpt-6.1-sol starts three specialists together. The patient data and history specialists read the record through an MCP server. The evidence specialist searches the pathway documents with File Search and looks up PubMed. The specialists use gpt-6.1-terra, which is faster and cheaper, because they are reading and extracting. A separate verifier checks the draft. Then the run pauses for the oncologist. Everything runs in the customer's own AWS account; only model calls and pathway search go to OpenAI.");
 }
 
 // ---------- 4. Expected value ----------
 pres.addSection({ title: "Value" });
 {
+  const ev = JSON.parse(require("fs").readFileSync(path.resolve(__dirname, "../docs/eval-results.json"), "utf8"));
+  const secs = Math.round(ev.runs.reduce((a, r) => a + r.seconds, 0) / ev.runs.length);
+  const cost = ev.runs.reduce((a, r) => a + r.costUsd, 0) / ev.runs.length;
+  const perfect = ev.rows.filter((r) => r.passed === r.total).length;
   const s = pres.addSlide({ masterName: "LIGHT", sectionTitle: "Value" });
   s.addText("Expected value", { placeholder: "title" });
 
   s.addChart(pres.charts.BAR, [{ name: "Minutes per case", labels: ["Today", "With the assistant"], values: [75, 25] }], {
-    x: 0.6, y: 1.6, w: 6.2, h: 4.5, barDir: "col", chartColors: ["5F6B76", "0F766E"], showTitle: true, title: "Preparation time per case, minutes (assumption)",
+    x: 0.6, y: 1.5, w: 5.6, h: 4.6, barDir: "col", chartColors: ["5F6B76", "0F766E"], showTitle: true, title: "Preparation time per case, minutes (assumption)",
     titleFontSize: 14, titleColor: "17212B", titleFontFace: "+mn-lt",
     showValue: true, dataLabelPosition: "outEnd", dataLabelFontSize: 14, dataLabelColor: "17212B", dataLabelFontFace: "+mn-lt",
     catAxisLabelColor: "17212B", catAxisLabelFontSize: 14, catAxisLabelFontFace: "+mn-lt",
@@ -147,18 +150,19 @@ pres.addSection({ title: "Value" });
   });
 
   const stats = [
-    ["About 33 hours a month", "of clinician and navigator time, at 40 cases a month"],
-    ["About $4,000 a month", "at a blended $120 an hour. Small next to the other benefits"],
-    ["Fewer missed conflicts", "to measure: sources that disagree, caught before the meeting"],
+    [`${secs} seconds`, `of agent work per case, measured over ${ev.runs.length} runs`],
+    [`About ${Math.round(cost * 100)} cents`, "of model cost per case at list prices, measured"],
+    [`${perfect} of ${ev.rows.length} checks`, `on the planted problems passed in all ${ev.runs.length} runs`],
+    ["About 33 hours a month", "of clinician time saved (assumed: 40 cases, 75 down to 25 min)"],
   ];
   stats.forEach(([big, small], i) => {
-    const y = 1.6 + i * 1.55;
-    card(s, 7.2, y, 5.55, 1.4, `Value card ${i + 1}`);
-    s.addText(big, { x: 7.45, y: y + 0.12, w: 5.05, h: 0.55, fontSize: 24, bold: true, color: C.accent1, margin: 0, valign: "middle", isTextBox: true, objectName: `Value ${i + 1}` });
-    s.addText(small, { x: 7.45, y: y + 0.7, w: 5.05, h: 0.6, fontSize: 14, color: C.text1, margin: 0, valign: "top", isTextBox: true, objectName: `Value label ${i + 1}` });
+    const y = 1.5 + i * 1.2;
+    card(s, 6.6, y, 6.15, 1.1, `Value card ${i + 1}`);
+    s.addText(big, { x: 6.85, y: y + 0.08, w: 5.65, h: 0.5, fontSize: 22, bold: true, color: i === 3 ? C.accent4 : C.accent1, margin: 0, valign: "middle", isTextBox: true, objectName: `Value ${i + 1}` });
+    s.addText(small, { x: 6.85, y: y + 0.58, w: 5.65, h: 0.45, fontSize: 14, color: C.text1, margin: 0, valign: "top", isTextBox: true, objectName: `Value label ${i + 1}` });
   });
-  s.addText("Assumptions are illustrative and editable in the value model spreadsheet. A pilot would replace them with measured times.", { x: 0.6, y: 6.4, w: 12.1, h: 0.5, fontSize: 12, color: C.accent4, margin: 0, isTextBox: true, objectName: "Value footnote" });
-  s.addNotes("Be plain about the numbers. These are assumptions: 40 cases a month, 75 minutes of preparation today, 25 minutes of review with the assistant, and a blended 120 dollars an hour. That gives about 33 hours a month. The dollar figure is modest. The bigger reason to do this is quality: catching a mismatch between sources before the meeting. We would measure that in a pilot.");
+  s.addText("Time and cost are measured on the synthetic case. Hours saved is an assumption, editable in the value model. A pilot would measure real preparation times.", { x: 0.6, y: 6.35, w: 12.1, h: 0.55, fontSize: 12, color: C.accent4, margin: 0, isTextBox: true, objectName: "Value footnote" });
+  s.addNotes("Separate measured from assumed. Measured on the synthetic case: about 88 seconds of agent work and under ten cents of model cost per case, and the checks on the planted problems passed in every one of ten runs. Assumed: forty cases a month and preparation dropping from seventy-five minutes to twenty-five, which gives about thirty-three hours a month. The dollar value of that time is modest. The bigger reason is catching conflicts before the meeting, which a pilot would measure.");
 }
 
 // ---------- 5. Governance, assumptions, next steps ----------

@@ -23,6 +23,24 @@ const text = (value: unknown) => ({
 function buildServer() {
   const server = new McpServer({ name: "mock-ehr", version: "0.1.0" });
 
+  server.tool(
+    "get_case_bundle",
+    "Everything in the record for a case in one call: demographics, problem list, medications, allergies, observations, procedures, pathology, imaging, genomics and the latest clinic note. Prefer this over the individual tools.",
+    { case_id: caseId },
+    async () =>
+      text({
+        patient: byType("Patient"),
+        conditions: byType("Condition"),
+        medications: byType("MedicationStatement"),
+        allergies: byType("AllergyIntolerance"),
+        observations: byType("Observation"),
+        procedures: byType("Procedure"),
+        pathology_report: read("pathology_report.txt"),
+        radiology_reports: read("radiology_report.txt"),
+        genomics_report: read("genomics_report.txt"),
+        clinic_note: read("clinic_note.txt"),
+      }),
+  );
   server.tool("get_patient_summary", "Demographics and menopausal status for a case.", { case_id: caseId }, async () =>
     text(byType("Patient")),
   );

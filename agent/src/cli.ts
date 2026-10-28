@@ -17,6 +17,12 @@ const print = (e: DemoEvent) => {
       console.log("\n=== PACKET AWAITING CLINICIAN REVIEW ===");
       console.log(JSON.stringify(e.packet, null, 2));
       break;
+    case "trace":
+      console.log(`  trace: ${e.url}`);
+      break;
+    case "stats":
+      console.log(`  stats: ${e.seconds}s, ${e.inputTokens} in, ${e.outputTokens} out, about $${e.costUsd}`);
+      break;
     case "final":
       console.log(`\n${e.message}`);
       break;

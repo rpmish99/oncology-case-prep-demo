@@ -1,11 +1,7 @@
 :root {
-  --bg: #f6f7f9; --panel: #fff; --text: #1d2430; --muted: #66707f; --line: #dfe3ea;
-  --accent: #1f5fbf; --patient: #1f5fbf; --guideline: #0f7a5c; --infer: #7a4fb0; --warn: #b4690e;
+  --bg: #f3f5f7; --panel: #ffffff; --text: #1b2430; --muted: #5d6877; --line: #dde2e8;
+  --accent: #0f6a73; --patient: #1f5fbf; --guideline: #0f7a5c; --infer: #7a4fb0; --warn: #b4690e;
   font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root { --bg: #12161c; --panel: #1b212a; --text: #e8ebf0; --muted: #9aa4b2; --line: #2d3541;
-    --accent: #6aa3ff; --patient: #6aa3ff; --guideline: #4cc9a0; --infer: #b995ee; --warn: #f0a64a; }
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--text); }
@@ -56,3 +52,42 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
 .done { margin-top: 12px; padding: 10px; border-radius: 8px; background: color-mix(in srgb, var(--guideline) 12%, transparent); font-size: 13px; }
 .error { margin-top: 12px; padding: 10px; border-radius: 8px; background: color-mix(in srgb, #d33 12%, transparent); font-size: 13px; }
 @media (max-width: 1000px) { main { grid-template-columns: 1fr; } .cols { grid-template-columns: 1fr; } .feedpanel, .packetpanel { max-height: none; } }
+
+.summary { background: color-mix(in srgb, var(--accent) 8%, transparent); border-radius: 8px; padding: 10px 12px; }
+.summary ol { margin: 0 0 8px; padding-left: 18px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 11px; padding: 3px 8px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); }
+.chip.conflict { border-color: var(--warn); }
+.chip.contraindication { border-color: #d33; }
+.chip.missing_test { border-color: var(--infer); }
+.chip.stale_source { border-color: var(--muted); }
+details { margin-top: 6px; }
+summary { cursor: pointer; font-size: 13px; color: var(--accent); margin-bottom: 8px; }
+.stats { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 13px; }
+.stats p { margin: 0 0 6px; line-height: 1.5; }
+.stats a { color: var(--accent); }
+.audit { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 13px; }
+.audit ul { margin: 0; padding-left: 18px; }
+
+.banner { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; }
+.banner-main { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font-size: 14px; }
+.banner-facts { color: var(--muted); font-size: 13px; }
+.timeline { list-style: none; display: flex; gap: 0; margin: 12px 0 0; padding: 0; overflow-x: auto; }
+.timeline li { flex: 1 1 0; min-width: 120px; position: relative; padding-top: 14px; font-size: 12px; display: flex; flex-direction: column; gap: 2px; }
+.timeline li::before { content: ""; position: absolute; top: 5px; left: 0; right: 0; height: 2px; background: var(--line); }
+.timeline .dot { position: absolute; top: 0; left: 0; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }
+.timeline b { font-size: 12px; }
+.timeline span:last-child { color: var(--muted); }
+.panel-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+button.tag { cursor: pointer; font: inherit; font-size: 10px; }
+button.tag:hover { border-color: var(--accent); color: var(--accent); }
+.drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(520px, 92vw); background: var(--panel); border-left: 1px solid var(--line); box-shadow: -8px 0 24px rgba(0,0,0,0.12); padding: 14px; overflow: auto; z-index: 10; }
+.drawer-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 14px; }
+.drawer pre { white-space: pre-wrap; font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; margin: 0; }
+@media print {
+  body { background: #fff; }
+  header, .banner .timeline, aside.panel, .feedpanel, .decision, .head-actions, .panel-head button, .drawer, .audit, .done, .error { display: none !important; }
+  main { display: block; }
+  .packetpanel { max-height: none; overflow: visible; border: none; padding: 0; }
+  .app { padding: 0; }
+}

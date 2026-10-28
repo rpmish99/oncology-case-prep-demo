@@ -9,7 +9,8 @@
     "cli": "tsx --env-file=.env src/cli.ts",
     "seed": "tsx --env-file=.env scripts/seed-vector-store.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "eval": "tsx --env-file=.env scripts/eval.ts"
   },
   "keywords": [],
   "author": "",

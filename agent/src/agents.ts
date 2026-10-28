@@ -4,8 +4,12 @@ import { emit, preview } from "./events.js";
 import { searchPubmed, searchTrials, submitForClinicianReview } from "./tools.js";
 
 export const MODEL = process.env.OPENAI_MODEL ?? "gpt-6.1-sol";
+// A faster, cheaper model reads records and searches evidence. The stronger model plans and verifies.
+export const SPECIALIST_MODEL = process.env.SPECIALIST_MODEL ?? "gpt-6.1-terra";
 const EFFORT = (process.env.REASONING_EFFORT ?? "low") as "low" | "medium" | "high";
 const SETTINGS = { reasoning: { effort: EFFORT } };
+const SPECIALIST_SETTINGS = { reasoning: { effort: EFFORT } };
+const MANAGER_SETTINGS = { reasoning: { effort: EFFORT }, parallelToolCalls: true };
 
 export function createEhrServer() {
   return new MCPServerStreamableHttp({
@@ -44,11 +48,11 @@ const nested = (agentName: string) => ({
 export function buildAgents(ehr: MCPServerStreamableHttp, vectorStoreId: string) {
   const patientData = new Agent({
     name: "Patient data specialist",
-    model: MODEL,
-    modelSettings: SETTINGS,
+    model: SPECIALIST_MODEL,
+    modelSettings: SPECIALIST_SETTINGS,
     mcpServers: [ehr],
     instructions: `You collect the current facts about one patient from the record tools.
-Call the tools for pathology, radiology, genomics, conditions and the clinic note.
+Call get_case_bundle once. It returns the whole record. Do not call the other record tools.
 Return a compact list: histology, grade, size, nodal status, stage, ER, PR, HER2, Ki-67, assay results,
 menopausal status, imaging findings. Each line ends with its source tag.
 Then add a section "Disagreements" listing any value that differs between records, quoting both.
@@ -57,10 +61,11 @@ ${CASE_RULES}`,
 
   const history = new Agent({
     name: "Clinical history specialist",
-    model: MODEL,
-    modelSettings: SETTINGS,
+    model: SPECIALIST_MODEL,
+    modelSettings: SPECIALIST_SETTINGS,
     mcpServers: [ehr],
     instructions: `You build a short timeline of history that could change endocrine therapy or supportive care.
+Call get_case_bundle once. It returns the whole record. Do not call the other record tools.
 Look at the problem list, medications, allergies, family history, bone density and prior thrombosis.
 Return only items that matter for treatment choice, each with its date and source tag.
 Add a section "Missing or stale" for tests that have not been done or are old.
@@ -69,19 +74,22 @@ ${CASE_RULES}`,
 
   const evidence = new Agent({
     name: "Evidence specialist",
-    model: MODEL,
-    modelSettings: SETTINGS,
+    model: SPECIALIST_MODEL,
+    modelSettings: SPECIALIST_SETTINGS,
+    mcpServers: [ehr],
     tools: [
       fileSearchTool([vectorStoreId], { includeSearchResults: true, maxNumResults: 8 }),
       searchPubmed,
       searchTrials,
     ],
     instructions: `You find evidence for the question you are given.
-First search the institutional pathway documents with file search. Each document has a version and a status.
+Call get_case_bundle once, only to learn the disease features you need for searching (type, stage, receptor
+status, menopausal status, relevant comorbidities). Do not repeat patient details in your answer beyond that.
+Then search the institutional pathway documents with file search. Each document has a version and a status.
 Report the version and status of every document you rely on. If a document is marked superseded, say so and
 do not use it for recommendations. Then, only if useful, search PubMed and ClinicalTrials.gov with queries
 that describe the disease and question, never the patient. Keep PubMed queries short (three to six words),
-run at most three searches, and run the searches one after another.
+run at most two PubMed searches, and skip ClinicalTrials.gov unless the question asks for trials.
 Quote the pathway wording you rely on, with the document title and version.
 ${CASE_RULES}`,
   });
@@ -104,7 +112,7 @@ Be specific: quote the claim. If everything checks out, return an empty findings
   const manager = new Agent({
     name: "Treatment planning manager",
     model: MODEL,
-    modelSettings: SETTINGS,
+    modelSettings: MANAGER_SETTINGS,
     tools: [
       patientData.asTool({
         toolName: "consult_patient_data",
@@ -132,14 +140,19 @@ Be specific: quote the claim. If everything checks out, return an empty findings
     instructions: `You prepare a case for a breast tumor board. You support the oncologist. You do not decide treatment.
 
 Work in this order:
-1. Call consult_patient_data and consult_clinical_history.
-2. Call consult_evidence with a specific question built from the findings.
+1. In one step, call all three specialists together: consult_patient_data, consult_clinical_history and
+   consult_evidence. For consult_evidence, ask for the pathway guidance on adjuvant endocrine therapy, genomic
+   assay use, bone health and radiation for early ER-positive, HER2-negative breast cancer, using the request.
+2. Do not call a specialist again unless an answer says it could not get information it needed. Go on to the draft.
 3. Write a draft packet. Keep patient facts, guideline statements and your own inference in separate fields.
    List options for the tumor board, not a decision. Put every disagreement in conflicts and every missing item
    in missing_information. Do not use any document marked superseded.
 4. Call verify_draft with the draft and the specialist outputs. Fix anything it flags. If you cannot fix a flag,
    say so in uncertainty_notes.
 5. Call submit_for_clinician_review once with the final packet.
+
+Fill board_summary with exactly three one-line points the board should know first. Fill attention_flags with
+short labels for conflicts, contraindication candidates, missing tests and stale sources.
 
 Keep the packet short enough to read in two minutes before a meeting:
 - At most 4 candidate options, 3 patient facts and 3 guideline facts per option, one sentence each.

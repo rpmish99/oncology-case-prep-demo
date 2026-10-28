@@ -5,11 +5,16 @@ export type DemoEvent =
   | { type: "interruption"; runId: string; tool: string; packet: Packet }
   | { type: "approved"; runId: string; noteId: string }
   | { type: "final"; runId: string; message: string }
+  | { type: "audit"; entries: { at: string; event: string; reviewer?: string; feedback?: string }[] }
+  | { type: "trace"; traceId: string; url: string }
+  | { type: "stats"; seconds: number; inputTokens: number; outputTokens: number; costUsd: number }
   | { type: "error"; message: string };
 
 export type Sourced = { text: string; sources: string[] };
 
 export type Packet = {
+  board_summary: string[];
+  attention_flags: { kind: "conflict" | "contraindication" | "missing_test" | "stale_source" | "other"; label: string }[];
   patient_snapshot: string;
   disease_characterization: { histology: Sourced; stage: Sourced; er_pr_her2: Sourced; other_markers: Sourced };
   clinically_relevant_history: Sourced[];

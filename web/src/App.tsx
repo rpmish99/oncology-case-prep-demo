@@ -1,4 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import pathologyText from "../../data/case/pathology_report.txt?raw";
+import radiologyText from "../../data/case/radiology_report.txt?raw";
+import genomicsText from "../../data/case/genomics_report.txt?raw";
+import clinicText from "../../data/case/clinic_note.txt?raw";
+import patientJson from "../../data/case/patient.json?raw";
+import pathwayText from "../../data/guidelines/pathway-er-pos-her2-neg-early-v2025-2.md?raw";
+import pathwayOldText from "../../data/guidelines/pathway-er-pos-her2-neg-early-v2022-1-SUPERSEDED.md?raw";
+import checklistText from "../../data/guidelines/endocrine-therapy-safety-checklist-v2025-1.md?raw";
 import { invoke } from "./api";
 import type { DemoEvent, Packet, Sourced } from "./types";
 
@@ -36,13 +44,29 @@ const toolName = (t: string) => TOOL_LABEL[t] ?? `reads ${t.replace(/^get_/, "")
 
 const clock = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
+type Doc = { title: string; text: string };
+const SourceCtx = createContext<(tag: string) => void>(() => {});
+
+function resolveSource(tag: string): Doc {
+  const t = tag.toLowerCase();
+  if (/checklist/.test(t)) return { title: "Endocrine therapy safety checklist, version 2025.1", text: checklistText };
+  if (/2022/.test(t)) return { title: "Pathway, version 2022.1 (superseded)", text: pathwayOldText };
+  if (/pathway|guideline|v20|2025/.test(t)) return { title: "Pathway, version 2025.2", text: pathwayText };
+  if (/pathology|biops/.test(t)) return { title: "Surgical pathology report, 2026-09-14", text: pathologyText };
+  if (/radiolog|imaging|ultrasound|mammo|\bct\b/.test(t)) return { title: "Radiology reports", text: radiologyText };
+  if (/genom|assay|recurrence|oncotype|21-gene/.test(t)) return { title: "Genomic assay report, 2026-09-28", text: genomicsText };
+  if (/clinic|intake|navigator|note/.test(t)) return { title: "Navigator clinic note, 2026-10-05", text: clinicText };
+  return { title: "Patient record: problem list, medications, allergies, observations", text: patientJson };
+}
+
 function SourceTags({ sources }: { sources: string[] }) {
+  const open = useContext(SourceCtx);
   return (
     <span className="tags">
       {sources.map((s) => (
-        <span key={s} className="tag">
+        <button key={s} className="tag" onClick={() => open(s)} title="Show the source text">
           {s}
-        </span>
+        </button>
       ))}
     </span>
   );
@@ -56,21 +80,32 @@ function Fact({ item }: { item: Sourced }) {
   );
 }
 
+const KIND_LABEL: Record<string, string> = {
+  conflict: "Conflict",
+  contraindication: "Contraindication",
+  missing_test: "Missing test",
+  stale_source: "Stale source",
+  other: "Note",
+};
+
 function PacketView({ p }: { p: Packet }) {
   const d = p.disease_characterization;
   return (
     <div className="packet">
-      <section>
-        <h3>Snapshot</h3>
-        <p>{p.patient_snapshot}</p>
-      </section>
-      <section>
-        <h3>Disease</h3>
-        <ul>
-          {[d.histology, d.stage, d.er_pr_her2, d.other_markers].map((x, i) => (
-            <Fact key={i} item={x} />
+      <section className="summary">
+        <h3>What the board should know first</h3>
+        <ol>
+          {p.board_summary.map((b, i) => (
+            <li key={i}>{b}</li>
           ))}
-        </ul>
+        </ol>
+        <div className="chips">
+          {p.attention_flags.map((f, i) => (
+            <span key={i} className={`chip ${f.kind}`}>
+              <b>{KIND_LABEL[f.kind]}</b> {f.label}
+            </span>
+          ))}
+        </div>
       </section>
       {p.conflicts.length > 0 && (
         <section className="conflicts">
@@ -84,14 +119,6 @@ function PacketView({ p }: { p: Packet }) {
           </ul>
         </section>
       )}
-      <section>
-        <h3>Relevant history</h3>
-        <ul>
-          {p.clinically_relevant_history.map((x, i) => (
-            <Fact key={i} item={x} />
-          ))}
-        </ul>
-      </section>
       <section>
         <h3>Options for the tumor board</h3>
         {p.candidate_options.map((o, i) => (
@@ -114,34 +141,92 @@ function PacketView({ p }: { p: Packet }) {
           </div>
         ))}
       </section>
-      {p.contraindication_candidates.length > 0 && (
+      <details>
+        <summary>Full detail: snapshot, disease, history, missing information, sources, verifier</summary>
         <section>
-          <h3>Possible contraindications</h3>
+          <h3>Snapshot</h3>
+          <p>{p.patient_snapshot}</p>
+        </section>
+        <section>
+          <h3>Disease</h3>
           <ul>
-            {p.contraindication_candidates.map((x, i) => (
+            {[d.histology, d.stage, d.er_pr_her2, d.other_markers].map((x, i) => (
               <Fact key={i} item={x} />
             ))}
           </ul>
         </section>
-      )}
-      <section>
-        <h3>Missing information</h3>
-        <ul>{p.missing_information.map((m, i) => <li key={i}>{m}</li>)}</ul>
-      </section>
-      <section>
-        <h3>Sources used</h3>
-        <ul className="sources">
-          {p.evidence_reviewed.map((e, i) => (
-            <li key={i} className={e.used ? "" : "excluded"}>
-              {e.title}, version {e.version} {e.used ? "" : "(not used)"}
-            </li>
-          ))}
-        </ul>
-      </section>
-      <section>
-        <h3>Verifier</h3>
-        <p>{p.verifier_summary}</p>
-      </section>
+        <section>
+          <h3>Relevant history</h3>
+          <ul>
+            {p.clinically_relevant_history.map((x, i) => (
+              <Fact key={i} item={x} />
+            ))}
+          </ul>
+        </section>
+        {p.contraindication_candidates.length > 0 && (
+          <section>
+            <h3>Possible contraindications</h3>
+            <ul>
+              {p.contraindication_candidates.map((x, i) => (
+                <Fact key={i} item={x} />
+              ))}
+            </ul>
+          </section>
+        )}
+        <section>
+          <h3>Missing information</h3>
+          <ul>{p.missing_information.map((m, i) => <li key={i}>{m}</li>)}</ul>
+        </section>
+        <section>
+          <h3>Sources used</h3>
+          <ul className="sources">
+            {p.evidence_reviewed.map((e, i) => (
+              <li key={i} className={e.used ? "" : "excluded"}>
+                {e.title}, version {e.version} {e.used ? "" : "(not used)"}
+              </li>
+            ))}
+          </ul>
+        </section>
+        <section>
+          <h3>Verifier</h3>
+          <p>{p.verifier_summary}</p>
+        </section>
+      </details>
+    </div>
+  );
+}
+
+const TIMELINE = [
+  ["Aug 12", "Mammogram and ultrasound"],
+  ["Aug 18", "Core biopsy"],
+  ["Sep 9", "Lumpectomy and sentinel node biopsy"],
+  ["Sep 14", "Pathology report"],
+  ["Sep 21", "Staging CT"],
+  ["Sep 28", "Genomic assay"],
+  ["Oct 5", "Navigator note"],
+];
+
+function CaseBanner() {
+  return (
+    <div className="banner">
+      <div className="banner-main">
+        <div>
+          <b>Synthetic Patient A</b> <span className="muted">Case 001</span>
+        </div>
+        <div className="banner-facts">
+          59 F, postmenopausal &nbsp;|&nbsp; Right breast, invasive ductal, grade 2, 1.9 cm &nbsp;|&nbsp; pT1c pN0 (sn)
+          &nbsp;|&nbsp; ER 95%, PR 70%, HER2 1+ (negative) &nbsp;|&nbsp; Recurrence score 22
+        </div>
+      </div>
+      <ol className="timeline">
+        {TIMELINE.map(([d, e]) => (
+          <li key={d}>
+            <span className="dot" />
+            <b>{d}</b>
+            <span>{e}</span>
+          </li>
+        ))}
+      </ol>
     </div>
   );
 }
@@ -155,7 +240,12 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
   const [feedback, setFeedback] = useState("");
   const [message, setMessage] = useState("");
   const [elapsed, setElapsed] = useState(0);
+  const [stats, setStats] = useState({ seconds: 0, inputTokens: 0, outputTokens: 0, costUsd: 0 });
+  const [traceUrl, setTraceUrl] = useState("");
+  const [audit, setAudit] = useState<{ at: string; event: string; reviewer?: string; feedback?: string }[]>([]);
   const feedEnd = useRef<HTMLDivElement>(null);
+  const [doc, setDoc] = useState<Doc | null>(null);
+  const lastDecision = useRef<"approve" | "request_changes" | null>(null);
 
   useEffect(() => {
     if (status !== "running" && status !== "saving") return;
@@ -167,6 +257,17 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
   useEffect(() => {
     feedEnd.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [events]);
+
+  useEffect(() => {
+    if (!runId || (status !== "review" && status !== "done")) return;
+    void (async () => {
+      try {
+        for await (const e of invoke({ action: "audit", runId })) if (e.type === "audit") setAudit(e.entries);
+      } catch {
+        /* the audit panel is optional */
+      }
+    })();
+  }, [status, runId]);
 
   const verifier = useMemo(() => {
     const r = [...events].reverse().find((e) => e.type === "tool_result" && e.tool === "verify_draft");
@@ -182,13 +283,26 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
     try {
       for await (const e of invoke(body)) {
         setEvents((prev) => [...prev, e]);
+        if (e.type === "trace") setTraceUrl(e.url);
+        if (e.type === "stats")
+          setStats((s0) => ({
+            seconds: s0.seconds + e.seconds,
+            inputTokens: s0.inputTokens + e.inputTokens,
+            outputTokens: s0.outputTokens + e.outputTokens,
+            costUsd: s0.costUsd + e.costUsd,
+          }));
         if (e.type === "interruption") {
           setPacket(e.packet);
           setRunId(e.runId);
           setStatus("review");
         } else if (e.type === "final") {
-          setMessage(e.message);
-          setStatus("done");
+          if (lastDecision.current === "request_changes") {
+            setMessage("The revision did not come back with a new packet. Try sending the change request again.");
+            setStatus("error");
+          } else {
+            setMessage(e.message);
+            setStatus("done");
+          }
         } else if (e.type === "error") {
           setMessage(e.message);
           setStatus("error");
@@ -205,11 +319,16 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
     setPacket(null);
     setMessage("");
     setElapsed(0);
+    setStats({ seconds: 0, inputTokens: 0, outputTokens: 0, costUsd: 0 });
+    setTraceUrl("");
+    setAudit([]);
+    lastDecision.current = null;
     setStatus("running");
     void consume({ action: "start", question, caseId: "case-001" });
   }
 
   function decide(decision: "approve" | "request_changes") {
+    lastDecision.current = decision;
     setStatus(decision === "approve" ? "saving" : "running");
     if (decision === "request_changes") setPacket(null);
     void consume({ action: "decide", runId, decision, feedback: decision === "approve" ? undefined : feedback });
@@ -221,12 +340,17 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
     setPacket(null);
     setMessage("");
     setElapsed(0);
+    setStats({ seconds: 0, inputTokens: 0, outputTokens: 0, costUsd: 0 });
+    setTraceUrl("");
+    setAudit([]);
+    setRunId("");
     setStatus("idle");
   }
 
   const feed = events.filter((e) => e.type === "tool_call" || (e.type === "tool_result" && SHOW_RESULT.has(e.tool)));
 
   return (
+    <SourceCtx.Provider value={(tag) => setDoc(resolveSource(tag))}>
     <div className="app">
       <header>
         <div>
@@ -244,6 +368,8 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
           )}
         </div>
       </header>
+
+      <CaseBanner />
 
       <main>
         <aside className="panel">
@@ -263,6 +389,23 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
             Prepare case
           </button>
           {(status === "running" || status === "saving") && <p className="timer">Working, {clock(elapsed)}</p>}
+          {stats.inputTokens > 0 && (
+            <div className="stats">
+              <h3>This run</h3>
+              <p>
+                {clock(stats.seconds)} of agent work
+                <br />
+                {Math.round(stats.inputTokens / 1000)}k tokens in, {Math.round(stats.outputTokens / 1000)}k out
+                <br />
+                About ${stats.costUsd.toFixed(2)} at list prices
+              </p>
+              {traceUrl && (
+                <a href={traceUrl} target="_blank" rel="noreferrer">
+                  View the trace in OpenAI
+                </a>
+              )}
+            </div>
+          )}
         </aside>
 
         <section className="panel feedpanel">
@@ -302,7 +445,20 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
         </section>
 
         <section className="panel packetpanel">
-          <h2>Evidence packet</h2>
+          <div className="panel-head">
+            <h2>Evidence packet</h2>
+            {packet && (
+              <button
+                className="ghost"
+                onClick={() => {
+                  document.querySelectorAll("details").forEach((d) => (d.open = true));
+                  window.print();
+                }}
+              >
+                Print board brief
+              </button>
+            )}
+          </div>
           {!packet && status !== "done" && <p className="muted">The packet appears here when the verifier has checked it.</p>}
           {packet && <PacketView p={packet} />}
           {status === "review" && (
@@ -325,9 +481,34 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
               <b>Approved.</b> {message.replace(/\*\*/g, "")}
             </div>
           )}
+          {audit.length > 0 && (
+            <div className="audit">
+              <h3>Audit trail</h3>
+              <ul>
+                {audit.map((a, i) => (
+                  <li key={i}>
+                    <span className="muted">{new Date(a.at).toLocaleTimeString()}</span> {a.event.replace(/_/g, " ")}
+                    {a.reviewer ? ` by ${a.reviewer}` : ""}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           {status === "error" && <div className="error">Something went wrong: {message}</div>}
         </section>
       </main>
+      {doc && (
+        <aside className="drawer" role="dialog" aria-label="Source text">
+          <div className="drawer-head">
+            <b>{doc.title}</b>
+            <button className="ghost" onClick={() => setDoc(null)}>
+              Close
+            </button>
+          </div>
+          <pre>{doc.text}</pre>
+        </aside>
+      )}
     </div>
+    </SourceCtx.Provider>
   );
 }

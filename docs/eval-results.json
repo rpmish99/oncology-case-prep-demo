@@ -1,0 +1,92 @@
+{
+  "rows": [
+    {
+      "key": "her2_conflict",
+      "label": "Flags the note that says HER2-positive against the pathology result",
+      "passed": 10,
+      "total": 10
+    },
+    {
+      "key": "dvt_tamoxifen",
+      "label": "Connects the prior DVT to tamoxifen",
+      "passed": 10,
+      "total": 10
+    },
+    {
+      "key": "stale_pathway_unused",
+      "label": "Does not rely on the superseded 2022 pathway",
+      "passed": 10,
+      "total": 10
+    },
+    {
+      "key": "dexa_old",
+      "label": "Notes the bone density scan is old or needs updating",
+      "passed": 10,
+      "total": 10
+    },
+    {
+      "key": "options_not_decision",
+      "label": "Offers at least two options rather than one decision",
+      "passed": 10,
+      "total": 10
+    },
+    {
+      "key": "options_sourced",
+      "label": "Every option has patient facts and pathway statements",
+      "passed": 10,
+      "total": 10
+    }
+  ],
+  "runs": [
+    {
+      "seconds": 81,
+      "costUsd": 0.0982,
+      "ok": true
+    },
+    {
+      "seconds": 82,
+      "costUsd": 0.1002,
+      "ok": true
+    },
+    {
+      "seconds": 87,
+      "costUsd": 0.0924,
+      "ok": true
+    },
+    {
+      "seconds": 93,
+      "costUsd": 0.0973,
+      "ok": true
+    },
+    {
+      "seconds": 99,
+      "costUsd": 0.1034,
+      "ok": true
+    },
+    {
+      "seconds": 85,
+      "costUsd": 0.0909,
+      "ok": true
+    },
+    {
+      "seconds": 86,
+      "costUsd": 0.1004,
+      "ok": true
+    },
+    {
+      "seconds": 92,
+      "costUsd": 0.0994,
+      "ok": true
+    },
+    {
+      "seconds": 86,
+      "costUsd": 0.0887,
+      "ok": true
+    },
+    {
+      "seconds": 84,
+      "costUsd": 0.0987,
+      "ok": true
+    }
+  ]
+}
