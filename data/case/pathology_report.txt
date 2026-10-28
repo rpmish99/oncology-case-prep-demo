@@ -1,0 +1,20 @@
+SYNTHETIC SURGICAL PATHOLOGY REPORT (fictional, for demonstration only)
+Report date: 2026-09-14
+Specimen: Right breast, lumpectomy with sentinel lymph node biopsy
+
+DIAGNOSIS
+Invasive ductal carcinoma, no special type, Nottingham grade 2 (tubule 3, nuclei 2, mitoses 1; total score 6).
+Tumor size: 1.9 cm greatest dimension.
+Margins: negative; closest margin 3 mm (inferior).
+Lymphovascular invasion: not identified.
+Ductal carcinoma in situ: low-grade, 15% of tumor volume.
+Sentinel lymph nodes: 0 of 3 nodes with metastasis (pN0).
+Pathologic stage: pT1c pN0 (sn).
+
+BIOMARKERS
+Estrogen receptor: positive, 95% of tumor cells, strong intensity.
+Progesterone receptor: positive, 70% of tumor cells, moderate intensity.
+HER2 (immunohistochemistry): 1+ (negative). In situ hybridization not required.
+Ki-67: 18%.
+
+Signed: Synthetic Pathologist

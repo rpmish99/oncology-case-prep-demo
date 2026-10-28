@@ -1,0 +1,36 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "note": "Entirely synthetic. No real patient data.",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "case-001",
+        "name": [{ "text": "Synthetic Patient A" }],
+        "gender": "female",
+        "birthDate": "1967-03-14",
+        "extension": [{ "url": "menopausal-status", "valueString": "postmenopausal (natural, age 52)" }]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "c-1",
+        "code": { "text": "Invasive ductal carcinoma, right breast" },
+        "clinicalStatus": "active",
+        "onsetDateTime": "2026-08-18"
+      }
+    },
+    { "resource": { "resourceType": "Condition", "id": "c-2", "code": { "text": "Essential hypertension" }, "clinicalStatus": "active", "onsetDateTime": "2015-02-01" } },
+    { "resource": { "resourceType": "Condition", "id": "c-3", "code": { "text": "Deep vein thrombosis, left leg" }, "clinicalStatus": "resolved", "onsetDateTime": "2019-06-10", "note": "Treated with anticoagulation for 6 months" } },
+    { "resource": { "resourceType": "Condition", "id": "c-4", "code": { "text": "Osteopenia, lumbar spine" }, "clinicalStatus": "active", "onsetDateTime": "2024-11-05", "note": "DEXA 2024-11-05, lumbar T-score -2.1" } },
+    { "resource": { "resourceType": "Condition", "id": "c-5", "code": { "text": "Type 2 diabetes, diet controlled" }, "clinicalStatus": "active", "onsetDateTime": "2021-09-20" } },
+    { "resource": { "resourceType": "MedicationStatement", "id": "m-1", "medicationCodeableConcept": { "text": "Lisinopril 10 mg daily" }, "status": "active" } },
+    { "resource": { "resourceType": "MedicationStatement", "id": "m-2", "medicationCodeableConcept": { "text": "Calcium and vitamin D supplement" }, "status": "active" } },
+    { "resource": { "resourceType": "AllergyIntolerance", "id": "a-1", "code": { "text": "Penicillin" }, "reaction": "Rash" } },
+    { "resource": { "resourceType": "Observation", "id": "o-1", "code": { "text": "ECOG performance status" }, "valueInteger": 0 } },
+    { "resource": { "resourceType": "Observation", "id": "o-2", "code": { "text": "Family history" }, "valueString": "Mother: breast cancer at age 71. No known BRCA testing in family." } },
+    { "resource": { "resourceType": "Procedure", "id": "p-1", "code": { "text": "Right lumpectomy with sentinel lymph node biopsy" }, "performedDateTime": "2026-09-09" } }
+  ]
+}

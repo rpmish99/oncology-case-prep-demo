@@ -1,0 +1,9 @@
+SYNTHETIC GENOMIC ASSAY REPORT (fictional, for demonstration only)
+Assay: 21-gene recurrence score assay on lumpectomy tissue
+Report date: 2026-09-28
+
+Recurrence score: 22 (intermediate range, 11 to 25)
+ER score: positive. PR score: positive. HER2 score: negative.
+
+Germline genetic testing: not performed.
+Somatic sequencing: not performed.

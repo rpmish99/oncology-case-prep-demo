@@ -1,0 +1,16 @@
+SYNTHETIC RADIOLOGY REPORT (fictional, for demonstration only)
+Study: Bilateral diagnostic mammogram and right breast ultrasound
+Date: 2026-08-12
+
+FINDINGS
+Right breast, upper outer quadrant: irregular spiculated mass, 1.8 cm on ultrasound, BI-RADS 5.
+No suspicious right axillary lymph nodes.
+Left breast: no suspicious findings.
+Heterogeneously dense breast tissue.
+
+IMPRESSION
+Highly suspicious right breast mass. Biopsy performed 2026-08-18 (core biopsy, see pathology).
+
+Study: Staging chest CT with contrast
+Date: 2026-09-21
+No pulmonary nodules. No suspicious liver or bone lesions. Incidental: mild coronary artery calcification.

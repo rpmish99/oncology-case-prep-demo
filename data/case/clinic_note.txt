@@ -1,0 +1,9 @@
+SYNTHETIC CLINIC NOTE (fictional, for demonstration only)
+Date: 2026-10-05
+Author: Synthetic nurse navigator (intake note)
+
+Patient is a 59-year-old postmenopausal woman, status post right lumpectomy and sentinel node biopsy
+for a 1.9 cm HER2-positive, ER-positive invasive ductal carcinoma. Hypertension on lisinopril.
+Reports history of "a blood clot in her leg" several years ago. Denies current bone pain.
+No chemotherapy to date. Patient asks about hormone therapy options and side effects.
+Plan: present at tumor board.
