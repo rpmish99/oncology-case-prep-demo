@@ -32,7 +32,7 @@ export const searchPubmed = tool({
     try {
       return await pubmed(query, max_results);
     } catch {
-      return "PubMed is not available right now. Continue with the pathway documents.";
+      return "PubMed is not available right now. Continue with the Oncology Care Guidelines.";
     }
   },
 });

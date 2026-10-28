@@ -1,5 +1,5 @@
 ---
-title: Early-stage ER-positive, HER2-negative breast cancer pathway
+title: Oncology Care Guidelines, early-stage ER-positive, HER2-negative breast cancer
 publisher: Lakeview Cancer Institute (synthetic institutional document)
 version: 2025.2
 effective_date: 2025-07-01
@@ -7,7 +7,7 @@ status: current
 supersedes: 2022.1
 ---
 
-SYNTHETIC DOCUMENT. Written for a demonstration. It is a simplified, illustrative pathway and is not clinical guidance.
+SYNTHETIC DOCUMENT. Written for a demonstration. It is a simplified, illustrative set of care guidelines and is not clinical guidance.
 
 # Scope
 Adults with stage I to II, ER-positive, HER2-negative invasive breast cancer after breast surgery.

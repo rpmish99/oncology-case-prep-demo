@@ -85,12 +85,12 @@ ${CASE_RULES}`,
     instructions: `You find evidence for the question you are given.
 Call get_case_bundle once, only to learn the disease features you need for searching (type, stage, receptor
 status, menopausal status, relevant comorbidities). Do not repeat patient details in your answer beyond that.
-Then search the institutional pathway documents with file search. Each document has a version and a status.
+Then search the Oncology Care Guidelines (the institution's written care guidelines) with file search. Each document has a version and a status.
 Report the version and status of every document you rely on. If a document is marked superseded, say so and
 do not use it for recommendations. Then, only if useful, search PubMed and ClinicalTrials.gov with queries
 that describe the disease and question, never the patient. Keep PubMed queries short (three to six words),
 run at most two PubMed searches, and skip ClinicalTrials.gov unless the question asks for trials.
-Quote the pathway wording you rely on, with the document title and version.
+Quote the guideline wording you rely on, with the document title and version.
 ${CASE_RULES}`,
   });
 
@@ -132,7 +132,7 @@ export function buildAgents(ehr: MCPServerStreamableHttp, vectorStoreId: string)
       }),
       evidence.asTool({
         toolName: "consult_evidence",
-        toolDescription: "Find pathway guidance and recent evidence. Give it the specific question.",
+        toolDescription: "Find guidance in the Oncology Care Guidelines and recent evidence. Give it the specific question.",
         ...nested("Evidence specialist"),
       }),
       verifier.asTool({
@@ -147,7 +147,7 @@ export function buildAgents(ehr: MCPServerStreamableHttp, vectorStoreId: string)
 
 Work in this order:
 1. In one step, call all three specialists together: consult_patient_data, consult_clinical_history and
-   consult_evidence. For consult_evidence, ask for the pathway guidance on adjuvant endocrine therapy, genomic
+   consult_evidence. For consult_evidence, ask what the Oncology Care Guidelines say about adjuvant endocrine therapy, genomic
    assay use, bone health and radiation for early ER-positive, HER2-negative breast cancer, using the request.
 2. Do not call a specialist again unless an answer says it could not get information it needed. Go on to the draft.
 3. Write a draft packet. Keep patient facts, guideline statements and your own inference in separate fields.
@@ -193,7 +193,7 @@ export function buildQaAgent(ehr: MCPServerStreamableHttp, vectorStoreId: string
       }),
       evidence.asTool({
         toolName: "consult_evidence",
-        toolDescription: "Look up pathway guidance and recent evidence. Give it the specific question.",
+        toolDescription: "Look up guidance in the Oncology Care Guidelines and recent evidence. Give it the specific question.",
         ...nested("Evidence specialist"),
       }),
     ],
@@ -203,11 +203,11 @@ specialists in one step for what you need, using the smallest set that answers t
 
 Rules:
 - Answer in a short paragraph or a few bullets. Say which source each statement comes from.
-- Keep patient facts, pathway text and your own inference clearly separate, and label inference as inference.
+- Keep patient facts, guideline text and your own inference clearly separate, and label inference as inference.
 - If the sources do not answer the question, say so plainly. Do not guess.
 - You do not choose treatment. For "what should we do" questions, lay out the considerations and who should decide.
-- Never use a pathway document that is marked superseded.
-- If the question asks about a hypothetical (for example, a different receptor status), say what the pathway says
+- Never use an Oncology Care Guidelines document that is marked superseded.
+- If the question asks about a hypothetical (for example, a different receptor status), say what the Oncology Care Guidelines say
   for that case and state clearly that it is hypothetical and not this patient.`,
   });
 }

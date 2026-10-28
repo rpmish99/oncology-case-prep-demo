@@ -1,5 +1,5 @@
 ---
-title: Endocrine therapy safety checklist
+title: Oncology Care Guidelines, endocrine therapy safety checklist
 publisher: Lakeview Cancer Institute (synthetic institutional document)
 version: 2025.1
 effective_date: 2025-03-01
@@ -21,7 +21,7 @@ SYNTHETIC DOCUMENT. Illustrative checklist for a demonstration. Not clinical gui
 
 # Monitoring
 - Review adherence and side effects at 3 months, then every 6 months.
-- Repeat bone density according to the bone health pathway.
+- Repeat bone density according to the bone health section of the Oncology Care Guidelines.
 
 # Documentation
 - Record who reviewed the checklist and the date.

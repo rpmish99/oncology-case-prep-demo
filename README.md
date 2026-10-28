@@ -13,16 +13,16 @@ changes. Nothing is written to a patient record.
 
 The synthetic case has planted problems the agents should catch: a note that says HER2-positive while the signed
 pathology says HER2-negative, a prior blood clot that matters for tamoxifen, an old bone density scan, missing
-genetic testing, and a superseded pathway document that should not be used.
+genetic testing, and a superseded guideline document that should not be used.
 
 ## What the UI shows
-A patient banner and case timeline, a viewer for every synthetic record and pathway document (including the superseded one),  a live feed of what each agent is doing, a board summary with attention chips,
-conflicts between sources, options with patient facts and pathway text kept apart, a source viewer behind every
-citation, the verifier findings, follow-up questions answered from the packet, the record and the pathways, a clinician review step (approve or request changes), an audit trail, run stats with
+A patient banner and case timeline, a viewer for every synthetic record and Oncology Care Guidelines document (including the superseded one),  a live feed of what each agent is doing, a board summary with attention chips,
+conflicts between sources, options with patient facts and guideline text kept apart, a source viewer behind every
+citation, the verifier findings, follow-up questions answered from the packet, the record and the Oncology Care Guidelines, a clinician review step (approve or request changes), an audit trail, run stats with
 a link to the OpenAI trace, and a printable board brief.
 
 ## Results
-- `docs/eval-results.md`: ten runs of the synthetic case. Six checks on the planted problems passed in all ten runs.
+- `docs/eval-results.md`: ten runs of the synthetic case. 59 of 60 checks on the planted problems passed across ten runs (one run missed the old bone density scan).
   Average 88 seconds of agent work and about $0.10 of model cost per case at list prices.
 - `docs/sample-packet.json`: a real packet produced by the agents.
 - `docs/value-model.xlsx`: editable assumptions for the time saved. These are assumptions, not measurements.
@@ -32,7 +32,7 @@ a link to the OpenAI trace, and a printable board brief.
 - `mcp-server/` the mock patient record, exposed as an MCP server
 - `web/` React app (Amplify libraries for sign-in)
 - `infra/` AWS CDK stack: Cognito, DynamoDB, the MCP Lambda, the AgentCore Runtime
-- `data/` synthetic case files and synthetic institutional pathway documents
+- `data/` synthetic case files and synthetic institutional Oncology Care Guidelines
 - `deck/` slide deck source and the built deck
 - `docs/` architecture diagram, value model, and the recording script
 - `scripts/` helper scripts
@@ -42,7 +42,7 @@ Run the evaluation with `cd agent && npm run eval` (needs the local setup below)
 ## Run locally
 1. `cp agent/.env.example agent/.env` and fill in `OPENAI_API_KEY` (this file is git-ignored).
 2. Start the mock record server: `cd mcp-server && npm i && MCP_TOKEN=local-dev-token npm run dev`
-3. Index the pathway documents: `cd agent && npm i && npm run seed`. Copy the printed `VECTOR_STORE_ID` into `.env`.
+3. Index the Oncology Care Guidelines: `cd agent && npm i && npm run seed`. Copy the printed `VECTOR_STORE_ID` into `.env`.
 4. Terminal run: `npm run cli`. Or run the server with `npx tsx --env-file=.env src/server.ts` and the UI with
    `cd web && npm i && VITE_AUTH=off VITE_AGENT_URL=http://localhost:8080/invocations npm run dev`.
 
@@ -62,4 +62,4 @@ Run the evaluation with `cd agent && npm run eval` (needs the local setup below)
 ## Notes
 - The mock record server's function URL is public but requires a bearer token. It holds only synthetic data.
 - Reasoning effort and model are set with `REASONING_EFFORT` and `OPENAI_MODEL`.
-- The pathway documents are invented for this demo. They are not clinical guidance.
+- The Oncology Care Guidelines documents are invented for this demo. They are not clinical guidance.

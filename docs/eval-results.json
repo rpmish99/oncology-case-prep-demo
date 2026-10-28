@@ -13,15 +13,15 @@
       "total": 10
     },
     {
-      "key": "stale_pathway_unused",
-      "label": "Does not rely on the superseded 2022 pathway",
+      "key": "stale_guidelines_unused",
+      "label": "Does not rely on the superseded 2022 guidelines",
       "passed": 10,
       "total": 10
     },
     {
       "key": "dexa_old",
       "label": "Notes the bone density scan is old or needs updating",
-      "passed": 10,
+      "passed": 9,
       "total": 10
     },
     {
@@ -32,60 +32,60 @@
     },
     {
       "key": "options_sourced",
-      "label": "Every option has patient facts and pathway statements",
+      "label": "Every option has patient facts and guideline statements",
       "passed": 10,
       "total": 10
     }
   ],
   "runs": [
     {
-      "seconds": 81,
-      "costUsd": 0.0982,
+      "seconds": 84,
+      "costUsd": 0.0993,
       "ok": true
     },
     {
-      "seconds": 82,
-      "costUsd": 0.1002,
-      "ok": true
-    },
-    {
-      "seconds": 87,
-      "costUsd": 0.0924,
+      "seconds": 91,
+      "costUsd": 0.1045,
       "ok": true
     },
     {
       "seconds": 93,
-      "costUsd": 0.0973,
+      "costUsd": 0.0989,
+      "ok": true
+    },
+    {
+      "seconds": 95,
+      "costUsd": 0.0964,
       "ok": true
     },
     {
       "seconds": 99,
-      "costUsd": 0.1034,
+      "costUsd": 0.0951,
       "ok": true
     },
     {
-      "seconds": 85,
-      "costUsd": 0.0909,
+      "seconds": 81,
+      "costUsd": 0.0946,
       "ok": true
     },
     {
-      "seconds": 86,
-      "costUsd": 0.1004,
+      "seconds": 77,
+      "costUsd": 0.098,
+      "ok": true
+    },
+    {
+      "seconds": 82,
+      "costUsd": 0.0939,
+      "ok": true
+    },
+    {
+      "seconds": 83,
+      "costUsd": 0.086,
       "ok": true
     },
     {
       "seconds": 92,
-      "costUsd": 0.0994,
-      "ok": true
-    },
-    {
-      "seconds": 86,
-      "costUsd": 0.0887,
-      "ok": true
-    },
-    {
-      "seconds": 84,
-      "costUsd": 0.0987,
+      "costUsd": 0.0977,
       "ok": true
     }
   ]

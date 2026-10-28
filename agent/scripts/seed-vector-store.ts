@@ -5,7 +5,7 @@ import path from "node:path";
 const client = new OpenAI();
 const dir = path.resolve(process.cwd(), "../data/guidelines");
 
-const store = await client.vectorStores.create({ name: "case-prep-demo-pathways" });
+const store = await client.vectorStores.create({ name: "case-prep-demo-care-guidelines" });
 for (const name of await readdir(dir)) {
   if (!name.endsWith(".md")) continue;
   const file = await client.files.create({

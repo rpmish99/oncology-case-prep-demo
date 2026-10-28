@@ -23,8 +23,8 @@ const CHECKS: Record<string, { label: string; test: (p: any) => boolean }> = {
       return /tamoxifen/i.test(t) && /(DVT|thrombo|clot)/i.test(t);
     },
   },
-  stale_pathway_unused: {
-    label: "Does not rely on the superseded 2022 pathway",
+  stale_guidelines_unused: {
+    label: "Does not rely on the superseded 2022 guidelines",
     test: (p) =>
       !p.candidate_options.some((o: any) => JSON.stringify(o.guideline_facts).includes("2022.1")) &&
       !p.evidence_reviewed.some((e: any) => /2022/.test(e.version) && e.used),
@@ -38,12 +38,12 @@ const CHECKS: Record<string, { label: string; test: (p: any) => boolean }> = {
     test: (p) => p.candidate_options.length >= 2,
   },
   options_sourced: {
-    label: "Every option has patient facts and pathway statements",
+    label: "Every option has patient facts and guideline statements",
     test: (p) => p.candidate_options.every((o: any) => o.patient_facts.length > 0 && o.guideline_facts.length > 0),
   },
 };
 
-// Observed but not scored: the pathway only asks for genetic counseling when risk criteria are met, and this
+// Observed but not scored: the Oncology Care Guidelines only ask for genetic counseling when risk criteria are met, and this
 // patient does not meet them, so mentioning genetic testing is optional.
 const INFO = {
   mentions_genetic_testing: {
@@ -109,7 +109,7 @@ Observed, not scored:
 
 ${info.map((r) => `- ${r.label}: ${r.passed} of ${r.total}`).join("\n")}
 
-The genetic testing line is not scored. The pathway only asks for genetic counseling when risk criteria are met, and this patient does not meet them, so mentioning it is optional. An earlier version of this check scored it as required and passed 3 of 8 runs. It was reclassified after looking at the pathway text, not to improve the number.
+The genetic testing line is not scored. The Oncology Care Guidelines only ask for genetic counseling when risk criteria are met, and this patient does not meet them, so mentioning it is optional. An earlier version of this check scored it as required and passed 3 of 8 runs. It was reclassified after looking at the guideline text, not to improve the number.
 
 Average time to the review step: ${avg((r) => r.seconds).toFixed(0)} seconds (runs were ${CONCURRENCY} at a time).
 Average model cost per case at list prices: $${avg((r) => r.costUsd).toFixed(3)}.
