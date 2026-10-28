@@ -6,10 +6,21 @@ import { saveNote } from "./store.js";
 
 const clip = (s: string, n = 6000) => (s.length > n ? `${s.slice(0, n)}\n[truncated]` : s);
 
-async function getJson(url: string) {
-  const res = await fetch(url, { headers: { "user-agent": "case-prep-demo/0.1" } });
-  if (!res.ok) throw new Error(`${url} returned ${res.status}`);
-  return res.json() as Promise<any>;
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+// PubMed allows about 3 requests per second without a key, so calls are spaced and retried.
+let lastCall = 0;
+async function getJson(url: string, attempts = 4): Promise<any> {
+  for (let i = 0; i < attempts; i++) {
+    const wait = Math.max(0, lastCall + 400 - Date.now());
+    lastCall = Date.now() + wait;
+    if (wait) await sleep(wait);
+    const res = await fetch(url, { headers: { "user-agent": "case-prep-demo/0.1" } });
+    if (res.ok) return res.json();
+    if (res.status !== 429 && res.status < 500) throw new Error(`${url} returned ${res.status}`);
+    await sleep(800 * (i + 1));
+  }
+  throw new Error("Service busy after retries");
 }
 
 export const searchPubmed = tool({

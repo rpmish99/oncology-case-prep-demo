@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { RunState, run } from "@openai/agents";
 import { buildAgents, createEhrServer } from "./agents.js";
-import { emit, type DemoEvent, withEmitter } from "./events.js";
+import { emit, preview, type DemoEvent, withEmitter } from "./events.js";
 import { audit, loadRunState, saveRunState } from "./store.js";
 
 const MAX_TURNS = 30;
@@ -25,7 +25,7 @@ async function drive(
         type: "tool_result",
         agent: manager.name,
         tool: raw.name ?? "tool",
-        preview: String((event.item as any).output ?? "").slice(0, 160),
+        preview: preview((event.item as any).output, raw.name === "verify_draft" ? 1200 : 160),
       });
     }
   }

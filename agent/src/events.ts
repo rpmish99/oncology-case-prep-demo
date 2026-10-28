@@ -15,3 +15,8 @@ const sink = new AsyncLocalStorage<Emit>();
 
 export const withEmitter = <T>(emit: Emit, fn: () => T): T => sink.run(emit, fn);
 export const emit: Emit = (event) => sink.getStore()?.(event);
+
+export const preview = (value: unknown, max = 160) => {
+  const text = typeof value === "string" ? value : JSON.stringify(value);
+  return (text ?? "").replace(/\s+/g, " ").slice(0, max);
+};
