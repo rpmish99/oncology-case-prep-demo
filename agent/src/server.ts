@@ -1,3 +1,4 @@
+import "./bootstrap.js";
 import express from "express";
 import { decide, startRun } from "./runner.js";
 import type { DemoEvent } from "./events.js";
