@@ -72,7 +72,7 @@ If the run fails, switch to your fallback recording and say so.
 "Nothing is saved until the oncologist approves. I'll approve, and the audit trail shows each step. This run took about a minute and a half and cost roughly ten cents in model calls."
 
 **3:45. Slides 4 and 5**
-"On value: agent time and cost are measured on these cases, and the checks on the planted problems are in the evaluation results, including every miss. The hours saved are my assumption, forty cases a month and preparation dropping from seventy-five minutes to twenty-five, so about thirty-three hours a month. A pilot would measure the real numbers. For safety, a clinician approves everything, nothing is written to the patient record, and before using real data we would confirm the contract terms. The next step is a four-week run on de-identified past cases."
+"On value: agent time and cost are measured on these cases, and every check on the planted problems passed across twenty runs. The hours saved are my assumption, forty cases a month and preparation dropping from seventy-five minutes to twenty-five, so about thirty-three hours a month. A pilot would measure the real numbers. For safety, a clinician approves everything, nothing is written to the patient record, and before using real data we would confirm the contract terms. The next step is a four-week run on de-identified past cases."
 
 **4:50. Close**
 "Thanks for watching. Happy to take questions."

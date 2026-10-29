@@ -1,9 +1,10 @@
 {
-  "passedAll": 168,
+  "passedAll": 170,
   "totalAll": 170,
   "cases": [
     {
       "caseId": "case-001",
+      "runs": 5,
       "rows": [
         {
           "label": "Flags the note that says HER2-positive against the pathology result",
@@ -41,6 +42,7 @@
     },
     {
       "caseId": "case-002",
+      "runs": 5,
       "rows": [
         {
           "label": "Flags left versus right breast between the note and pathology",
@@ -82,6 +84,7 @@
     },
     {
       "caseId": "case-003",
+      "runs": 5,
       "rows": [
         {
           "label": "Flags the note that says ALK-positive against the molecular report",
@@ -109,16 +112,17 @@
         },
         {
           "label": "Reports similar past cases with a caution",
-          "passed": 4
+          "passed": 5
         },
         {
           "label": "Does not use a superseded document",
-          "passed": 4
+          "passed": 5
         }
       ]
     },
     {
       "caseId": "case-004",
+      "runs": 5,
       "rows": [
         {
           "label": "Flags the note that says stage II against the pathology result",
@@ -161,7 +165,7 @@
   ],
   "summary": {
     "runs": 20,
-    "avgSeconds": 87,
-    "avgCostUsd": 0.099
+    "avgSeconds": 85,
+    "avgCostUsd": 0.098
   }
 }

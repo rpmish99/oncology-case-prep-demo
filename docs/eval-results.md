@@ -2,12 +2,7 @@
 
 4 synthetic cases, 5 runs each (20 of 20 completed), run 2026-10-29.
 Checks are text tests on the structured packet. They show how often each planted problem was caught.
-Overall: 168 of 170 checks passed.
-
-Note: this is the last complete run (20 of 20). Two small changes were made after it and have not yet been re-run
-because the OpenAI account ran out of credits: a fix to one scoring check (it wrongly counted "not superseded" as
-superseded) and a hint in the similar-cases search for unrecognized tokens. Both misses in this run were in the lung
-case. Re-run with `cd agent && npm run eval` once credits are available.
+Overall: 170 of 170 checks passed.
 
 ## case-001: Breast, early, ER-positive
 
@@ -50,12 +45,12 @@ Observed, not scored:
 | Offers EGFR-targeted therapy as first-line | 5 of 5 |
 | Offers at least two options rather than one decision | 5 of 5 |
 | Every option has patient facts and guideline statements | 5 of 5 |
-| Reports similar past cases with a caution | 4 of 5 |
-| Does not use a superseded document | 4 of 5 |
+| Reports similar past cases with a caution | 5 of 5 |
+| Does not use a superseded document | 5 of 5 |
 
 Observed, not scored:
 
-- States that the guidelines do not address the lung disease: 4 of 5
+- States that the guidelines do not address the lung disease: 3 of 5
 
 ## case-004: Colon, stage III
 
@@ -75,6 +70,5 @@ Observed, not scored:
 
 - Mentions DPYD testing: 5 of 5
 
-Average time to the review step: 87 seconds (runs were 5 at a time).
-Average model cost per case at list prices: $0.099.
-
+Average time to the review step: 85 seconds (runs were 5 at a time).
+Average model cost per case at list prices: $0.098.

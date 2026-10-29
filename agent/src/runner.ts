@@ -11,6 +11,8 @@ async function drive(
   coordinator: ReturnType<typeof buildAgents>,
   input: string | RunState<any, any>,
   runId: string,
+  expectSubmission = true,
+  retried = false,
 ) {
   const traceId = `trace_${randomUUID().replace(/-/g, "")}`;
   const t0 = Date.now();
@@ -50,6 +52,16 @@ async function drive(
     const packet = JSON.parse(String((pending.rawItem as any).arguments ?? "{}"));
     await audit({ runId, event: "awaiting_clinician", tool: pending.toolName });
     emit({ type: "interruption", runId, tool: pending.toolName ?? "", packet });
+    return;
+  }
+  // The model sometimes answers in text without calling the submit step. Ask once for the submission.
+  if (expectSubmission && !retried) {
+    const nudge = {
+      role: "user" as const,
+      content:
+        "You finished without submitting the packet. Call submit_for_clinician_review now with the final, verified packet. Do not reply with text only.",
+    };
+    await drive(coordinator, [...stream.history, nudge] as any, runId, true, true);
     return;
   }
   emit({ type: "final", runId, message: String(stream.finalOutput ?? "") });
@@ -98,7 +110,7 @@ export async function decide(
         });
         await audit({ runId, event: "changes_requested", reviewer, feedback });
       }
-      await drive(coordinator, state, runId);
+      await drive(coordinator, state, runId, decision === "request_changes");
     } finally {
       await ehr.close();
     }

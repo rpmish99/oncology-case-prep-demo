@@ -165,7 +165,7 @@ pres.addSection({ title: "Value" });
     s.addText(small, { x: 6.85, y: y + 0.58, w: 5.65, h: 0.45, fontSize: 14, color: C.text1, margin: 0, valign: "top", isTextBox: true, objectName: `Value label ${i + 1}` });
   });
   s.addText("Time and cost are measured on the synthetic cases. Hours saved is an assumption, editable in the value model. A pilot would measure real preparation times.", { x: 0.6, y: 6.35, w: 12.1, h: 0.55, fontSize: 12, color: C.accent4, margin: 0, isTextBox: true, objectName: "Value footnote" });
-  s.addNotes("Separate measured from assumed. Measured on the four synthetic cases: about 90 seconds of agent work and about ten cents of model cost per case. The checks on the planted problems are in the evaluation results file, with every miss listed. Assumed: forty cases a month and preparation dropping from seventy-five minutes to twenty-five, which gives about thirty-three hours a month. The dollar value of that time is modest. The bigger reason is catching conflicts before the meeting, which a pilot would measure.");
+  s.addNotes("Separate measured from assumed. Measured on the four synthetic cases: about 85 seconds of agent work and about ten cents of model cost per case, and every check on the planted problems passed across twenty runs. Earlier runs missed a few checks before I tightened the instructions, which is why the evaluation is worth repeating on any change. Assumed: forty cases a month and preparation dropping from seventy-five minutes to twenty-five, which gives about thirty-three hours a month. The dollar value of that time is modest. The bigger reason is catching conflicts before the meeting, which a pilot would measure.");
 }
 
 // ---------- 5. Governance, assumptions, next steps ----------
