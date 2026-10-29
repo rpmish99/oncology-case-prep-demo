@@ -1,0 +1,5 @@
+SYNTHETIC MOLECULAR PROFILING REPORT (fictional, for demonstration only)
+Patient: Carl Exemplar   MRN: TB-101552   DOB: 1958-02-02
+Assay: Next-generation sequencing panel on biopsy tissue. Report date: 2026-09-19
+EGFR: exon 19 deletion (E746_A750del), sensitizing mutation detected.
+ALK rearrangement: not detected. ROS1: not detected. KRAS: wild type. BRAF V600E: not detected. MET exon 14: not detected.

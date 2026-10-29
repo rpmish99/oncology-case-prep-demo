@@ -1,0 +1,5 @@
+SYNTHETIC CLINIC NOTE (fictional, for demonstration only)
+Patient: Carl Exemplar   MRN: TB-101552   DOB: 1958-02-02
+Date: 2026-10-05. Author: Synthetic nurse navigator (intake note)
+Carl Exemplar is a 68-year-old former smoker with newly diagnosed stage IV ALK-positive lung adenocarcinoma. Known mild lung scarring
+followed by pulmonology. Hypertension. Mild back pain at the upper spine. Plan: present at thoracic tumor board.

@@ -1,0 +1,62 @@
+{
+ "checks": [
+  {
+   "id": "laterality_conflict",
+   "label": "Flags left versus right breast between the note and pathology",
+   "where": [
+    "conflicts"
+   ],
+   "all": [
+    "left",
+    "right"
+   ]
+  },
+  {
+   "id": "genetic_testing",
+   "label": "Flags that genetic counseling or testing is indicated",
+   "where": [
+    "missing_information",
+    "attention_flags",
+    "uncertainty_notes",
+    "candidate_options"
+   ],
+   "all": [
+    "(germline|genetic)"
+   ]
+  },
+  {
+   "id": "chemo_discussed",
+   "label": "Includes chemotherapy as an option to discuss",
+   "where": [
+    "candidate_options"
+   ],
+   "all": [
+    "chemotherapy"
+   ]
+  },
+  {
+   "id": "ovarian_suppression",
+   "label": "Mentions ovarian suppression",
+   "where": [
+    "candidate_options"
+   ],
+   "all": [
+    "ovarian"
+   ]
+  },
+  {
+   "id": "fertility",
+   "label": "Raises fertility",
+   "where": [
+    "missing_information",
+    "uncertainty_notes",
+    "attention_flags",
+    "candidate_options"
+   ],
+   "all": [
+    "fertility"
+   ]
+  }
+ ],
+ "info": []
+}

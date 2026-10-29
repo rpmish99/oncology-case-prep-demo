@@ -1,0 +1,68 @@
+{
+  "title": "Lung, EGFR-mutated",
+  "site": "Lung",
+  "banner": "68 M, former smoker | Right upper lobe adenocarcinoma, 4.2 cm | cT2b N2 M1b, stage IVA | EGFR exon 19 deletion, ALK negative | PD-L1 5%",
+  "timeline": [
+    [
+      "Sep 1",
+      "CT chest and abdomen"
+    ],
+    [
+      "Sep 8",
+      "CT-guided biopsy"
+    ],
+    [
+      "Sep 12",
+      "Pathology report"
+    ],
+    [
+      "Sep 14",
+      "PET/CT"
+    ],
+    [
+      "Sep 19",
+      "Molecular profiling"
+    ],
+    [
+      "Oct 5",
+      "Navigator note"
+    ]
+  ],
+  "followUps": [
+    "What do the Oncology Care Guidelines say about first-line treatment for this patient?",
+    "Does his lung disease affect the treatment options?",
+    "Is brain imaging needed before treatment?"
+  ],
+  "id": "case-003",
+  "identifiers": {
+    "name": "Carl Exemplar",
+    "mrn": "TB-101552",
+    "dob": "1958-02-02"
+  },
+  "documents": [
+    {
+      "key": "pathology_report.txt",
+      "title": "Synthetic lung biopsy pathology report",
+      "date": "2026-09-12",
+      "file": "pathology_report.txt"
+    },
+    {
+      "key": "radiology_report.txt",
+      "title": "Synthetic imaging reports",
+      "date": "2026-09-01",
+      "file": "radiology_report.txt"
+    },
+    {
+      "key": "molecular_report.txt",
+      "title": "Synthetic molecular profiling report",
+      "date": "2026-09-19",
+      "file": "molecular_report.txt"
+    },
+    {
+      "key": "clinic_note.txt",
+      "title": "Synthetic clinic note",
+      "date": "2026-10-05",
+      "file": "clinic_note.txt"
+    }
+  ]
+}

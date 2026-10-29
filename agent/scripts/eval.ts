@@ -1,60 +1,47 @@
 import "../src/bootstrap.js";
+import { readdirSync, readFileSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { startRun } from "../src/runner.js";
 import type { DemoEvent } from "../src/events.js";
 
 /**
- * Runs the synthetic case several times and checks whether each planted problem was caught.
- * The checks are simple text tests on the structured packet, so they are repeatable and cheap.
+ * Runs every synthetic case several times and checks whether each planted problem was caught. The checks are simple
+ * text tests on the structured packet, so they are repeatable and cheap. Expected findings live next to each case in
+ * data/cases/<id>/expected.json.
  */
-const RUNS = Number(process.env.EVAL_RUNS ?? 8);
-const CONCURRENCY = Number(process.env.EVAL_CONCURRENCY ?? 4);
+const RUNS = Number(process.env.EVAL_RUNS ?? 5);
+const CONCURRENCY = Number(process.env.EVAL_CONCURRENCY ?? 5);
+const casesDir = path.resolve(process.cwd(), "../data/cases");
 
-const CHECKS: Record<string, { label: string; test: (p: any) => boolean }> = {
-  her2_conflict: {
-    label: "Flags the note that says HER2-positive against the pathology result",
-    test: (p) => p.conflicts.some((c: any) => /HER2/i.test(JSON.stringify(c)) && /(positive|\+)/i.test(JSON.stringify(c))),
-  },
-  dvt_tamoxifen: {
-    label: "Connects the prior DVT to tamoxifen",
-    test: (p) => {
-      const t = JSON.stringify([p.contraindication_candidates, p.candidate_options, p.attention_flags]);
-      return /tamoxifen/i.test(t) && /(DVT|thrombo|clot)/i.test(t);
-    },
-  },
-  stale_guidelines_unused: {
-    label: "Does not rely on the superseded 2022 guidelines",
-    test: (p) =>
-      !p.candidate_options.some((o: any) => JSON.stringify(o.guideline_facts).includes("2022.1")) &&
-      !p.evidence_reviewed.some((e: any) => /2022/.test(e.version) && e.used),
-  },
-  dexa_old: {
-    label: "Notes the bone density scan is old or needs updating",
-    test: (p) => /(DEXA|bone density|BMD)/i.test(JSON.stringify([p.missing_information, p.attention_flags, p.uncertainty_notes])),
-  },
-  options_not_decision: {
-    label: "Offers at least two options rather than one decision",
-    test: (p) => p.candidate_options.length >= 2,
-  },
-  options_sourced: {
-    label: "Every option has patient facts and guideline statements",
-    test: (p) => p.candidate_options.every((o: any) => o.patient_facts.length > 0 && o.guideline_facts.length > 0),
-  },
+type Check = { id: string; label: string; where: string[]; all?: string[]; none?: string[] };
+
+function pick(obj: any, p: string): unknown[] {
+  const [head, ...rest] = p.split(".");
+  if (head === "*") return (Array.isArray(obj) ? obj : []).flatMap((x) => (rest.length ? pick(x, rest.join(".")) : [x]));
+  const next = obj?.[head];
+  return rest.length ? pick(next, rest.join(".")) : [next];
+}
+const textOf = (packet: any, where: string[]) => JSON.stringify(where.flatMap((p) => pick(packet, p)));
+const test = (packet: any, c: Check) => {
+  const t = textOf(packet, c.where);
+  return (c.all ?? []).every((r) => new RegExp(r, "i").test(t)) && !(c.none ?? []).some((r) => new RegExp(r, "i").test(t));
 };
 
-// Observed but not scored: the Oncology Care Guidelines only ask for genetic counseling when risk criteria are met, and this
-// patient does not meet them, so mentioning genetic testing is optional.
-const INFO = {
-  mentions_genetic_testing: {
-    label: "Mentions that genetic testing was not done (optional for this patient)",
-    test: (p: any) => /(germline|genetic)/i.test(JSON.stringify([p.missing_information, p.uncertainty_notes, p.attention_flags])),
-  },
+const GENERIC: Check[] = [];
+const genericTests: Record<string, (p: any) => boolean> = {
+  "Offers at least two options rather than one decision": (p) => p.candidate_options.length >= 2,
+  "Every option has patient facts and guideline statements": (p) =>
+    p.candidate_options.every((o: any) => o.patient_facts.length > 0 && o.guideline_facts.length > 0),
+  "Reports similar past cases with a caution": (p) => p.similar_cases?.matched > 0 && p.similar_cases.decisions.length > 0 && !!p.similar_cases.caution,
+  "Does not use a superseded document": (p) =>
+    !p.evidence_reviewed.some((e: any) => e.used && /supersed/i.test(e.status) && !/\b(not|no|nor)\b[^.;]{0,20}supersed/i.test(e.status)),
 };
+void GENERIC;
 
-type Result = { packet: any | null; seconds: number; costUsd: number; error?: string };
+type Result = { caseId: string; packet: any | null; seconds: number; costUsd: number; error?: string };
 
-async function one(): Promise<Result> {
+async function one(caseId: string): Promise<Result> {
   let packet: any = null;
   let seconds = 0;
   let costUsd = 0;
@@ -68,52 +55,68 @@ async function one(): Promise<Result> {
     if (e.type === "error") error = e.message;
   };
   try {
-    await startRun("Prepare this case for tumor board. What endocrine and supportive-care options should we discuss?", "case-001", onEvent);
+    await startRun("Prepare this case for tumor board.", caseId, onEvent);
   } catch (err) {
     error = err instanceof Error ? err.message : String(err);
   }
-  return { packet, seconds, costUsd, error };
+  return { caseId, packet, seconds, costUsd, error };
 }
 
+const caseIds = readdirSync(casesDir).filter((d) => /^case-\d{3}$/.test(d)).sort();
+const queue = caseIds.flatMap((id) => Array.from({ length: RUNS }, () => id));
 const results: Result[] = [];
-let next = 0;
 await Promise.all(
   Array.from({ length: CONCURRENCY }, async () => {
-    while (next < RUNS) {
-      const i = next++;
-      const r = await one();
+    for (let id = queue.shift(); id; id = queue.shift()) {
+      const r = await one(id);
       results.push(r);
-      console.log(`run ${i + 1}/${RUNS}: ${r.packet ? "packet" : `FAILED ${r.error}`} in ${r.seconds}s`);
+      console.log(`${id}: ${r.packet ? "packet" : `FAILED ${r.error}`} in ${r.seconds}s`);
     }
   }),
 );
 
-const ok = results.filter((r) => r.packet);
-const rows = Object.entries(CHECKS).map(([key, c]) => {
-  const passed = ok.filter((r) => c.test(r.packet)).length;
-  return { key, label: c.label, passed, total: ok.length };
-});
-const info = Object.values(INFO).map((c) => ({ label: c.label, passed: ok.filter((r) => c.test(r.packet)).length, total: ok.length }));
-const avg = (f: (r: Result) => number) => (ok.length ? ok.reduce((a, r) => a + f(r), 0) / ok.length : 0);
+const sections: string[] = [];
+const jsonRows: any[] = [];
+let passedAll = 0;
+let totalAll = 0;
+for (const id of caseIds) {
+  const meta = JSON.parse(readFileSync(path.join(casesDir, id, "meta.json"), "utf8"));
+  const expected = JSON.parse(readFileSync(path.join(casesDir, id, "expected.json"), "utf8")) as { checks: Check[]; info: Check[] };
+  const ok = results.filter((r) => r.caseId === id && r.packet);
+  const rows = [
+    ...expected.checks.map((c) => ({ label: c.label, passed: ok.filter((r) => test(r.packet, c)).length })),
+    ...Object.entries(genericTests).map(([label, f]) => ({ label, passed: ok.filter((r) => f(r.packet)).length })),
+  ];
+  rows.forEach((r) => {
+    passedAll += r.passed;
+    totalAll += ok.length;
+  });
+  const info = expected.info.map((c) => `- ${c.label}: ${ok.filter((r) => test(r.packet, c)).length} of ${ok.length}`);
+  sections.push(
+    `## ${id}: ${meta.title}\n\n| Check | Passed |\n|---|---|\n${rows.map((r) => `| ${r.label} | ${r.passed} of ${ok.length} |`).join("\n")}\n${info.length ? `\nObserved, not scored:\n\n${info.join("\n")}\n` : ""}`,
+  );
+  jsonRows.push({ caseId: id, runs: ok.length, rows });
+}
 
+const done = results.filter((r) => r.packet);
+const avg = (f: (r: Result) => number) => (done.length ? done.reduce((a, r) => a + f(r), 0) / done.length : 0);
 const md = `# Evaluation results
 
-Synthetic case 001, ${RUNS} runs (${ok.length} completed), run ${new Date().toISOString().slice(0, 10)}.
+${caseIds.length} synthetic cases, ${RUNS} runs each (${done.length} of ${results.length} completed), run ${new Date().toISOString().slice(0, 10)}.
 Checks are text tests on the structured packet. They show how often each planted problem was caught.
+Overall: ${passedAll} of ${totalAll} checks passed.
 
-| Check | Passed |
-|---|---|
-${rows.map((r) => `| ${r.label} | ${r.passed} of ${r.total} |`).join("\n")}
-
-Observed, not scored:
-
-${info.map((r) => `- ${r.label}: ${r.passed} of ${r.total}`).join("\n")}
-
-The genetic testing line is not scored. The Oncology Care Guidelines only ask for genetic counseling when risk criteria are met, and this patient does not meet them, so mentioning it is optional. An earlier version of this check scored it as required and passed 3 of 8 runs. It was reclassified after looking at the guideline text, not to improve the number.
-
+${sections.join("\n")}
 Average time to the review step: ${avg((r) => r.seconds).toFixed(0)} seconds (runs were ${CONCURRENCY} at a time).
 Average model cost per case at list prices: $${avg((r) => r.costUsd).toFixed(3)}.
 `;
+if (done.length < results.length) {
+  console.error(`Only ${done.length} of ${results.length} runs completed (for example the account may have no credits). Results not written.`);
+  process.exit(1);
+}
 await writeFile(path.resolve(process.cwd(), "../docs/eval-results.md"), md);
-await writeFile(path.resolve(process.cwd(), "../docs/eval-results.json"), JSON.stringify({ rows, runs: results.map((r) => ({ seconds: r.seconds, costUsd: r.costUsd, ok: !!r.packet })) }, null, 2));
+await writeFile(
+  path.resolve(process.cwd(), "../docs/eval-results.json"),
+  JSON.stringify({ passedAll, totalAll, cases: jsonRows, summary: { runs: done.length, avgSeconds: Math.round(avg((r) => r.seconds)), avgCostUsd: Number(avg((r) => r.costUsd).toFixed(3)) } }, null, 2),
+);
 console.log(md);

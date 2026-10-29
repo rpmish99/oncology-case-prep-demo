@@ -17,8 +17,9 @@ export type Packet = {
   board_summary: string[];
   attention_flags: { kind: "conflict" | "contraindication" | "missing_test" | "stale_source" | "other"; label: string }[];
   patient_snapshot: string;
-  disease_characterization: { histology: Sourced; stage: Sourced; er_pr_her2: Sourced; other_markers: Sourced };
+  disease_characterization: { histology: Sourced; stage: Sourced; biomarkers: Sourced; other_markers: Sourced };
   clinically_relevant_history: Sourced[];
+  similar_cases: { summary: string; matched: number; decisions: { decision: string; count: number }[]; caution: string };
   evidence_reviewed: { title: string; version: string; status: string; used: boolean }[];
   candidate_options: {
     option: string;

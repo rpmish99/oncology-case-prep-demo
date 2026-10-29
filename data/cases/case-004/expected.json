@@ -1,0 +1,73 @@
+{
+ "checks": [
+  {
+   "id": "stage_conflict",
+   "label": "Flags the note that says stage II against the pathology result",
+   "where": [
+    "conflicts"
+   ],
+   "all": [
+    "stage II\\b",
+    "(III|pN1|node)"
+   ]
+  },
+  {
+   "id": "neuropathy_oxaliplatin",
+   "label": "Connects the existing neuropathy to oxaliplatin",
+   "where": [
+    "contraindication_candidates",
+    "candidate_options",
+    "attention_flags"
+   ],
+   "all": [
+    "neuropath",
+    "oxaliplatin"
+   ]
+  },
+  {
+   "id": "duration_current",
+   "label": "Uses the current three-month duration for low-risk stage III",
+   "where": [
+    "candidate_options"
+   ],
+   "all": [
+    "(3|three)[ -]months?"
+   ]
+  },
+  {
+   "id": "stale_unused",
+   "label": "Does not use the superseded 2020 guidelines",
+   "where": [
+    "candidate_options.*.guideline_facts"
+   ],
+   "none": [
+    "2020\\.1"
+   ]
+  },
+  {
+   "id": "postop_cea",
+   "label": "Notes the post-operative CEA has not been drawn",
+   "where": [
+    "missing_information",
+    "attention_flags",
+    "uncertainty_notes"
+   ],
+   "all": [
+    "CEA"
+   ]
+  }
+ ],
+ "info": [
+  {
+   "label": "Mentions DPYD testing",
+   "where": [
+    "missing_information",
+    "uncertainty_notes",
+    "candidate_options"
+   ],
+   "all": [
+    "DPYD"
+   ]
+  }
+ ]
+}

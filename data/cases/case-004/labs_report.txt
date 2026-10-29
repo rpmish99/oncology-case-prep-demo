@@ -1,0 +1,4 @@
+SYNTHETIC LABORATORY RESULTS (fictional, for demonstration only)
+Patient: Dora Fiction   MRN: TB-102203   DOB: 1965-07-30
+Pre-operative CEA (2026-08-25): 8.2 ng/mL (elevated). Post-operative CEA: not yet drawn.
+Creatinine 0.9 mg/dL. HbA1c 8.1% (2026-09-10). DPYD genotype: not documented.

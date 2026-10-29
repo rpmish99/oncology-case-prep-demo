@@ -1,0 +1,6 @@
+SYNTHETIC RADIOLOGY REPORT (fictional, for demonstration only)
+Patient: Brenda Sample   MRN: TB-100871   DOB: 1982-05-09
+Study: Bilateral mammogram and breast MRI, date 2026-08-18
+RIGHT breast, upper inner quadrant: irregular mass, 2.7 cm. Suspicious right axillary node. Left breast: no suspicious findings.
+Study: Staging CT chest, abdomen and pelvis, date 2026-09-30
+No distant metastasis. Incidental 5 mm nodule in the right lower lobe, low suspicion; follow-up CT in 12 months suggested.

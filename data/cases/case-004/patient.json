@@ -1,0 +1,148 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "note": "Entirely synthetic. No real patient data.",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "case-004",
+        "name": [
+          {
+            "text": "Dora Fiction"
+          }
+        ],
+        "identifier": [
+          {
+            "system": "mrn",
+            "value": "TB-102203"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1965-07-30",
+        "extension": [
+          {
+            "url": "status-note",
+            "valueString": "postmenopausal"
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "c-1",
+        "code": {
+          "text": "Adenocarcinoma of the sigmoid colon"
+        },
+        "clinicalStatus": "active",
+        "onsetDateTime": "2026-08-20"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "c-2",
+        "code": {
+          "text": "Type 2 diabetes"
+        },
+        "clinicalStatus": "active",
+        "onsetDateTime": "2012-05-01",
+        "note": "HbA1c 8.1% in September 2026"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "c-3",
+        "code": {
+          "text": "Diabetic peripheral neuropathy"
+        },
+        "clinicalStatus": "active",
+        "onsetDateTime": "2020-09-15",
+        "note": "Numbness in both feet, on gabapentin"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "c-4",
+        "code": {
+          "text": "Essential hypertension"
+        },
+        "clinicalStatus": "active",
+        "onsetDateTime": "2014-01-01"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "id": "m-1",
+        "medicationCodeableConcept": {
+          "text": "Metformin 1000 mg twice daily"
+        },
+        "status": "active"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "id": "m-2",
+        "medicationCodeableConcept": {
+          "text": "Gabapentin 300 mg three times daily"
+        },
+        "status": "active"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "id": "m-3",
+        "medicationCodeableConcept": {
+          "text": "Lisinopril 10 mg daily"
+        },
+        "status": "active"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "AllergyIntolerance",
+        "id": "a-1",
+        "code": {
+          "text": "Sulfonamide antibiotics"
+        },
+        "reaction": "Rash"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "o-1",
+        "code": {
+          "text": "ECOG performance status"
+        },
+        "valueInteger": 1
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "o-2",
+        "code": {
+          "text": "Family history"
+        },
+        "valueString": "Father: colon cancer at age 72."
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "p-1",
+        "code": {
+          "text": "Sigmoid colectomy"
+        },
+        "performedDateTime": "2026-09-18"
+      }
+    }
+  ]
+}

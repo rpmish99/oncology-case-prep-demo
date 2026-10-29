@@ -53,8 +53,9 @@ function makeSpecialists(ehr: MCPServerStreamableHttp, vectorStoreId: string) {
     mcpServers: [ehr],
     instructions: `You collect the current facts about one patient from the record tools.
 Call get_case_bundle once. It returns the whole record. Do not call the other record tools.
-Return a compact list: histology, grade, size, nodal status, stage, ER, PR, HER2, Ki-67, assay results,
-menopausal status, imaging findings. Each line ends with its source tag.
+Return a compact list: histology, grade, size, nodal status, stage, biomarkers and receptor or mutation status,
+assay and molecular results, imaging findings, and any status that matters for treatment (for example
+menopausal status or smoking history). Each line ends with its source tag.
 Then add a section "Disagreements" listing any value that differs between records, quoting both.
 ${CASE_RULES}`,
   });
@@ -64,9 +65,10 @@ ${CASE_RULES}`,
     model: SPECIALIST_MODEL,
     modelSettings: SPECIALIST_SETTINGS,
     mcpServers: [ehr],
-    instructions: `You build a short timeline of history that could change endocrine therapy or supportive care.
+    instructions: `You build a short timeline of history that could change the treatment choice or its safety.
 Call get_case_bundle once. It returns the whole record. Do not call the other record tools.
-Look at the problem list, medications, allergies, family history, bone density and prior thrombosis.
+Look at the problem list, medications, allergies, family history, organ function, prior thrombosis and lung, heart,
+nerve or bone conditions.
 Return only items that matter for treatment choice, each with its date and source tag.
 Add a section "Missing or stale" for tests that have not been done or are old.
 ${CASE_RULES}`,
@@ -83,14 +85,33 @@ ${CASE_RULES}`,
       searchTrials,
     ],
     instructions: `You find evidence for the question you are given.
-Call get_case_bundle once, only to learn the disease features you need for searching (type, stage, receptor
-status, menopausal status, relevant comorbidities). Do not repeat patient details in your answer beyond that.
+Call get_case_bundle once, only to learn the disease features you need for searching (tumor type, stage,
+biomarkers, relevant comorbidities). Do not repeat patient details in your answer beyond that.
 Then search the Oncology Care Guidelines (the institution's written care guidelines) with file search. Each document has a version and a status.
+The documents cover several tumor types: use the ones that match this patient's tumor type and stage. If the
+guidelines do not address a specific patient factor, say so plainly instead of filling the gap.
 Report the version and status of every document you rely on. If a document is marked superseded, say so and
 do not use it for recommendations. Then, only if useful, search PubMed and ClinicalTrials.gov with queries
 that describe the disease and question, never the patient. Keep PubMed queries short (three to six words),
 run at most two PubMed searches, and skip ClinicalTrials.gov unless the question asks for trials.
 Quote the guideline wording you rely on, with the document title and version.
+${CASE_RULES}`,
+  });
+
+  const similar = new Agent({
+    name: "Similar cases specialist",
+    model: SPECIALIST_MODEL,
+    modelSettings: SPECIALIST_SETTINGS,
+    mcpServers: [ehr],
+    instructions: `You find past tumor board cases similar to this patient.
+Call get_case_bundle once, then work out these features for this patient: tumor type (breast, lung or colon),
+stage, biomarker tokens, factor tokens and age band. Use only the token vocabulary given in the description of
+find_similar_cases. Then call find_similar_cases. If the result lists unrecognized tokens or matched is 0, correct
+the tokens and call it one more time.
+Report: how many past cases matched, the spread of board decisions with counts, the spread of 24-month outcomes,
+and which features the closest cases share with this patient. Then state how this patient differs from the closest
+cases. Always add that the registry is synthetic in this demo, that past decisions are precedent and not
+recommendations, and that the numbers are small.
 ${CASE_RULES}`,
   });
 
@@ -109,11 +130,11 @@ You have no tools. Check every claim for:
 Be specific: quote the claim. If everything checks out, return an empty findings list.`,
   });
 
-  return { patientData, history, evidence, verifier };
+  return { patientData, history, evidence, similar, verifier };
 }
 
 export function buildAgents(ehr: MCPServerStreamableHttp, vectorStoreId: string) {
-  const { patientData, history, evidence, verifier } = makeSpecialists(ehr, vectorStoreId);
+  const { patientData, history, evidence, similar, verifier } = makeSpecialists(ehr, vectorStoreId);
 
   const coordinator = new Agent({
     name: "Case coordinator",
@@ -135,6 +156,11 @@ export function buildAgents(ehr: MCPServerStreamableHttp, vectorStoreId: string)
         toolDescription: "Find guidance in the Oncology Care Guidelines and recent evidence. Give it the specific question.",
         ...nested("Evidence specialist"),
       }),
+      similar.asTool({
+        toolName: "consult_similar_cases",
+        toolDescription: "Find similar past tumor board cases and what was decided.",
+        ...nested("Similar cases specialist"),
+      }),
       verifier.asTool({
         toolName: "verify_draft",
         toolDescription:
@@ -146,9 +172,10 @@ export function buildAgents(ehr: MCPServerStreamableHttp, vectorStoreId: string)
     instructions: `You prepare a case for a breast tumor board. You support the oncologist. You do not decide treatment.
 
 Work in this order:
-1. In one step, call all three specialists together: consult_patient_data, consult_clinical_history and
-   consult_evidence. For consult_evidence, ask what the Oncology Care Guidelines say about adjuvant endocrine therapy, genomic
-   assay use, bone health and radiation for early ER-positive, HER2-negative breast cancer, using the request.
+1. In one step, call all four specialists together: consult_patient_data, consult_clinical_history,
+   consult_evidence and consult_similar_cases. Give each one the case id. For consult_evidence, ask what the
+   Oncology Care Guidelines say about the main treatment decisions and the safety checks before treatment for this
+   patient's tumor type, stage and biomarkers, using the oncologist's request.
 2. Do not call a specialist again unless an answer says it could not get information it needed. Go on to the draft.
 3. Write a draft packet. Keep patient facts, guideline statements and your own inference in separate fields.
    List options for the tumor board, not a decision. Put every disagreement in conflicts and every missing item
@@ -157,12 +184,15 @@ Work in this order:
    say so in uncertainty_notes.
 5. Call submit_for_clinician_review once with the final packet.
 
-Fill board_summary with exactly three one-line points the board should know first. Fill attention_flags with
+Fill similar_cases from the similar cases specialist. Do not put source tags in square brackets inside board_summary,
+attention_flags or similar_cases text; source tags belong only in the fields that have a sources list. Fill board_summary with exactly three one-line points the board should know first. Fill attention_flags with
 short labels for conflicts, contraindication candidates, missing tests and stale sources.
 
 Keep the packet short enough to read in two minutes before a meeting:
 - At most 4 candidate options, 3 patient facts and 3 guideline facts per option, one sentence each.
-- At most 5 items in missing_information, only those that could change the treatment choice. Do not list
+- Always include in missing_information any test or check that the Oncology Care Guidelines require before
+  treatment and that is missing or out of date in the record, even if that makes the list longer than usual.
+- At most 5 other items in missing_information, only those that could change the treatment choice. Do not list
   routine workup. Do not call a value missing if a record tool returned it.
 - At most 4 conflicts, 3 uncertainty notes, and plain language throughout. No filler about the documents being
   synthetic, since the oncologist already knows that.
@@ -175,7 +205,7 @@ If the clinician returns feedback instead of approving, revise the packet and su
 
 /** Answers an oncologist's follow-up question about a prepared case. It never changes the packet. */
 export function buildQaAgent(ehr: MCPServerStreamableHttp, vectorStoreId: string) {
-  const { patientData, history, evidence } = makeSpecialists(ehr, vectorStoreId);
+  const { patientData, history, evidence, similar } = makeSpecialists(ehr, vectorStoreId);
   return new Agent({
     name: "Case coordinator",
     model: MODEL,
@@ -195,6 +225,11 @@ export function buildQaAgent(ehr: MCPServerStreamableHttp, vectorStoreId: string
         toolName: "consult_evidence",
         toolDescription: "Look up guidance in the Oncology Care Guidelines and recent evidence. Give it the specific question.",
         ...nested("Evidence specialist"),
+      }),
+      similar.asTool({
+        toolName: "consult_similar_cases",
+        toolDescription: "Find similar past tumor board cases and what was decided.",
+        ...nested("Similar cases specialist"),
       }),
     ],
     instructions: `You answer an oncologist's follow-up question about one prepared tumor board case.

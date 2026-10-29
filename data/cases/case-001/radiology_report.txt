@@ -1,4 +1,5 @@
 SYNTHETIC RADIOLOGY REPORT (fictional, for demonstration only)
+Patient: Alma Testcase   MRN: TB-100234   DOB: 1967-03-14
 Study: Bilateral diagnostic mammogram and right breast ultrasound
 Date: 2026-08-12
 

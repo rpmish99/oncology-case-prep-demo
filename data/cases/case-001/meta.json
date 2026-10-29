@@ -1,0 +1,72 @@
+{
+  "id": "case-001",
+  "title": "Breast, early, ER-positive",
+  "site": "Breast",
+  "banner": "59 F, postmenopausal | Right breast, invasive ductal, grade 2, 1.9 cm | pT1c pN0 (sn) | ER 95%, PR 70%, HER2 1+ (negative) | Recurrence score 22",
+  "timeline": [
+    [
+      "Aug 12",
+      "Mammogram and ultrasound"
+    ],
+    [
+      "Aug 18",
+      "Core biopsy"
+    ],
+    [
+      "Sep 9",
+      "Lumpectomy and sentinel node biopsy"
+    ],
+    [
+      "Sep 14",
+      "Pathology report"
+    ],
+    [
+      "Sep 21",
+      "Staging CT"
+    ],
+    [
+      "Sep 28",
+      "Genomic assay"
+    ],
+    [
+      "Oct 5",
+      "Navigator note"
+    ]
+  ],
+  "followUps": [
+    "What do the Oncology Care Guidelines say about extending endocrine therapy?",
+    "Is the prior DVT a hard contraindication to tamoxifen?",
+    "What would change if the tumor were HER2-positive?"
+  ],
+  "identifiers": {
+    "name": "Alma Testcase",
+    "mrn": "TB-100234",
+    "dob": "1967-03-14"
+  },
+  "documents": [
+    {
+      "key": "pathology_report.txt",
+      "title": "Pathology report",
+      "date": "2026-09-14",
+      "file": "pathology_report.txt"
+    },
+    {
+      "key": "radiology_report.txt",
+      "title": "Radiology reports",
+      "date": "2026-08-12, 2026-09-21",
+      "file": "radiology_report.txt"
+    },
+    {
+      "key": "genomics_report.txt",
+      "title": "Genomic assay",
+      "date": "2026-09-28",
+      "file": "genomics_report.txt"
+    },
+    {
+      "key": "clinic_note.txt",
+      "title": "Navigator clinic note",
+      "date": "2026-10-05",
+      "file": "clinic_note.txt"
+    }
+  ]
+}

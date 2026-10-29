@@ -7,7 +7,7 @@ status: current
 supersedes: 2022.1
 ---
 
-SYNTHETIC DOCUMENT. Written for a demonstration. It is a simplified, illustrative set of care guidelines and is not clinical guidance.
+SYNTHETIC DOCUMENT. Written for a demonstration, with reference to public NCI PDQ treatment summaries. It is a simplified, illustrative set of care guidelines and is not clinical guidance.
 
 # Scope
 Adults with stage I to II, ER-positive, HER2-negative invasive breast cancer after breast surgery.
@@ -21,6 +21,12 @@ Adults with stage I to II, ER-positive, HER2-negative invasive breast cancer aft
 2.2 Postmenopausal patients (or age over 50) with recurrence score 0 to 25: endocrine therapy alone. Chemotherapy is not routinely recommended.
 2.3 Recurrence score 26 or higher: discuss chemotherapy followed by endocrine therapy.
 2.4 Premenopausal patients age 50 or younger with recurrence score 16 to 25: discuss the added value of chemotherapy or ovarian suppression.
+
+# 2A. Node-positive disease (1 to 3 positive nodes)
+2A.1 Postmenopausal with recurrence score 0 to 25: endocrine therapy alone. Chemotherapy is not routinely added.
+2A.2 Premenopausal with recurrence score 0 to 25: chemotherapy followed by endocrine therapy is discussed, because trial data show benefit in this group.
+2A.3 Recurrence score 26 or higher at any age: chemotherapy followed by endocrine therapy.
+2A.4 Premenopausal patients: discuss ovarian function suppression with endocrine therapy, and discuss fertility before chemotherapy starts.
 
 # 3. Endocrine therapy
 3.1 Postmenopausal: an aromatase inhibitor for 5 years is the preferred starting option. Consider extended therapy after review at year 5.

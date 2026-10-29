@@ -1,0 +1,63 @@
+{
+ "checks": [
+  {
+   "id": "her2_conflict",
+   "label": "Flags the note that says HER2-positive against the pathology result",
+   "where": [
+    "conflicts"
+   ],
+   "all": [
+    "HER2",
+    "(positive|\\+)"
+   ]
+  },
+  {
+   "id": "dvt_tamoxifen",
+   "label": "Connects the prior DVT to tamoxifen",
+   "where": [
+    "contraindication_candidates",
+    "candidate_options",
+    "attention_flags"
+   ],
+   "all": [
+    "tamoxifen",
+    "(DVT|thrombo|clot)"
+   ]
+  },
+  {
+   "id": "dexa_old",
+   "label": "Notes the bone density scan is old or needs updating",
+   "where": [
+    "missing_information",
+    "attention_flags",
+    "uncertainty_notes"
+   ],
+   "all": [
+    "(DEXA|bone density|BMD)"
+   ]
+  },
+  {
+   "id": "stale_unused",
+   "label": "Does not use the superseded 2022 guidelines",
+   "where": [
+    "candidate_options.*.guideline_facts"
+   ],
+   "none": [
+    "2022\\.1"
+   ]
+  }
+ ],
+ "info": [
+  {
+   "label": "Mentions genetic testing (optional for this patient)",
+   "where": [
+    "missing_information",
+    "uncertainty_notes",
+    "attention_flags"
+   ],
+   "all": [
+    "(germline|genetic)"
+   ]
+  }
+ ]
+}

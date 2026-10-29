@@ -1,0 +1,12 @@
+SYNTHETIC SURGICAL PATHOLOGY REPORT (fictional, for demonstration only)
+Patient: Dora Fiction   MRN: TB-102203   DOB: 1965-07-30
+Report date: 2026-09-24
+Specimen: Sigmoid colectomy
+
+DIAGNOSIS
+Adenocarcinoma of the sigmoid colon, moderately differentiated. Invasion through the muscularis propria into pericolic tissue (pT3).
+Lymph nodes: 3 of 14 with metastasis (pN1b). Margins negative. Lymphovascular invasion: present. Perineural invasion: not identified.
+Pathologic stage: pT3 pN1b (stage IIIB).
+
+BIOMARKERS
+Mismatch repair proteins: all intact (MMR proficient, microsatellite stable).

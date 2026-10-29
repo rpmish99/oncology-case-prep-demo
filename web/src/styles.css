@@ -107,3 +107,20 @@ button.tag:hover { border-color: var(--accent); color: var(--accent); }
 .rec { background: none; border: none; padding: 0; text-align: left; font: inherit; font-size: 13px; color: var(--accent); cursor: pointer; text-decoration: underline; text-decoration-color: transparent; }
 .rec:hover { text-decoration-color: var(--accent); }
 .small { font-size: 12px; margin-top: 8px; }
+
+.agenda { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px; margin-bottom: 12px; }
+.agenda-item { text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; cursor: pointer; color: var(--text); font: inherit; }
+.agenda-item.selected { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.agenda-top { display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
+.site { text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); font-weight: 600; }
+.status { padding: 2px 8px; border-radius: 10px; background: var(--bg); color: var(--muted); }
+.status.review { background: color-mix(in srgb, var(--warn) 18%, transparent); color: var(--warn); }
+.status.done { background: color-mix(in srgb, var(--guideline) 16%, transparent); color: var(--guideline); }
+.status.running, .status.saving { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); }
+.status.error { background: color-mix(in srgb, #d33 14%, transparent); color: #b22; }
+.mask-badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--accent); color: var(--accent); }
+.maskbar { display: flex; gap: 6px; margin-bottom: 10px; }
+.ghost.on { border-color: var(--accent); color: var(--accent); }
+.similar { background: color-mix(in srgb, var(--infer) 7%, transparent); border-radius: 8px; padding: 10px 12px; }
+.similar ul { margin: 6px 0; }
+@media print { .agenda { display: none !important; } }
