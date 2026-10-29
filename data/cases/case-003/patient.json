@@ -1,0 +1,116 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "note": "Entirely synthetic. No real patient data.",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "case-003",
+        "name": [
+          {
+            "text": "Carl Exemplar"
+          }
+        ],
+        "identifier": [
+          {
+            "system": "mrn",
+            "value": "TB-101552"
+          }
+        ],
+        "gender": "male",
+        "birthDate": "1958-02-02",
+        "extension": [
+          {
+            "url": "status-note",
+            "valueString": "former smoker, about 40 pack-years, quit 2018"
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "c-1",
+        "code": {
+          "text": "Lung adenocarcinoma, right upper lobe, stage IVA"
+        },
+        "clinicalStatus": "active",
+        "onsetDateTime": "2026-09-02"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "c-2",
+        "code": {
+          "text": "Interstitial lung disease, mild, stable"
+        },
+        "clinicalStatus": "active",
+        "onsetDateTime": "2022-04-12",
+        "note": "Followed by pulmonology; stable basal changes on serial CT"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "c-3",
+        "code": {
+          "text": "Essential hypertension"
+        },
+        "clinicalStatus": "active",
+        "onsetDateTime": "2012-06-01"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "id": "m-1",
+        "medicationCodeableConcept": {
+          "text": "Amlodipine 5 mg daily"
+        },
+        "status": "active"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "AllergyIntolerance",
+        "id": "a-1",
+        "code": {
+          "text": "Penicillin"
+        },
+        "reaction": "Rash"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "o-1",
+        "code": {
+          "text": "ECOG performance status"
+        },
+        "valueInteger": 1
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "o-2",
+        "code": {
+          "text": "Smoking history"
+        },
+        "valueString": "Former smoker, about 40 pack-years, quit 2018"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "p-1",
+        "code": {
+          "text": "CT-guided biopsy of right upper lobe mass"
+        },
+        "performedDateTime": "2026-09-08"
+      }
+    }
+  ]
+}

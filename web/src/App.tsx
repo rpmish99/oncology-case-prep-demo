@@ -1,38 +1,19 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
-import pathologyText from "../../data/case/pathology_report.txt?raw";
-import radiologyText from "../../data/case/radiology_report.txt?raw";
-import genomicsText from "../../data/case/genomics_report.txt?raw";
-import clinicText from "../../data/case/clinic_note.txt?raw";
-import patientJson from "../../data/case/patient.json?raw";
-import guidelinesText from "../../data/guidelines/care-guidelines-er-pos-her2-neg-early-v2025-2.md?raw";
-import guidelinesOldText from "../../data/guidelines/care-guidelines-er-pos-her2-neg-early-v2022-1-SUPERSEDED.md?raw";
-import checklistText from "../../data/guidelines/care-guidelines-endocrine-therapy-safety-checklist-v2025-1.md?raw";
 import { invoke } from "./api";
+import { CASES, GUIDELINES, caseFile, type CaseMeta, type GuidelineDoc } from "./cases";
+import { maskCode, maskText, type Identifiers } from "./mask";
 import type { DemoEvent, Packet, Sourced } from "./types";
 
 type Status = "idle" | "running" | "review" | "saving" | "done" | "error";
 
-const QUESTION = "Prepare this case for tumor board. What endocrine and supportive-care options should we discuss?";
-
-const RECORDS: [string, string, string][] = [
-  ["Pathology report", "2026-09-14", "pathology"],
-  ["Radiology reports", "2026-08-12, 2026-09-21", "radiology"],
-  ["Genomic assay", "2026-09-28", "genomic"],
-  ["Navigator clinic note", "2026-10-05", "clinic note"],
-  ["Problem list, medications, allergies", "current", "patient record"],
-];
-
-const GUIDELINE_DOCS: [string, string, string][] = [
-  ["Oncology Care Guidelines", "v2025.2, current", "guidelines 2025.2"],
-  ["Oncology Care Guidelines", "v2022.1, superseded", "2022.1"],
-  ["Endocrine therapy checklist", "v2025.1", "checklist"],
-];
+const QUESTION = "Prepare this case for tumor board. What should we discuss?";
 
 const AGENT_LABEL: Record<string, string> = {
   "Case coordinator": "Coordinator",
   "Patient data specialist": "Patient data",
   "Clinical history specialist": "History",
   "Evidence specialist": "Evidence",
+  "Similar cases specialist": "Similar cases",
   Verifier: "Verifier",
 };
 
@@ -40,17 +21,19 @@ const TOOL_LABEL: Record<string, string> = {
   consult_patient_data: "asks the patient data specialist",
   consult_clinical_history: "asks the history specialist",
   consult_evidence: "asks the evidence specialist",
+  consult_similar_cases: "asks the similar cases specialist",
+  find_similar_cases: "searches past tumor board cases",
   verify_draft: "sends the draft to the verifier",
   file_search_call: "searches the Oncology Care Guidelines",
   search_pubmed: "searches PubMed",
   search_clinical_trials: "searches ClinicalTrials.gov",
 };
-const SHOW_RESULT = new Set(["search_pubmed", "search_clinical_trials", "consult_patient_data", "consult_clinical_history", "consult_evidence"]);
+const SHOW_RESULT = new Set(["search_pubmed", "search_clinical_trials", "consult_patient_data", "consult_clinical_history", "consult_evidence", "consult_similar_cases"]);
 const toolName = (t: string) => TOOL_LABEL[t] ?? `reads ${t.replace(/^get_/, "").replace(/_/g, " ")}`;
 
 const clock = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
-type Doc = { title: string; text: string };
+type Doc = { title: string; text: string; mask?: Identifiers };
 function formatPatient(json: string): string {
   const entries = (JSON.parse(json).entry as { resource: any }[]).map((e) => e.resource);
   const of = (t: string) => entries.filter((r) => r.resourceType === t);
@@ -74,16 +57,36 @@ function formatPatient(json: string): string {
 
 const SourceCtx = createContext<(tag: string) => void>(() => {});
 
-function resolveSource(tag: string): Doc {
+const guidelineDoc = (g: GuidelineDoc): Doc => ({
+  title: `${g.title}, version ${g.version}${g.status === "superseded" ? " (superseded)" : ""}`,
+  text: g.text,
+});
+
+function guidelinesFor(site: CaseMeta["site"]) {
+  return GUIDELINES.filter((g) => g.site === site).sort((a, b) => (a.status === "current" ? -1 : 1) - (b.status === "current" ? -1 : 1));
+}
+
+function resolveSource(tag: string, c: CaseMeta): Doc {
   const t = tag.toLowerCase();
-  if (/checklist/.test(t)) return { title: "Oncology Care Guidelines, endocrine therapy safety checklist, version 2025.1", text: checklistText };
-  if (/2022/.test(t)) return { title: "Oncology Care Guidelines, version 2022.1 (superseded)", text: guidelinesOldText };
-  if (/care guideline|guideline|v20|2025/.test(t)) return { title: "Oncology Care Guidelines, version 2025.2", text: guidelinesText };
-  if (/pathology|biops/.test(t)) return { title: "Surgical pathology report, 2026-09-14", text: pathologyText };
-  if (/radiolog|imaging|ultrasound|mammo|\bct\b/.test(t)) return { title: "Radiology reports", text: radiologyText };
-  if (/genom|assay|recurrence|oncotype|21-gene/.test(t)) return { title: "Genomic assay report, 2026-09-28", text: genomicsText };
-  if (/clinic|intake|navigator|note/.test(t)) return { title: "Navigator clinic note, 2026-10-05", text: clinicText };
-  return { title: "Patient record: problem list, medications, allergies, observations", text: formatPatient(patientJson) };
+  if (/guideline|checklist|\bv20\d\d|\b20\d\d\.\d\b/.test(t)) {
+    const own = guidelinesFor(c.site);
+    const named = GUIDELINES.find((g) => t.includes(g.version) && (g.site === c.site || (/lung|nsclc/.test(t) && g.site === "Lung") || (/colon/.test(t) && g.site === "Colon")));
+    const checklist = /checklist/.test(t) ? own.find((g) => /checklist/.test(g.file)) : undefined;
+    return guidelineDoc(checklist ?? named ?? own.find((g) => g.status === "current" && !/checklist/.test(g.file)) ?? own[0]);
+  }
+  const rules: [string, RegExp][] = [
+    ["pathology_report.txt", /patholog|biops/],
+    ["radiology_report.txt", /radiolog|imaging|ultrasound|mammo|\bmri\b|\bct\b|\bpet/],
+    ["genomics_report.txt", /genom|assay|recurrence|oncotype|21-gene/],
+    ["molecular_report.txt", /molecular|sequenc|ngs|mutation/],
+    ["labs_report.txt", /\blabs?\b|laborator|cea|hba1c|creatinine|dpyd/],
+    ["clinic_note.txt", /clinic|intake|navigator|note/],
+  ];
+  for (const [file, re] of rules) {
+    const d = c.documents.find((x) => x.file === file);
+    if (d && re.test(t)) return { title: `${d.title}, ${d.date}`, text: caseFile(c.id, file), mask: c.identifiers };
+  }
+  return { title: "Patient record: problem list, medications, allergies, observations", text: formatPatient(caseFile(c.id, "patient.json")), mask: c.identifiers };
 }
 
 function SourceTags({ sources }: { sources: string[] }) {
@@ -168,6 +171,20 @@ function PacketView({ p }: { p: Packet }) {
           </div>
         ))}
       </section>
+      <section className="similar">
+        <h3>
+          Similar past cases <span className="muted">(synthetic registry)</span>
+        </h3>
+        <p>{p.similar_cases.summary}</p>
+        <ul>
+          {p.similar_cases.decisions.map((x, i) => (
+            <li key={i}>
+              {x.decision} <b>{x.count}</b>
+            </li>
+          ))}
+        </ul>
+        <p className="cautions">{p.similar_cases.caution}</p>
+      </section>
       <details>
         <summary>Full detail: snapshot, disease, history, missing information, sources, verifier</summary>
         <section>
@@ -177,7 +194,7 @@ function PacketView({ p }: { p: Packet }) {
         <section>
           <h3>Disease</h3>
           <ul>
-            {[d.histology, d.stage, d.er_pr_her2, d.other_markers].map((x, i) => (
+            {[d.histology, d.stage, d.biomarkers, d.other_markers].map((x, i) => (
               <Fact key={i} item={x} />
             ))}
           </ul>
@@ -223,31 +240,24 @@ function PacketView({ p }: { p: Packet }) {
   );
 }
 
-const TIMELINE = [
-  ["Aug 12", "Mammogram and ultrasound"],
-  ["Aug 18", "Core biopsy"],
-  ["Sep 9", "Lumpectomy and sentinel node biopsy"],
-  ["Sep 14", "Pathology report"],
-  ["Sep 21", "Staging CT"],
-  ["Sep 28", "Genomic assay"],
-  ["Oct 5", "Navigator note"],
-];
-
-function CaseBanner() {
+function CaseBanner({ c, onReset, canReset }: { c: CaseMeta; onReset: () => void; canReset: boolean }) {
   return (
     <div className="banner">
       <div className="banner-main">
         <div>
-          <b>Synthetic Patient A</b> <span className="muted">Case 001</span>
+          <b>{c.identifiers.name}</b> <span className="muted">{c.id.replace("case-", "Case ")} | MRN {c.identifiers.mrn}</span>{" "}
+          <span className="mask-badge" title="Names, record numbers and birth dates are replaced with a code before the agents see the record">
+            Agents see {maskCode(c.identifiers)}
+          </span>
         </div>
-        <div className="banner-facts">
-          59 F, postmenopausal &nbsp;|&nbsp; Right breast, invasive ductal, grade 2, 1.9 cm &nbsp;|&nbsp; pT1c pN0 (sn)
-          &nbsp;|&nbsp; ER 95%, PR 70%, HER2 1+ (negative) &nbsp;|&nbsp; Recurrence score 22
-        </div>
+        <button className="ghost" onClick={onReset} disabled={!canReset}>
+          Reset case
+        </button>
       </div>
+      <div className="banner-facts">{c.banner.replace(/ \| /g, "  |  ")}</div>
       <ol className="timeline">
-        {TIMELINE.map(([d, e]) => (
-          <li key={d}>
+        {c.timeline.map(([d, e]) => (
+          <li key={d + e}>
             <span className="dot" />
             <b>{d}</b>
             <span>{e}</span>
@@ -258,7 +268,7 @@ function CaseBanner() {
   );
 }
 
-export default function App({ onSignOut }: { onSignOut?: () => void }) {
+function CaseWorkspace({ meta, active, onStatus }: { meta: CaseMeta; active: boolean; onStatus: (s: Status) => void }) {
   const [status, setStatus] = useState<Status>("idle");
   const [events, setEvents] = useState<DemoEvent[]>([]);
   const [packet, setPacket] = useState<Packet | null>(null);
@@ -272,6 +282,8 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
   const [audit, setAudit] = useState<{ at: string; event: string; reviewer?: string; feedback?: string }[]>([]);
   const feedEnd = useRef<HTMLDivElement>(null);
   const [doc, setDoc] = useState<Doc | null>(null);
+  const [showMasked, setShowMasked] = useState(false);
+  useEffect(() => onStatus(status), [status]); // eslint-disable-line react-hooks/exhaustive-deps
   const [qa, setQa] = useState<{ q: string; a: string }[]>([]);
   const [followQ, setFollowQ] = useState("");
   const [asking, setAsking] = useState(false);
@@ -355,7 +367,7 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
     setQa([]);
     lastDecision.current = null;
     setStatus("running");
-    void consume({ action: "start", question, caseId: "case-001" });
+    void consume({ action: "start", question, caseId: meta.id });
   }
 
   function decide(decision: "approve" | "request_changes") {
@@ -415,35 +427,18 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
   const feed = events.filter((e) => e.type === "tool_call" || (e.type === "tool_result" && SHOW_RESULT.has(e.tool)));
 
   return (
-    <SourceCtx.Provider value={(tag) => setDoc(resolveSource(tag))}>
-    <div className="app">
-      <header>
-        <div>
-          <h1>Tumor board case prep</h1>
-          <p className="sub">Synthetic data only. Prepares options and evidence for a clinician to review. It does not decide treatment.</p>
-        </div>
-        <div className="head-actions">
-          <button className="ghost" onClick={reset} disabled={status === "running" || status === "saving"}>
-            Reset demo
-          </button>
-          {onSignOut && (
-            <button className="ghost" onClick={onSignOut}>
-              Sign out
-            </button>
-          )}
-        </div>
-      </header>
-
-      <CaseBanner />
+    <SourceCtx.Provider value={(tag) => { setShowMasked(false); setDoc(resolveSource(tag, meta)); }}>
+    <div className="workspace" style={{ display: active ? "block" : "none" }}>
+      <CaseBanner c={meta} onReset={reset} canReset={status !== "running" && status !== "saving"} />
 
       <main>
         <aside className="panel">
-          <h2>Case 001</h2>
-          <p className="muted">Synthetic patient, right breast, after lumpectomy. Click any record to read it:</p>
+          <h2>{meta.title}</h2>
+          <p className="muted">Click any record to read it:</p>
           <ul className="records">
-            {RECORDS.map(([name, date, key]) => (
+            {[...meta.documents.map((d) => [d.title.replace(/^Synthetic /, "").replace(/^./, (m) => m.toUpperCase()), d.date, d.title] as [string, string, string]), ["Problem list, medications, allergies", "current", "patient record"] as [string, string, string]].map(([name, date, key]) => (
               <li key={name}>
-                <button className="rec" onClick={() => setDoc(resolveSource(key))}>
+                <button className="rec" onClick={() => { setShowMasked(false); setDoc(resolveSource(key, meta)); }}>
                   {name}
                 </button>
                 <span className="muted">{date}</span>
@@ -452,12 +447,14 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
           </ul>
           <p className="muted small">Oncology Care Guidelines the evidence specialist searches:</p>
           <ul className="records">
-            {GUIDELINE_DOCS.map(([name, date, key]) => (
-              <li key={key}>
-                <button className="rec" onClick={() => setDoc(resolveSource(key))}>
-                  {name}
+            {guidelinesFor(meta.site).map((g) => (
+              <li key={g.file}>
+                <button className="rec" onClick={() => { setShowMasked(false); setDoc(guidelineDoc(g)); }}>
+                  {g.title.replace("Oncology Care Guidelines, ", "Care Guidelines: ")}
                 </button>
-                <span className="muted">{date}</span>
+                <span className="muted">
+                  v{g.version}, {g.status || "current"}
+                </span>
               </li>
             ))}
           </ul>
@@ -550,11 +547,7 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
               ))}
               {asking && <p className="muted">Looking it up in the record and the Oncology Care Guidelines...</p>}
               <div className="suggest">
-                {[
-                  "What do the Oncology Care Guidelines say about extending endocrine therapy?",
-                  "Is the prior DVT a hard contraindication to tamoxifen?",
-                  "What would change if the tumor were HER2-positive?",
-                ].map((q) => (
+                {meta.followUps.map((q) => (
                   <button key={q} className="chip-btn" disabled={asking} onClick={() => void ask(q)}>
                     {q}
                   </button>
@@ -584,7 +577,7 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
                 Approve and save draft note
               </button>
               <label htmlFor="fb">Or request changes</label>
-              <textarea id="fb" rows={2} value={feedback} onChange={(e) => setFeedback(e.target.value)} placeholder="For example: add the bone density plan to the aromatase inhibitor option" />
+              <textarea id="fb" rows={2} value={feedback} onChange={(e) => setFeedback(e.target.value)} placeholder="For example: add the safety checks to do before starting the first option" />
               <button className="secondary" disabled={!feedback.trim()} onClick={() => decide("request_changes")}>
                 Send back for changes
               </button>
@@ -619,10 +612,72 @@ export default function App({ onSignOut }: { onSignOut?: () => void }) {
               Close
             </button>
           </div>
-          <pre>{doc.text}</pre>
+          {doc.mask && (
+            <div className="maskbar">
+              <button className={showMasked ? "ghost" : "ghost on"} onClick={() => setShowMasked(false)}>
+                Original
+              </button>
+              <button className={showMasked ? "ghost on" : "ghost"} onClick={() => setShowMasked(true)}>
+                What the agents see
+              </button>
+            </div>
+          )}
+          <pre>{doc.mask && showMasked ? maskText(doc.text, doc.mask) : doc.text}</pre>
         </aside>
       )}
     </div>
     </SourceCtx.Provider>
+  );
+}
+
+const STATUS_LABEL: Record<Status, string> = {
+  idle: "Not prepared",
+  running: "Preparing",
+  review: "Ready for review",
+  saving: "Saving",
+  done: "Approved",
+  error: "Needs attention",
+};
+
+export default function App({ onSignOut }: { onSignOut?: () => void }) {
+  const [selected, setSelected] = useState(CASES[0].id);
+  const [statuses, setStatuses] = useState<Record<string, Status>>({});
+  return (
+    <div className="app">
+      <header>
+        <div>
+          <h1>Tumor board case prep</h1>
+          <p className="sub">Synthetic data only. Prepares options and evidence for a clinician to review. It does not decide treatment.</p>
+        </div>
+        <div className="head-actions">
+          {onSignOut && (
+            <button className="ghost" onClick={onSignOut}>
+              Sign out
+            </button>
+          )}
+        </div>
+      </header>
+
+      <nav className="agenda" aria-label="Tumor board agenda">
+        {CASES.map((c, i) => {
+          const st = statuses[c.id] ?? "idle";
+          return (
+            <button key={c.id} className={`agenda-item ${c.id === selected ? "selected" : ""}`} onClick={() => setSelected(c.id)}>
+              <span className="agenda-top">
+                <span className="site">{c.site}</span>
+                <span className={`status ${st}`}>{STATUS_LABEL[st]}</span>
+              </span>
+              <b>
+                {i + 1}. {c.title}
+              </b>
+            </button>
+          );
+        })}
+      </nav>
+
+      {CASES.map((c) => (
+        <CaseWorkspace key={c.id} meta={c} active={c.id === selected} onStatus={(st) => setStatuses((prev) => (prev[c.id] === st ? prev : { ...prev, [c.id]: st }))} />
+      ))}
+    </div>
   );
 }

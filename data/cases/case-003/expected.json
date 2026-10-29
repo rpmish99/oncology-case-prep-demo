@@ -1,0 +1,64 @@
+{
+ "checks": [
+  {
+   "id": "alk_conflict",
+   "label": "Flags the note that says ALK-positive against the molecular report",
+   "where": [
+    "conflicts"
+   ],
+   "all": [
+    "ALK"
+   ]
+  },
+  {
+   "id": "brain_mri",
+   "label": "Flags that brain MRI has not been done",
+   "where": [
+    "missing_information",
+    "attention_flags",
+    "uncertainty_notes"
+   ],
+   "all": [
+    "(brain|MRI)"
+   ]
+  },
+  {
+   "id": "ild_flag",
+   "label": "Flags the existing interstitial lung disease",
+   "where": [
+    "contraindication_candidates",
+    "attention_flags",
+    "uncertainty_notes",
+    "candidate_options"
+   ],
+   "all": [
+    "(ILD|interstitial|lung disease)"
+   ]
+  },
+  {
+   "id": "targeted_first_line",
+   "label": "Offers EGFR-targeted therapy as first-line",
+   "where": [
+    "candidate_options"
+   ],
+   "all": [
+    "EGFR",
+    "(osimertinib|targeted|TKI)"
+   ]
+  }
+ ],
+ "info": [
+  {
+   "label": "States that the guidelines do not address the lung disease",
+   "where": [
+    "uncertainty_notes",
+    "contraindication_candidates",
+    "attention_flags",
+    "candidate_options"
+   ],
+   "all": [
+    "(silent|not address|does not address|do not address|no guidance|not covered|not mention|not specifically|does not specify|do not specify)"
+   ]
+  }
+ ]
+}

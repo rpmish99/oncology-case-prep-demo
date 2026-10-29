@@ -6,6 +6,7 @@ RUN npm ci
 COPY mcp-server/tsconfig.json ./
 COPY mcp-server/src ./src
 RUN npx tsc
-COPY data/case /app/data/case
-ENV PORT=8080 AWS_LWA_PORT=8080 DATA_DIR=/app/data/case
+COPY data/cases /app/data/cases
+COPY data/registry /app/data/registry
+ENV PORT=8080 AWS_LWA_PORT=8080 DATA_DIR=/app/data
 CMD ["node", "dist/server.js"]

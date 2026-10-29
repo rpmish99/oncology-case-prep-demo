@@ -22,10 +22,16 @@ export const packetSchema = z.object({
   disease_characterization: z.object({
     histology: sourced,
     stage: sourced,
-    er_pr_her2: sourced,
+    biomarkers: sourced,
     other_markers: sourced,
   }),
   clinically_relevant_history: z.array(sourced),
+  similar_cases: z.object({
+    summary: z.string().describe("One or two sentences: how many past cases matched and what the board usually decided"),
+    matched: z.number().int(),
+    decisions: z.array(z.object({ decision: z.string(), count: z.number().int() })).describe("At most four"),
+    caution: z.string().describe("That this is precedent and not a recommendation, and how this patient differs"),
+  }),
   evidence_reviewed: z.array(
     z.object({ title: z.string(), version: z.string(), status: z.string(), used: z.boolean() }),
   ),

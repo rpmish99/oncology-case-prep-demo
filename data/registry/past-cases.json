@@ -1,0 +1,829 @@
+{
+ "note": "Entirely synthetic. Invented decisions and outcomes. Not real patients or results.",
+ "cases": [
+  {
+   "tumor_type": "breast",
+   "stage": "I",
+   "biomarkers": [
+    "ER+",
+    "PR+",
+    "HER2-",
+    "RS_intermediate"
+   ],
+   "factors": [
+    "postmenopausal"
+   ],
+   "age_band": "50-59",
+   "decision": "Endocrine therapy alone (aromatase inhibitor)",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2023,
+   "id": "PC-0001"
+  },
+  {
+   "tumor_type": "breast",
+   "stage": "I",
+   "biomarkers": [
+    "ER+",
+    "PR+",
+    "HER2-",
+    "RS_intermediate"
+   ],
+   "factors": [
+    "postmenopausal"
+   ],
+   "age_band": "50-59",
+   "decision": "Endocrine therapy alone (aromatase inhibitor)",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2023,
+   "id": "PC-0002"
+  },
+  {
+   "tumor_type": "breast",
+   "stage": "I",
+   "biomarkers": [
+    "ER+",
+    "PR+",
+    "HER2-",
+    "RS_intermediate"
+   ],
+   "factors": [
+    "postmenopausal",
+    "osteopenia"
+   ],
+   "age_band": "50-59",
+   "decision": "Endocrine therapy alone (aromatase inhibitor)",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2023,
+   "id": "PC-0003"
+  },
+  {
+   "tumor_type": "breast",
+   "stage": "I",
+   "biomarkers": [
+    "ER+",
+    "PR+",
+    "HER2-",
+    "RS_intermediate"
+   ],
+   "factors": [
+    "postmenopausal",
+    "prior_vte",
+    "osteopenia"
+   ],
+   "age_band": "50-59",
+   "decision": "Endocrine therapy alone (aromatase inhibitor, tamoxifen avoided)",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2023,
+   "id": "PC-0004"
+  },
+  {
+   "tumor_type": "breast",
+   "stage": "I",
+   "biomarkers": [
+    "ER+",
+    "PR+",
+    "HER2-",
+    "RS_intermediate"
+   ],
+   "factors": [
+    "postmenopausal",
+    "osteopenia"
+   ],
+   "age_band": "60-69",
+   "decision": "Endocrine therapy alone (aromatase inhibitor)",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2024,
+   "id": "PC-0005"
+  },
+  {
+   "tumor_type": "breast",
+   "stage": "I",
+   "biomarkers": [
+    "ER+",
+    "PR+",
+    "HER2-",
+    "RS_intermediate"
+   ],
+   "factors": [
+    "postmenopausal"
+   ],
+   "age_band": "50-59",
+   "decision": "Endocrine therapy alone (aromatase inhibitor)",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2024,
+   "id": "PC-0006"
+  },
+  {
+   "tumor_type": "breast",
+   "stage": "I",
+   "biomarkers": [
+    "ER+",
+    "PR+",
+    "HER2-",
+    "RS_intermediate"
+   ],
+   "factors": [
+    "postmenopausal",
+    "prior_vte"
+   ],
+   "age_band": "50-59",
+   "decision": "Endocrine therapy alone (aromatase inhibitor, tamoxifen avoided)",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2024,
+   "id": "PC-0007"
+  },
+  {
+   "tumor_type": "breast",
+   "stage": "I",
+   "biomarkers": [
+    "ER+",
+    "PR+",
+    "HER2-",
+    "RS_intermediate"
+   ],
+   "factors": [
+    "postmenopausal"
+   ],
+   "age_band": "60-69",
+   "decision": "Endocrine therapy alone (aromatase inhibitor)",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2024,
+   "id": "PC-0008"
+  },
+  {
+   "tumor_type": "breast",
+   "stage": "I",
+   "biomarkers": [
+    "ER+",
+    "PR+",
+    "HER2-",
+    "RS_intermediate"
+   ],
+   "factors": [
+    "postmenopausal",
+    "osteopenia"
+   ],
+   "age_band": "50-59",
+   "decision": "Endocrine therapy alone (aromatase inhibitor)",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2024,
+   "id": "PC-0009"
+  },
+  {
+   "tumor_type": "breast",
+   "stage": "II",
+   "biomarkers": [
+    "ER+",
+    "PR+",
+    "HER2-",
+    "RS_high"
+   ],
+   "factors": [
+    "premenopausal",
+    "node_positive"
+   ],
+   "age_band": "40-49",
+   "decision": "Chemotherapy, then endocrine therapy with ovarian suppression",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2024,
+   "id": "PC-0010"
+  },
+  {
+   "tumor_type": "breast",
+   "stage": "II",
+   "biomarkers": [
+    "ER+",
+    "PR+",
+    "HER2-",
+    "RS_high"
+   ],
+   "factors": [
+    "premenopausal",
+    "node_positive"
+   ],
+   "age_band": "40-49",
+   "decision": "Chemotherapy, then endocrine therapy with ovarian suppression",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2025,
+   "id": "PC-0011"
+  },
+  {
+   "tumor_type": "breast",
+   "stage": "II",
+   "biomarkers": [
+    "ER+",
+    "PR+",
+    "HER2-",
+    "RS_high"
+   ],
+   "factors": [
+    "premenopausal",
+    "node_positive",
+    "family_history_young"
+   ],
+   "age_band": "30-39",
+   "decision": "Chemotherapy, then endocrine therapy; referred for genetic counseling",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2023,
+   "id": "PC-0012"
+  },
+  {
+   "tumor_type": "breast",
+   "stage": "II",
+   "biomarkers": [
+    "ER+",
+    "PR+",
+    "HER2-",
+    "RS_high"
+   ],
+   "factors": [
+    "premenopausal",
+    "node_positive"
+   ],
+   "age_band": "40-49",
+   "decision": "Chemotherapy, then endocrine therapy with ovarian suppression",
+   "outcome_24mo": "recurrence",
+   "board_year": 2025,
+   "id": "PC-0013"
+  },
+  {
+   "tumor_type": "breast",
+   "stage": "II",
+   "biomarkers": [
+    "ER+",
+    "PR+",
+    "HER2-",
+    "RS_high"
+   ],
+   "factors": [
+    "premenopausal",
+    "node_positive",
+    "family_history_young"
+   ],
+   "age_band": "30-39",
+   "decision": "Chemotherapy, then endocrine therapy; referred for genetic counseling",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2023,
+   "id": "PC-0014"
+  },
+  {
+   "tumor_type": "breast",
+   "stage": "II",
+   "biomarkers": [
+    "ER+",
+    "PR+",
+    "HER2-",
+    "RS_high"
+   ],
+   "factors": [
+    "premenopausal",
+    "node_positive"
+   ],
+   "age_band": "40-49",
+   "decision": "Chemotherapy, then endocrine therapy with ovarian suppression",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2025,
+   "id": "PC-0015"
+  },
+  {
+   "tumor_type": "breast",
+   "stage": "II",
+   "biomarkers": [
+    "ER+",
+    "PR+",
+    "HER2-",
+    "RS_high"
+   ],
+   "factors": [
+    "premenopausal",
+    "node_positive",
+    "family_history_young"
+   ],
+   "age_band": "40-49",
+   "decision": "Chemotherapy, then endocrine therapy; referred for genetic counseling",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2025,
+   "id": "PC-0016"
+  },
+  {
+   "tumor_type": "breast",
+   "stage": "II",
+   "biomarkers": [
+    "ER-",
+    "HER2+"
+   ],
+   "factors": [
+    "premenopausal"
+   ],
+   "age_band": "40-49",
+   "decision": "Chemotherapy with HER2-directed therapy",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2023,
+   "id": "PC-0017"
+  },
+  {
+   "tumor_type": "breast",
+   "stage": "II",
+   "biomarkers": [
+    "ER-",
+    "HER2+"
+   ],
+   "factors": [
+    "premenopausal"
+   ],
+   "age_band": "40-49",
+   "decision": "Chemotherapy with HER2-directed therapy",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2025,
+   "id": "PC-0018"
+  },
+  {
+   "tumor_type": "breast",
+   "stage": "II",
+   "biomarkers": [
+    "ER-",
+    "HER2+"
+   ],
+   "factors": [
+    "premenopausal"
+   ],
+   "age_band": "40-49",
+   "decision": "Chemotherapy with HER2-directed therapy",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2024,
+   "id": "PC-0019"
+  },
+  {
+   "tumor_type": "breast",
+   "stage": "II",
+   "biomarkers": [
+    "ER-",
+    "HER2+"
+   ],
+   "factors": [
+    "premenopausal"
+   ],
+   "age_band": "40-49",
+   "decision": "Chemotherapy with HER2-directed therapy",
+   "outcome_24mo": "recurrence",
+   "board_year": 2023,
+   "id": "PC-0020"
+  },
+  {
+   "tumor_type": "lung",
+   "stage": "IV",
+   "biomarkers": [
+    "EGFR_exon19"
+   ],
+   "factors": [
+    "smoker"
+   ],
+   "age_band": "60-69",
+   "decision": "EGFR-targeted therapy (osimertinib)",
+   "outcome_24mo": "progression",
+   "board_year": 2023,
+   "id": "PC-0021"
+  },
+  {
+   "tumor_type": "lung",
+   "stage": "IV",
+   "biomarkers": [
+    "EGFR_L858R",
+    "PD-L1_low"
+   ],
+   "factors": [],
+   "age_band": "70-79",
+   "decision": "EGFR-targeted therapy (osimertinib)",
+   "outcome_24mo": "alive on treatment, disease controlled",
+   "board_year": 2025,
+   "id": "PC-0022"
+  },
+  {
+   "tumor_type": "lung",
+   "stage": "IV",
+   "biomarkers": [
+    "EGFR_L858R",
+    "PD-L1_low"
+   ],
+   "factors": [
+    "ild"
+   ],
+   "age_band": "70-79",
+   "decision": "Chemotherapy first, targeted therapy deferred",
+   "outcome_24mo": "progression",
+   "board_year": 2023,
+   "id": "PC-0023"
+  },
+  {
+   "tumor_type": "lung",
+   "stage": "IV",
+   "biomarkers": [
+    "EGFR_L858R",
+    "PD-L1_low"
+   ],
+   "factors": [],
+   "age_band": "70-79",
+   "decision": "EGFR-targeted therapy (osimertinib)",
+   "outcome_24mo": "alive on treatment, disease controlled",
+   "board_year": 2024,
+   "id": "PC-0024"
+  },
+  {
+   "tumor_type": "lung",
+   "stage": "IV",
+   "biomarkers": [
+    "EGFR_exon19",
+    "PD-L1_low"
+   ],
+   "factors": [
+    "ild"
+   ],
+   "age_band": "70-79",
+   "decision": "EGFR-targeted therapy with pulmonology co-management and CT surveillance",
+   "outcome_24mo": "progression",
+   "board_year": 2025,
+   "id": "PC-0025"
+  },
+  {
+   "tumor_type": "lung",
+   "stage": "IV",
+   "biomarkers": [
+    "EGFR_L858R",
+    "PD-L1_low"
+   ],
+   "factors": [
+    "ild"
+   ],
+   "age_band": "60-69",
+   "decision": "EGFR-targeted therapy with pulmonology co-management and CT surveillance",
+   "outcome_24mo": "alive on treatment, disease controlled",
+   "board_year": 2025,
+   "id": "PC-0026"
+  },
+  {
+   "tumor_type": "lung",
+   "stage": "IV",
+   "biomarkers": [
+    "EGFR_L858R",
+    "PD-L1_low"
+   ],
+   "factors": [
+    "ild"
+   ],
+   "age_band": "60-69",
+   "decision": "EGFR-targeted therapy with pulmonology co-management and CT surveillance",
+   "outcome_24mo": "progression",
+   "board_year": 2025,
+   "id": "PC-0027"
+  },
+  {
+   "tumor_type": "lung",
+   "stage": "IV",
+   "biomarkers": [
+    "EGFR_exon19",
+    "PD-L1_low"
+   ],
+   "factors": [
+    "smoker"
+   ],
+   "age_band": "70-79",
+   "decision": "EGFR-targeted therapy (osimertinib)",
+   "outcome_24mo": "alive on treatment, disease controlled",
+   "board_year": 2024,
+   "id": "PC-0028"
+  },
+  {
+   "tumor_type": "lung",
+   "stage": "IV",
+   "biomarkers": [
+    "PD-L1_high"
+   ],
+   "factors": [
+    "smoker"
+   ],
+   "age_band": "60-69",
+   "decision": "Immunotherapy alone",
+   "outcome_24mo": "progression",
+   "board_year": 2024,
+   "id": "PC-0029"
+  },
+  {
+   "tumor_type": "lung",
+   "stage": "IV",
+   "biomarkers": [
+    "PD-L1_high"
+   ],
+   "factors": [
+    "smoker"
+   ],
+   "age_band": "60-69",
+   "decision": "Immunotherapy alone",
+   "outcome_24mo": "alive on treatment, disease controlled",
+   "board_year": 2025,
+   "id": "PC-0030"
+  },
+  {
+   "tumor_type": "lung",
+   "stage": "IV",
+   "biomarkers": [
+    "PD-L1_high"
+   ],
+   "factors": [
+    "smoker"
+   ],
+   "age_band": "60-69",
+   "decision": "Immunotherapy alone",
+   "outcome_24mo": "alive on treatment, disease controlled",
+   "board_year": 2024,
+   "id": "PC-0031"
+  },
+  {
+   "tumor_type": "lung",
+   "stage": "IV",
+   "biomarkers": [
+    "PD-L1_high"
+   ],
+   "factors": [
+    "smoker"
+   ],
+   "age_band": "60-69",
+   "decision": "Immunotherapy alone",
+   "outcome_24mo": "progression",
+   "board_year": 2025,
+   "id": "PC-0032"
+  },
+  {
+   "tumor_type": "lung",
+   "stage": "IIIA",
+   "biomarkers": [
+    "PD-L1_low"
+   ],
+   "factors": [
+    "smoker"
+   ],
+   "age_band": "60-69",
+   "decision": "Surgery with adjuvant therapy",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2024,
+   "id": "PC-0033"
+  },
+  {
+   "tumor_type": "lung",
+   "stage": "IIIA",
+   "biomarkers": [
+    "PD-L1_low"
+   ],
+   "factors": [
+    "smoker"
+   ],
+   "age_band": "60-69",
+   "decision": "Surgery with adjuvant therapy",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2025,
+   "id": "PC-0034"
+  },
+  {
+   "tumor_type": "lung",
+   "stage": "IIIA",
+   "biomarkers": [
+    "PD-L1_low"
+   ],
+   "factors": [
+    "smoker"
+   ],
+   "age_band": "60-69",
+   "decision": "Surgery with adjuvant therapy",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2023,
+   "id": "PC-0035"
+  },
+  {
+   "tumor_type": "colon",
+   "stage": "IIIB",
+   "biomarkers": [
+    "MSS",
+    "pT3",
+    "pN1"
+   ],
+   "factors": [
+    "diabetes"
+   ],
+   "age_band": "60-69",
+   "decision": "CAPOX for 3 months",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2025,
+   "id": "PC-0036"
+  },
+  {
+   "tumor_type": "colon",
+   "stage": "IIIB",
+   "biomarkers": [
+    "MSS",
+    "pT3",
+    "pN1"
+   ],
+   "factors": [
+    "neuropathy",
+    "diabetes"
+   ],
+   "age_band": "50-59",
+   "decision": "FOLFOX for 3 months, early stop if neuropathy worsens",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2023,
+   "id": "PC-0037"
+  },
+  {
+   "tumor_type": "colon",
+   "stage": "IIIB",
+   "biomarkers": [
+    "MSS",
+    "pT3",
+    "pN1"
+   ],
+   "factors": [],
+   "age_band": "60-69",
+   "decision": "CAPOX for 3 months",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2023,
+   "id": "PC-0038"
+  },
+  {
+   "tumor_type": "colon",
+   "stage": "IIIB",
+   "biomarkers": [
+    "MSS",
+    "pT3",
+    "pN1"
+   ],
+   "factors": [
+    "diabetes"
+   ],
+   "age_band": "60-69",
+   "decision": "CAPOX for 3 months",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2023,
+   "id": "PC-0039"
+  },
+  {
+   "tumor_type": "colon",
+   "stage": "IIIB",
+   "biomarkers": [
+    "MSS",
+    "pT3",
+    "pN1"
+   ],
+   "factors": [],
+   "age_band": "60-69",
+   "decision": "FOLFOX for 3 to 6 months",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2023,
+   "id": "PC-0040"
+  },
+  {
+   "tumor_type": "colon",
+   "stage": "IIIB",
+   "biomarkers": [
+    "MSS",
+    "pT3",
+    "pN1"
+   ],
+   "factors": [
+    "diabetes"
+   ],
+   "age_band": "60-69",
+   "decision": "CAPOX for 3 months",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2025,
+   "id": "PC-0041"
+  },
+  {
+   "tumor_type": "colon",
+   "stage": "IIIB",
+   "biomarkers": [
+    "MSS",
+    "pT3",
+    "pN1"
+   ],
+   "factors": [],
+   "age_band": "50-59",
+   "decision": "CAPOX for 3 months",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2024,
+   "id": "PC-0042"
+  },
+  {
+   "tumor_type": "colon",
+   "stage": "IIIB",
+   "biomarkers": [
+    "MSS",
+    "pT3",
+    "pN1"
+   ],
+   "factors": [],
+   "age_band": "60-69",
+   "decision": "CAPOX for 3 months",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2024,
+   "id": "PC-0043"
+  },
+  {
+   "tumor_type": "colon",
+   "stage": "IIIC",
+   "biomarkers": [
+    "MSS",
+    "pT4",
+    "pN2"
+   ],
+   "factors": [],
+   "age_band": "60-69",
+   "decision": "CAPOX or FOLFOX for 6 months",
+   "outcome_24mo": "recurrence",
+   "board_year": 2023,
+   "id": "PC-0044"
+  },
+  {
+   "tumor_type": "colon",
+   "stage": "IIIC",
+   "biomarkers": [
+    "MSS",
+    "pT4",
+    "pN2"
+   ],
+   "factors": [],
+   "age_band": "60-69",
+   "decision": "CAPOX or FOLFOX for 6 months",
+   "outcome_24mo": "recurrence",
+   "board_year": 2023,
+   "id": "PC-0045"
+  },
+  {
+   "tumor_type": "colon",
+   "stage": "IIIC",
+   "biomarkers": [
+    "MSS",
+    "pT4",
+    "pN2"
+   ],
+   "factors": [],
+   "age_band": "60-69",
+   "decision": "CAPOX or FOLFOX for 6 months",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2023,
+   "id": "PC-0046"
+  },
+  {
+   "tumor_type": "colon",
+   "stage": "IIIC",
+   "biomarkers": [
+    "MSS",
+    "pT4",
+    "pN2"
+   ],
+   "factors": [],
+   "age_band": "60-69",
+   "decision": "CAPOX or FOLFOX for 6 months",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2024,
+   "id": "PC-0047"
+  },
+  {
+   "tumor_type": "colon",
+   "stage": "II",
+   "biomarkers": [
+    "MSI-H"
+   ],
+   "factors": [],
+   "age_band": "70-79",
+   "decision": "Surveillance without chemotherapy",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2024,
+   "id": "PC-0048"
+  },
+  {
+   "tumor_type": "colon",
+   "stage": "II",
+   "biomarkers": [
+    "MSI-H"
+   ],
+   "factors": [],
+   "age_band": "70-79",
+   "decision": "Surveillance without chemotherapy",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2024,
+   "id": "PC-0049"
+  },
+  {
+   "tumor_type": "colon",
+   "stage": "II",
+   "biomarkers": [
+    "MSI-H"
+   ],
+   "factors": [],
+   "age_band": "70-79",
+   "decision": "Surveillance without chemotherapy",
+   "outcome_24mo": "no evidence of disease",
+   "board_year": 2023,
+   "id": "PC-0050"
+  }
+ ]
+}

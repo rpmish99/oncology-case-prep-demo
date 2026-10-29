@@ -1,0 +1,72 @@
+{
+  "title": "Breast, premenopausal, node-positive",
+  "site": "Breast",
+  "banner": "44 F, premenopausal | Right breast, invasive ductal, grade 3, 2.6 cm | pT2 pN1a (sn) | ER 80%, PR 40%, HER2 0 | Recurrence score 31",
+  "timeline": [
+    [
+      "Aug 18",
+      "Mammogram and MRI"
+    ],
+    [
+      "Aug 25",
+      "Core biopsy"
+    ],
+    [
+      "Sep 16",
+      "Lumpectomy and sentinel node biopsy"
+    ],
+    [
+      "Sep 21",
+      "Pathology report"
+    ],
+    [
+      "Sep 29",
+      "Genomic assay"
+    ],
+    [
+      "Sep 30",
+      "Staging CT"
+    ],
+    [
+      "Oct 6",
+      "Navigator note"
+    ]
+  ],
+  "followUps": [
+    "What do the Oncology Care Guidelines say about chemotherapy for this patient?",
+    "Does she meet the criteria for genetic counseling?",
+    "What are the options for ovarian suppression?"
+  ],
+  "id": "case-002",
+  "identifiers": {
+    "name": "Brenda Sample",
+    "mrn": "TB-100871",
+    "dob": "1982-05-09"
+  },
+  "documents": [
+    {
+      "key": "pathology_report.txt",
+      "title": "Synthetic surgical pathology report",
+      "date": "2026-09-21",
+      "file": "pathology_report.txt"
+    },
+    {
+      "key": "radiology_report.txt",
+      "title": "Synthetic radiology report",
+      "date": "2026-08-18",
+      "file": "radiology_report.txt"
+    },
+    {
+      "key": "genomics_report.txt",
+      "title": "Synthetic genomic assay report",
+      "date": "2026-09-29",
+      "file": "genomics_report.txt"
+    },
+    {
+      "key": "clinic_note.txt",
+      "title": "Synthetic clinic note",
+      "date": "2026-10-06",
+      "file": "clinic_note.txt"
+    }
+  ]
+}

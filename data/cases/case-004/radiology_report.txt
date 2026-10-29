@@ -1,0 +1,5 @@
+SYNTHETIC IMAGING REPORT (fictional, for demonstration only)
+Patient: Dora Fiction   MRN: TB-102203   DOB: 1965-07-30
+Study: CT chest, abdomen and pelvis with contrast, date 2026-08-28
+Sigmoid colon mass with pericolic stranding. Borderline pericolic nodes. No liver or lung lesions. No distant metastasis.
+Postoperative imaging: not yet performed.

@@ -1,0 +1,6 @@
+SYNTHETIC CLINIC NOTE (fictional, for demonstration only)
+Patient: Brenda Sample   MRN: TB-100871   DOB: 1982-05-09
+Date: 2026-10-06. Author: Synthetic nurse navigator (intake note)
+Brenda Sample is a 44-year-old premenopausal woman, status post lumpectomy and sentinel node biopsy for a 2.6 cm LEFT breast
+ER-positive, HER2-negative invasive ductal carcinoma with positive nodes. Asthma, well controlled. Her sister had breast cancer
+in her early forties. Patient asks about chemotherapy and hair loss. Plan: present at tumor board.

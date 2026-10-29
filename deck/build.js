@@ -19,7 +19,7 @@ const THEME = {
 const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE"; // 13.33 x 7.5
 pres.theme = { headFontFace: THEME.headFontFace, bodyFontFace: THEME.bodyFontFace };
-pres.title = "Preparing breast cancer cases for tumor board";
+pres.title = "Preparing cases for tumor board";
 const C = pres.SchemeColor;
 
 pres.defineSlideMaster({
@@ -48,14 +48,14 @@ const card = (slide, x, y, w, h, name) =>
 pres.addSection({ title: "Setup" });
 {
   const s = pres.addSlide({ masterName: "DARK", sectionTitle: "Setup" });
-  s.addText("Preparing breast cancer cases for tumor board", { placeholder: "title" });
+  s.addText("Preparing cases for tumor board", { placeholder: "title" });
 
   s.addText(
     [
       { text: "Customer", options: { bold: true, color: "9FD8CF", breakLine: true } },
-      { text: "Lakeview Cancer Institute, a fictional regional cancer center with about 500 new breast cancer cases a year.", options: { breakLine: true, paraSpaceAfter: 14 } },
+      { text: "Lakeview Cancer Institute, a fictional regional cancer center that runs weekly tumor boards for breast, lung and colon cancer.", options: { breakLine: true, paraSpaceAfter: 14 } },
       { text: "Who does the work", options: { bold: true, color: "9FD8CF", breakLine: true } },
-      { text: "Breast medical oncologists and nurse navigators, before the weekly tumor board.", options: { breakLine: true, paraSpaceAfter: 14 } },
+      { text: "Oncologists and nurse navigators who prepare each board's case list.", options: { breakLine: true, paraSpaceAfter: 14 } },
       { text: "The problem", options: { bold: true, color: "9FD8CF", breakLine: true } },
       { text: "For each case, someone reads pathology, imaging, genomics, clinic notes and the problem list in separate places, then checks the institution's Oncology Care Guidelines. It is slow, and a disagreement between two sources is easy to miss.", options: {} },
     ],
@@ -65,7 +65,7 @@ pres.addSection({ title: "Setup" });
   const stats = [
     ["60 to 90 min", "to prepare one case today"],
     ["5", "places a reviewer reads for each case"],
-    ["1", "wrong HER2 label hidden in the demo case"],
+    ["4", "demo cases across 3 tumor types, each with a hidden record problem"],
   ];
   stats.forEach(([big, small], i) => {
     const y = 1.8 + i * 1.65;
@@ -74,7 +74,7 @@ pres.addSection({ title: "Setup" });
     s.addText(small, { x: 8.15, y: y + 0.85, w: 4.3, h: 0.45, fontSize: 14, color: C.background1, margin: 0, valign: "top", isTextBox: true, objectName: `Stat label ${i + 1}` });
   });
   s.addText("Prep time is an assumption to confirm in a pilot. All patient data in the demo is synthetic.", { x: 0.6, y: 6.75, w: 11, h: 0.35, fontSize: 12, color: "A9C7C2", margin: 0, isTextBox: true, objectName: "Footnote" });
-  s.addNotes("Introduce the customer and the two users. The point is not that charts are hard to read. It is that the reviewer has to look in five places and compare them by eye. In this demo case the navigator's note says HER2 positive, while the signed pathology report says HER2 negative. That kind of mismatch is what we want caught before the meeting.");
+  s.addNotes("Introduce the customer and the two users. The point is not that charts are hard to read. It is that the reviewer has to look in five places and compare them by eye. Each of the four demo cases has a planted problem, such as a navigator note that disagrees with the signed pathology or molecular report. That kind of mismatch is what we want caught before the meeting.");
 }
 
 // ---------- 2. Workflow ----------
@@ -83,7 +83,7 @@ pres.addSection({ title: "Setup" });
   s.addText("The workflow, before and after", { placeholder: "title" });
 
   const before = ["Open pathology, imaging, genomics and notes one by one", "Copy the key facts into a summary", "Look up the current Oncology Care Guidelines", "Compare sources by eye and chase gaps", "Present from memory and the summary"];
-  const after = ["Oncologist asks for the case to be prepared", "Specialists read each record and the Oncology Care Guidelines", "A draft lists facts, guideline text and inference separately", "A second check flags conflicts and unsupported claims", "The oncologist reviews and approves before anything is saved"];
+  const after = ["Oncologist asks for the case to be prepared", "Specialists read each record and the Oncology Care Guidelines", "A draft keeps patient facts, guideline text, similar past cases and inference separate", "A second check flags conflicts and unsupported claims", "The oncologist reviews and approves before anything is saved"];
 
   [["Today", before, 0.6, C.text1], ["With the OpenAI API", after, 6.85, C.accent1]].forEach(([head, items, x, col]) => {
     card(s, x, 1.6, 5.9, 4.1, `${head} card`);
@@ -98,7 +98,7 @@ pres.addSection({ title: "Setup" });
   s.addText(
     [
       { text: "Product surface: OpenAI Platform and APIs. ", options: { bold: true } },
-      { text: "Responses API for the model calls, Agents SDK for the case coordinator and specialists, File Search for the Oncology Care Guidelines, MCP for the patient record, tracing for review." },
+      { text: "Responses API for the model calls, Agents SDK for the case coordinator and specialists, File Search for the Oncology Care Guidelines, MCP for the masked patient record and past cases, tracing for review." },
     ],
     { x: 0.85, y: 6.0, w: 11.65, h: 0.85, fontSize: 16, color: C.background1, valign: "middle", margin: 0, isTextBox: true, objectName: "Surface text" }
   );
@@ -114,10 +114,10 @@ pres.addSection({ title: "Demo" });
   s.addText("Runs in the customer's AWS account: Cognito sign-in, AgentCore Runtime, an MCP server for the record, and DynamoDB for run state and the audit trail.", { x: 0.6, y: 6.2, w: 7.3, h: 0.7, fontSize: 14, color: C.accent4, margin: 0, valign: "top", isTextBox: true, objectName: "Graph caption" });
 
   const steps = [
-    ["1", "Three specialists start together and read the record and the Oncology Care Guidelines"],
+    ["1", "Four specialists start together: record, history, guidelines and similar past cases"],
     ["2", "The coordinator drafts a packet that keeps patient facts, guideline text and inference apart"],
     ["3", "A separate verifier checks every claim against its source"],
-    ["4", "The run pauses. Nothing is saved until the oncologist approves"],
+    ["4", "Names and record numbers are masked first. The run pauses until the oncologist approves"],
   ];
   card(s, 8.3, 1.5, 4.45, 5.4, "Steps card");
   s.addText("What happens in a run", { x: 8.55, y: 1.65, w: 4.0, h: 0.45, fontSize: 18, bold: true, color: C.text1, margin: 0, isTextBox: true, objectName: "Steps heading" });
@@ -127,17 +127,19 @@ pres.addSection({ title: "Demo" });
     s.addText(n, { x: 8.55, y, w: 0.45, h: 0.45, fontSize: 14, bold: true, color: C.background1, align: "center", valign: "middle", margin: 0, isTextBox: true, objectName: `Step number ${n}` });
     s.addText(d, { x: 9.2, y: y - 0.05, w: 3.4, h: 1.0, fontSize: 14, color: C.text1, margin: 0, valign: "top", isTextBox: true, objectName: `Step text ${n}` });
   });
-  s.addNotes("This slide is the OpenAI side. A case coordinator agent on gpt-6.1-sol starts three specialists together. The patient data and history specialists read the record through an MCP server. The evidence specialist searches the Oncology Care Guidelines with File Search and looks up PubMed. The specialists use gpt-6.1-terra, which is faster and cheaper, because they are reading and extracting. A separate verifier checks the draft. Then the run pauses for the oncologist. Everything runs in the customer's own AWS account; only model calls and the guideline search go to OpenAI.");
+  s.addNotes("This slide is the OpenAI side. A case coordinator agent on gpt-6.1-sol starts four specialists together. The patient data and history specialists read the record through an MCP server that masks names, record numbers and birth dates before the model sees anything. The similar cases specialist searches a synthetic registry of past tumor board cases. The evidence specialist searches the Oncology Care Guidelines with File Search and looks up PubMed. The specialists use gpt-6.1-terra, which is faster and cheaper, because they are reading and extracting. A separate verifier checks the draft. Then the run pauses for the oncologist. Everything runs in the customer's own AWS account; only model calls and the guideline search go to OpenAI.");
 }
 
 // ---------- 4. Expected value ----------
 pres.addSection({ title: "Value" });
 {
   const ev = JSON.parse(require("fs").readFileSync(path.resolve(__dirname, "../docs/eval-results.json"), "utf8"));
-  const secs = Math.round(ev.runs.reduce((a, r) => a + r.seconds, 0) / ev.runs.length);
-  const cost = ev.runs.reduce((a, r) => a + r.costUsd, 0) / ev.runs.length;
-  const passedChecks = ev.rows.reduce((a, r) => a + r.passed, 0);
-  const totalChecks = ev.rows.reduce((a, r) => a + r.total, 0);
+  const secs = ev.summary.avgSeconds;
+  const cost = ev.summary.avgCostUsd;
+  const passedChecks = ev.passedAll;
+  const totalChecks = ev.totalAll;
+  const caseCount = ev.cases.length;
+  const runCount = ev.summary.runs;
   const s = pres.addSlide({ masterName: "LIGHT", sectionTitle: "Value" });
   s.addText("Expected value", { placeholder: "title" });
 
@@ -151,9 +153,9 @@ pres.addSection({ title: "Value" });
   });
 
   const stats = [
-    [`${secs} seconds`, `of agent work per case, measured over ${ev.runs.length} runs`],
+    [`${secs} seconds`, `of agent work per case, measured over ${runCount} runs on ${caseCount} cases`],
     [`About ${Math.round(cost * 100)} cents`, "of model cost per case at list prices, measured"],
-    [`${passedChecks} of ${totalChecks} checks`, `on the planted problems passed across ${ev.runs.length} runs`],
+    [`${passedChecks} of ${totalChecks} checks`, `on the planted problems passed across ${runCount} runs`],
     ["About 33 hours a month", "of clinician time saved (assumed: 40 cases, 75 down to 25 min)"],
   ];
   stats.forEach(([big, small], i) => {
@@ -162,8 +164,8 @@ pres.addSection({ title: "Value" });
     s.addText(big, { x: 6.85, y: y + 0.08, w: 5.65, h: 0.5, fontSize: 22, bold: true, color: i === 3 ? C.accent4 : C.accent1, margin: 0, valign: "middle", isTextBox: true, objectName: `Value ${i + 1}` });
     s.addText(small, { x: 6.85, y: y + 0.58, w: 5.65, h: 0.45, fontSize: 14, color: C.text1, margin: 0, valign: "top", isTextBox: true, objectName: `Value label ${i + 1}` });
   });
-  s.addText("Time and cost are measured on the synthetic case. Hours saved is an assumption, editable in the value model. A pilot would measure real preparation times.", { x: 0.6, y: 6.35, w: 12.1, h: 0.55, fontSize: 12, color: C.accent4, margin: 0, isTextBox: true, objectName: "Value footnote" });
-  s.addNotes("Separate measured from assumed. Measured on the synthetic case: about 88 seconds of agent work and under ten cents of model cost per case, and 59 of 60 checks on the planted problems passed across ten runs. The one miss was a run that did not mention the old bone density scan. Assumed: forty cases a month and preparation dropping from seventy-five minutes to twenty-five, which gives about thirty-three hours a month. The dollar value of that time is modest. The bigger reason is catching conflicts before the meeting, which a pilot would measure.");
+  s.addText("Time and cost are measured on the synthetic cases. Hours saved is an assumption, editable in the value model. A pilot would measure real preparation times.", { x: 0.6, y: 6.35, w: 12.1, h: 0.55, fontSize: 12, color: C.accent4, margin: 0, isTextBox: true, objectName: "Value footnote" });
+  s.addNotes("Separate measured from assumed. Measured on the four synthetic cases: about 90 seconds of agent work and about ten cents of model cost per case. The checks on the planted problems are in the evaluation results file, with every miss listed. Assumed: forty cases a month and preparation dropping from seventy-five minutes to twenty-five, which gives about thirty-three hours a month. The dollar value of that time is modest. The bigger reason is catching conflicts before the meeting, which a pilot would measure.");
 }
 
 // ---------- 5. Governance, assumptions, next steps ----------

@@ -1,0 +1,9 @@
+SYNTHETIC IMAGING REPORTS (fictional, for demonstration only)
+Patient: Carl Exemplar   MRN: TB-101552   DOB: 1958-02-02
+Study: CT chest and abdomen with contrast, date 2026-09-01
+Right upper lobe spiculated mass, 4.2 cm. Right paratracheal (4R) node 1.8 cm. Bibasilar subpleural reticulation consistent with
+known mild interstitial lung disease, unchanged from 2025. No adrenal or liver lesion.
+Study: PET/CT, date 2026-09-14
+Avid right upper lobe mass and 4R node. Single avid lytic lesion at T8, 1.1 cm. No other distant disease.
+Brain imaging: not performed.
+Clinical stage: cT2b N2 M1b (stage IVA).

@@ -1,0 +1,6 @@
+SYNTHETIC CLINIC NOTE (fictional, for demonstration only)
+Patient: Dora Fiction   MRN: TB-102203   DOB: 1965-07-30
+Date: 2026-10-07. Author: Synthetic nurse navigator (intake note)
+Dora Fiction is a 61-year-old woman recovering well after sigmoid colectomy for stage II colon cancer. Diabetes with numbness in
+both feet, which she says is a bit worse this year. Asks about chemotherapy and whether she will lose her hair.
+Plan: present at gastrointestinal tumor board.

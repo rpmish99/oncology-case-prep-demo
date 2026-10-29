@@ -1,92 +1,167 @@
 {
-  "rows": [
+  "passedAll": 168,
+  "totalAll": 170,
+  "cases": [
     {
-      "key": "her2_conflict",
-      "label": "Flags the note that says HER2-positive against the pathology result",
-      "passed": 10,
-      "total": 10
+      "caseId": "case-001",
+      "rows": [
+        {
+          "label": "Flags the note that says HER2-positive against the pathology result",
+          "passed": 5
+        },
+        {
+          "label": "Connects the prior DVT to tamoxifen",
+          "passed": 5
+        },
+        {
+          "label": "Notes the bone density scan is old or needs updating",
+          "passed": 5
+        },
+        {
+          "label": "Does not use the superseded 2022 guidelines",
+          "passed": 5
+        },
+        {
+          "label": "Offers at least two options rather than one decision",
+          "passed": 5
+        },
+        {
+          "label": "Every option has patient facts and guideline statements",
+          "passed": 5
+        },
+        {
+          "label": "Reports similar past cases with a caution",
+          "passed": 5
+        },
+        {
+          "label": "Does not use a superseded document",
+          "passed": 5
+        }
+      ]
     },
     {
-      "key": "dvt_tamoxifen",
-      "label": "Connects the prior DVT to tamoxifen",
-      "passed": 10,
-      "total": 10
+      "caseId": "case-002",
+      "rows": [
+        {
+          "label": "Flags left versus right breast between the note and pathology",
+          "passed": 5
+        },
+        {
+          "label": "Flags that genetic counseling or testing is indicated",
+          "passed": 5
+        },
+        {
+          "label": "Includes chemotherapy as an option to discuss",
+          "passed": 5
+        },
+        {
+          "label": "Mentions ovarian suppression",
+          "passed": 5
+        },
+        {
+          "label": "Raises fertility",
+          "passed": 5
+        },
+        {
+          "label": "Offers at least two options rather than one decision",
+          "passed": 5
+        },
+        {
+          "label": "Every option has patient facts and guideline statements",
+          "passed": 5
+        },
+        {
+          "label": "Reports similar past cases with a caution",
+          "passed": 5
+        },
+        {
+          "label": "Does not use a superseded document",
+          "passed": 5
+        }
+      ]
     },
     {
-      "key": "stale_guidelines_unused",
-      "label": "Does not rely on the superseded 2022 guidelines",
-      "passed": 10,
-      "total": 10
+      "caseId": "case-003",
+      "rows": [
+        {
+          "label": "Flags the note that says ALK-positive against the molecular report",
+          "passed": 5
+        },
+        {
+          "label": "Flags that brain MRI has not been done",
+          "passed": 5
+        },
+        {
+          "label": "Flags the existing interstitial lung disease",
+          "passed": 5
+        },
+        {
+          "label": "Offers EGFR-targeted therapy as first-line",
+          "passed": 5
+        },
+        {
+          "label": "Offers at least two options rather than one decision",
+          "passed": 5
+        },
+        {
+          "label": "Every option has patient facts and guideline statements",
+          "passed": 5
+        },
+        {
+          "label": "Reports similar past cases with a caution",
+          "passed": 4
+        },
+        {
+          "label": "Does not use a superseded document",
+          "passed": 4
+        }
+      ]
     },
     {
-      "key": "dexa_old",
-      "label": "Notes the bone density scan is old or needs updating",
-      "passed": 9,
-      "total": 10
-    },
-    {
-      "key": "options_not_decision",
-      "label": "Offers at least two options rather than one decision",
-      "passed": 10,
-      "total": 10
-    },
-    {
-      "key": "options_sourced",
-      "label": "Every option has patient facts and guideline statements",
-      "passed": 10,
-      "total": 10
+      "caseId": "case-004",
+      "rows": [
+        {
+          "label": "Flags the note that says stage II against the pathology result",
+          "passed": 5
+        },
+        {
+          "label": "Connects the existing neuropathy to oxaliplatin",
+          "passed": 5
+        },
+        {
+          "label": "Uses the current three-month duration for low-risk stage III",
+          "passed": 5
+        },
+        {
+          "label": "Does not use the superseded 2020 guidelines",
+          "passed": 5
+        },
+        {
+          "label": "Notes the post-operative CEA has not been drawn",
+          "passed": 5
+        },
+        {
+          "label": "Offers at least two options rather than one decision",
+          "passed": 5
+        },
+        {
+          "label": "Every option has patient facts and guideline statements",
+          "passed": 5
+        },
+        {
+          "label": "Reports similar past cases with a caution",
+          "passed": 5
+        },
+        {
+          "label": "Does not use a superseded document",
+          "passed": 5
+        }
+      ]
     }
   ],
-  "runs": [
-    {
-      "seconds": 84,
-      "costUsd": 0.0993,
-      "ok": true
-    },
-    {
-      "seconds": 91,
-      "costUsd": 0.1045,
-      "ok": true
-    },
-    {
-      "seconds": 93,
-      "costUsd": 0.0989,
-      "ok": true
-    },
-    {
-      "seconds": 95,
-      "costUsd": 0.0964,
-      "ok": true
-    },
-    {
-      "seconds": 99,
-      "costUsd": 0.0951,
-      "ok": true
-    },
-    {
-      "seconds": 81,
-      "costUsd": 0.0946,
-      "ok": true
-    },
-    {
-      "seconds": 77,
-      "costUsd": 0.098,
-      "ok": true
-    },
-    {
-      "seconds": 82,
-      "costUsd": 0.0939,
-      "ok": true
-    },
-    {
-      "seconds": 83,
-      "costUsd": 0.086,
-      "ok": true
-    },
-    {
-      "seconds": 92,
-      "costUsd": 0.0977,
-      "ok": true
-    }
-  ]
+  "summary": {
+    "runs": 20,
+    "avgSeconds": 87,
+    "avgCostUsd": 0.099
+  }
 }

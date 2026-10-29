@@ -1,0 +1,68 @@
+{
+  "title": "Colon, stage III",
+  "site": "Colon",
+  "banner": "61 F | Sigmoid colon adenocarcinoma, moderately differentiated | pT3 pN1b (3 of 14 nodes), stage IIIB | MMR proficient | Pre-op CEA 8.2",
+  "timeline": [
+    [
+      "Aug 20",
+      "Colonoscopy and biopsy"
+    ],
+    [
+      "Aug 28",
+      "CT chest, abdomen, pelvis"
+    ],
+    [
+      "Sep 18",
+      "Sigmoid colectomy"
+    ],
+    [
+      "Sep 24",
+      "Pathology report"
+    ],
+    [
+      "Oct 2",
+      "Laboratory results"
+    ],
+    [
+      "Oct 7",
+      "Navigator note"
+    ]
+  ],
+  "followUps": [
+    "What do the Oncology Care Guidelines say about adjuvant chemotherapy for this patient?",
+    "Does her neuropathy change the options?",
+    "How long should adjuvant treatment last?"
+  ],
+  "id": "case-004",
+  "identifiers": {
+    "name": "Dora Fiction",
+    "mrn": "TB-102203",
+    "dob": "1965-07-30"
+  },
+  "documents": [
+    {
+      "key": "pathology_report.txt",
+      "title": "Synthetic surgical pathology report",
+      "date": "2026-09-24",
+      "file": "pathology_report.txt"
+    },
+    {
+      "key": "radiology_report.txt",
+      "title": "Synthetic imaging report",
+      "date": "2026-08-28",
+      "file": "radiology_report.txt"
+    },
+    {
+      "key": "labs_report.txt",
+      "title": "Synthetic laboratory results",
+      "date": "2026-10-02",
+      "file": "labs_report.txt"
+    },
+    {
+      "key": "clinic_note.txt",
+      "title": "Synthetic clinic note",
+      "date": "2026-10-07",
+      "file": "clinic_note.txt"
+    }
+  ]
+}

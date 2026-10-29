@@ -1,0 +1,8 @@
+SYNTHETIC LUNG BIOPSY PATHOLOGY REPORT (fictional, for demonstration only)
+Patient: Carl Exemplar   MRN: TB-101552   DOB: 1958-02-02
+Report date: 2026-09-12
+Specimen: CT-guided core biopsy, right upper lobe mass
+
+DIAGNOSIS
+Adenocarcinoma, acinar and lepidic patterns. TTF-1 positive, p40 negative.
+PD-L1 (22C3) tumor proportion score: 5%.

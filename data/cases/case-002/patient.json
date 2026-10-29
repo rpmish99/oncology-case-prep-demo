@@ -1,0 +1,105 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "note": "Entirely synthetic. No real patient data.",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "case-002",
+        "name": [
+          {
+            "text": "Brenda Sample"
+          }
+        ],
+        "identifier": [
+          {
+            "system": "mrn",
+            "value": "TB-100871"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1982-05-09",
+        "extension": [
+          {
+            "url": "status-note",
+            "valueString": "premenopausal, regular cycles"
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "c-1",
+        "code": {
+          "text": "Invasive ductal carcinoma, right breast"
+        },
+        "clinicalStatus": "active",
+        "onsetDateTime": "2026-08-25"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "c-2",
+        "code": {
+          "text": "Asthma"
+        },
+        "clinicalStatus": "active",
+        "onsetDateTime": "2010-03-01",
+        "note": "Well controlled"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "MedicationStatement",
+        "id": "m-1",
+        "medicationCodeableConcept": {
+          "text": "Albuterol inhaler as needed"
+        },
+        "status": "active"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "AllergyIntolerance",
+        "id": "a-1",
+        "code": {
+          "text": "No known drug allergies"
+        },
+        "reaction": "none"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "o-1",
+        "code": {
+          "text": "ECOG performance status"
+        },
+        "valueInteger": 0
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "o-2",
+        "code": {
+          "text": "Family history"
+        },
+        "valueString": "Sister: breast cancer at age 41. Mother: no cancer. No genetic testing in the family."
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "p-1",
+        "code": {
+          "text": "Right lumpectomy with sentinel lymph node biopsy"
+        },
+        "performedDateTime": "2026-09-16"
+      }
+    }
+  ]
+}

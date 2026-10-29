@@ -7,23 +7,24 @@ demonstration, not a medical device, and it does not give treatment advice.
 ![Architecture](docs/architecture.png)
 
 ## What it does
-A case coordinator agent asks three specialists (patient data, clinical history, evidence) for sourced findings, drafts a
-structured packet, has a separate verifier agent check it, then pauses for a clinician to approve or request
-changes. Nothing is written to a patient record.
+A tumor board agenda lists four synthetic cases across three tumor types: two breast, one lung and one colon. For the
+selected case, a case coordinator agent asks four specialists (patient data, clinical history, evidence from the
+Oncology Care Guidelines, and similar past cases) for sourced findings, drafts a structured packet, has a separate
+verifier agent check it, then pauses for a clinician to approve or request changes. Nothing is written to a patient
+record. Names, record numbers and birth dates are masked before the agents see the record.
 
-The synthetic case has planted problems the agents should catch: a note that says HER2-positive while the signed
-pathology says HER2-negative, a prior blood clot that matters for tamoxifen, an old bone density scan, missing
-genetic testing, and a superseded guideline document that should not be used.
+Each case has planted problems the agents should catch, such as a note that disagrees with the signed pathology
+report, a missing test, a patient factor the guidelines do not address, and a superseded guideline document that
+should not be used. The expected findings are in `data/cases/<id>/expected.json`.
 
 ## What the UI shows
-A patient banner and case timeline, a viewer for every synthetic record and Oncology Care Guidelines document (including the superseded one),  a live feed of what each agent is doing, a board summary with attention chips,
-conflicts between sources, options with patient facts and guideline text kept apart, a source viewer behind every
+An agenda of cases with a status for each, a patient banner and case timeline (the agents see a masked code instead of the name), a viewer for every synthetic record and Oncology Care Guidelines document (including the superseded one),  a live feed of what each agent is doing, a board summary with attention chips,
+conflicts between sources, options with patient facts and guideline text kept apart, a similar past cases card (synthetic registry), a source viewer behind every
 citation, the verifier findings, follow-up questions answered from the packet, the record and the Oncology Care Guidelines, a clinician review step (approve or request changes), an audit trail, run stats with
 a link to the OpenAI trace, and a printable board brief.
 
 ## Results
-- `docs/eval-results.md`: ten runs of the synthetic case. 59 of 60 checks on the planted problems passed across ten runs (one run missed the old bone density scan).
-  Average 88 seconds of agent work and about $0.10 of model cost per case at list prices.
+- `docs/eval-results.md`: five runs of each of the four cases, with every check listed.
 - `docs/sample-packet.json`: a real packet produced by the agents.
 - `docs/value-model.xlsx`: editable assumptions for the time saved. These are assumptions, not measurements.
 
@@ -32,7 +33,7 @@ a link to the OpenAI trace, and a printable board brief.
 - `mcp-server/` the mock patient record, exposed as an MCP server
 - `web/` React app (Amplify libraries for sign-in)
 - `infra/` AWS CDK stack: Cognito, DynamoDB, the MCP Lambda, the AgentCore Runtime
-- `data/` synthetic case files and synthetic institutional Oncology Care Guidelines
+- `data/` synthetic cases (`cases/`), a synthetic registry of past cases (`registry/`), and synthetic institutional Oncology Care Guidelines (`guidelines/`)
 - `deck/` slide deck source and the built deck
 - `docs/` architecture diagram, value model, and the recording script
 - `scripts/` helper scripts
