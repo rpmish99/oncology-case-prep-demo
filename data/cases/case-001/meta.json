@@ -30,7 +30,7 @@
     ],
     [
       "Oct 5",
-      "Navigator note"
+      "Intake note"
     ]
   ],
   "followUps": [
@@ -64,7 +64,7 @@
     },
     {
       "key": "clinic_note.txt",
-      "title": "Navigator clinic note",
+      "title": "Intake clinic note",
       "date": "2026-10-05",
       "file": "clinic_note.txt"
     }

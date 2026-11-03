@@ -2,7 +2,7 @@
 <rect x="8" y="8" width="884" height="96" rx="14" fill="#FFF7E6" stroke="#B45309" stroke-width="1.2" stroke-dasharray="6 4"/>
 <text x="22" y="28" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="700" fill="#633806">Tumor board panel (people)</text>
 <rect x="20" y="44" width="138" height="48" rx="8" fill="#FFFFFF" stroke="#B45309" stroke-width="1.2"/>
-<text x="89.0" y="68.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#633806">Nurse navigation</text>
+<text x="89.0" y="68.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#633806">Coordinator</text>
 <rect x="166" y="44" width="138" height="48" rx="8" fill="#FFFFFF" stroke="#B45309" stroke-width="1.2"/>
 <text x="235.0" y="68.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#633806">Medical oncology</text>
 <rect x="312" y="44" width="138" height="48" rx="8" fill="#FFFFFF" stroke="#B45309" stroke-width="1.2"/>

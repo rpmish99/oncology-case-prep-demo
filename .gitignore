@@ -11,3 +11,4 @@ amplify_outputs.json
 cdk.out/
 *.log
 .runs/
+recording/

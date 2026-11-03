@@ -43,13 +43,12 @@ const node = (x, y, w, h, ic, name, sub, o = {}) => {
 
 // ---------- title ----------
 text("Architecture: AI-augmented tumor board case prep", { x: 0.4, y: 0.25, w: 12.5, h: 0.5, fontSize: 28, bold: true, fontFace: "Cambria", objectName: "Title" });
-text("People, AWS services and the OpenAI Platform. Numbers follow one request.", { x: 0.4, y: 0.78, w: 12.5, h: 0.3, fontSize: 14, color: MUTED, objectName: "Subtitle" });
 
 // ---------- users ----------
 s.addImage({ path: icon("users"), x: 0.75, y: 3.25, w: 0.7, h: 0.7, altText: "Users icon", objectName: "Users icon" });
 text([
   { text: "Tumor board panel", options: { bold: true, fontSize: 12, breakLine: true } },
-  { text: "Navigators and clinicians, in a browser", options: { fontSize: 11, color: MUTED } },
+  { text: "Coordinators and clinicians, in a browser", options: { fontSize: 11, color: MUTED } },
 ], { x: 0.2, y: 4.05, w: 1.8, h: 0.9, align: "center", objectName: "Users text" });
 
 // ---------- AWS Cloud group ----------
