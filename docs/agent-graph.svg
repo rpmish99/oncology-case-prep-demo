@@ -1,23 +1,86 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 440" font-family="Arial, Helvetica, sans-serif">
-<title>Agent graph</title>
-<defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
-<rect width="700" height="440" fill="#FFFFFF"/>
-<rect x="20" y="150" width="140" height="64" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="90.0" y="174.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#2C2C2A">Oncologist</text><text x="90.0" y="194.0" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#5F5E5A">asks for the case</text>
-<rect x="200" y="120" width="170" height="124" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/><text x="285.0" y="174.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#3C3489">Case coordinator</text><text x="285.0" y="194.0" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#534AB7">gpt-6.1-sol</text>
-<text x="545" y="18" text-anchor="middle" font-size="12" fill="#5F5E5A">Started together</text>
-<rect x="430" y="28" width="230" height="56" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/><text x="545.0" y="48.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#3C3489">Patient data</text><text x="545.0" y="68.0" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#534AB7">gpt-6.1-terra, reads record by MCP</text>
-<rect x="430" y="94" width="230" height="56" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/><text x="545.0" y="114.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#3C3489">Clinical history</text><text x="545.0" y="134.0" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#534AB7">gpt-6.1-terra, reads record by MCP</text>
-<rect x="430" y="160" width="230" height="56" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/><text x="545.0" y="180.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#3C3489">Evidence</text><text x="545.0" y="200.0" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#534AB7">gpt-6.1-terra, File Search and PubMed</text>
-<rect x="430" y="226" width="230" height="56" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/><text x="545.0" y="246.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#3C3489">Similar cases</text><text x="545.0" y="266.0" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#534AB7">gpt-6.1-terra, searches past cases</text>
-<rect x="200" y="310" width="170" height="64" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1"/><text x="285.0" y="334.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#3C3489">Verifier</text><text x="285.0" y="354.0" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#534AB7">gpt-6.1-sol, checks the draft</text>
-<rect x="430" y="310" width="230" height="56" rx="8" fill="#FAEEDA" stroke="#B45309" stroke-width="1"/><text x="545.0" y="330.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#633806">Clinician approves</text><text x="545.0" y="350.0" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#854F0B">the run pauses until a decision</text>
-<rect x="430" y="384" width="230" height="44" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/><text x="545.0" y="406.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#2C2C2A">Note saved, audit trail written</text>
-<line x1="160" y1="182" x2="198" y2="182" stroke="#5F5E5A" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
-<path d="M370 150 L400 150 L400 56 L428 56" stroke="#5F5E5A" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
-<line x1="370" y1="168" x2="428" y2="122" stroke="#5F5E5A" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
-<line x1="370" y1="196" x2="428" y2="188" stroke="#5F5E5A" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
-<path d="M370 224 L400 224 L400 254 L428 254" stroke="#5F5E5A" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
-<line x1="285" y1="244" x2="285" y2="308" stroke="#5F5E5A" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
-<line x1="370" y1="338" x2="428" y2="338" stroke="#5F5E5A" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
-<line x1="545" y1="366" x2="545" y2="382" stroke="#5F5E5A" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 610" font-family="Arial, Helvetica, sans-serif"><title>How a case is prepared</title><defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#5F5E5A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect width="900" height="610" fill="#FFFFFF"/>
+<rect x="8" y="8" width="884" height="96" rx="14" fill="#FFF7E6" stroke="#B45309" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="22" y="28" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="700" fill="#633806">Tumor board panel (people)</text>
+<rect x="20" y="44" width="138" height="48" rx="8" fill="#FFFFFF" stroke="#B45309" stroke-width="1.2"/>
+<text x="89.0" y="68.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#633806">Nurse navigation</text>
+<rect x="166" y="44" width="138" height="48" rx="8" fill="#FFFFFF" stroke="#B45309" stroke-width="1.2"/>
+<text x="235.0" y="68.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#633806">Medical oncology</text>
+<rect x="312" y="44" width="138" height="48" rx="8" fill="#FFFFFF" stroke="#B45309" stroke-width="1.2"/>
+<text x="381.0" y="68.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#633806">Surgical oncology</text>
+<rect x="458" y="44" width="138" height="48" rx="8" fill="#FFFFFF" stroke="#B45309" stroke-width="1.2"/>
+<text x="527.0" y="68.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#633806">Radiation oncology</text>
+<rect x="604" y="44" width="138" height="48" rx="8" fill="#FFFFFF" stroke="#B45309" stroke-width="1.2"/>
+<text x="673.0" y="68.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#633806">Pathology</text>
+<rect x="750" y="44" width="138" height="48" rx="8" fill="#FFFFFF" stroke="#B45309" stroke-width="1.2"/>
+<text x="819.0" y="68.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#633806">Radiology</text>
+<rect x="8" y="140" width="884" height="262" rx="14" fill="#F5F4FF" stroke="#534AB7" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="22" y="160" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="700" fill="#3C3489">AI agents: Agents SDK on AgentCore</text>
+<rect x="300" y="176" width="250" height="64" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.2"/>
+<text x="425.0" y="198.5" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#3C3489">Case coordinator</text>
+<text x="425.0" y="217.5" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="400" fill="#534AB7">Agent, gpt-6.1-sol</text>
+<rect x="640" y="176" width="240" height="64" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.2"/>
+<text x="760.0" y="198.5" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#3C3489">Verifier</text>
+<text x="760.0" y="217.5" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="400" fill="#534AB7">Agent, gpt-6.1-sol</text>
+<rect x="20" y="282" width="170" height="64" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.2"/>
+<text x="105.0" y="304.5" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#3C3489">Patient data</text>
+<text x="105.0" y="323.5" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="400" fill="#534AB7">Agent, gpt-6.1-terra</text>
+<rect x="200" y="282" width="170" height="64" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.2"/>
+<text x="285.0" y="304.5" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#3C3489">Clinical history</text>
+<text x="285.0" y="323.5" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="400" fill="#534AB7">Agent, gpt-6.1-terra</text>
+<rect x="380" y="282" width="330" height="64" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.2"/>
+<text x="545.0" y="304.5" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#3C3489">Evidence</text>
+<text x="545.0" y="323.5" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="400" fill="#534AB7">Agent, gpt-6.1-terra</text>
+<rect x="720" y="282" width="160" height="64" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.2"/>
+<text x="800.0" y="304.5" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#3C3489">Similar cases</text>
+<text x="800.0" y="323.5" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="400" fill="#534AB7">Agent, gpt-6.1-terra</text>
+<rect x="8" y="440" width="884" height="150" rx="14" fill="#F7F6F2" stroke="#888780" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="300" y="460" text-anchor="start" dominant-baseline="central" font-size="14" font-weight="700" fill="#2C2C2A">Data and knowledge</text>
+<rect x="20" y="476" width="350" height="98" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.2"/>
+<text x="195.0" y="506.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#085041">Patient record (MCP server)</text>
+<text x="195.0" y="525.0" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="400" fill="#0F6E56">Pathology, imaging, molecular, labs, notes</text>
+<text x="195.0" y="544.0" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="400" fill="#0F6E56">Names, record numbers, birth dates masked</text>
+<rect x="380" y="476" width="160" height="98" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.2"/>
+<text x="460.0" y="506.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#3C3489">Oncology Care</text>
+<text x="460.0" y="525.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#3C3489">Guidelines</text>
+<text x="460.0" y="544.0" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="400" fill="#534AB7">OpenAI File Search</text>
+<rect x="550" y="476" width="160" height="98" rx="8" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1.2"/>
+<text x="630.0" y="506.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#2C2C2A">Public sources</text>
+<text x="630.0" y="525.0" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="400" fill="#5F5E5A">PubMed</text>
+<text x="630.0" y="544.0" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="400" fill="#5F5E5A">ClinicalTrials.gov</text>
+<rect x="720" y="476" width="160" height="98" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1.2"/>
+<text x="800.0" y="506.0" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#085041">Past cases registry</text>
+<text x="800.0" y="525.0" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="400" fill="#0F6E56">MCP server</text>
+<text x="800.0" y="544.0" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="400" fill="#0F6E56">De-identified</text>
+<path d="M425 104 L425 174" fill="none" stroke="#5F5E5A" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M552 208 L638 208" fill="none" stroke="#5F5E5A" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M760 174 L760 106" fill="none" stroke="#5F5E5A" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M425 240 L425 262 M105 262 L800 262" fill="none" stroke="#5F5E5A" stroke-width="1.6"/>
+<path d="M105 262 L105 280" fill="none" stroke="#5F5E5A" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M285 262 L285 280" fill="none" stroke="#5F5E5A" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M545 262 L545 280" fill="none" stroke="#5F5E5A" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M800 262 L800 280" fill="none" stroke="#5F5E5A" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M105 346 L105 474" fill="none" stroke="#5F5E5A" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M285 346 L285 474" fill="none" stroke="#5F5E5A" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M460 346 L460 474" fill="none" stroke="#5F5E5A" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M630 346 L630 474" fill="none" stroke="#5F5E5A" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M800 346 L800 474" fill="none" stroke="#5F5E5A" stroke-width="1.6" marker-end="url(#a)"/>
+<circle cx="425" cy="139" r="13" fill="#0F766E" stroke="#FFFFFF" stroke-width="2"/>
+<text x="425" y="139.5" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#FFFFFF">1</text>
+<circle cx="425" cy="262" r="13" fill="#0F766E" stroke="#FFFFFF" stroke-width="2"/>
+<text x="425" y="262.5" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#FFFFFF">2</text>
+<circle cx="595" cy="208" r="13" fill="#0F766E" stroke="#FFFFFF" stroke-width="2"/>
+<text x="595" y="208.5" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#FFFFFF">4</text>
+<circle cx="760" cy="139" r="13" fill="#0F766E" stroke="#FFFFFF" stroke-width="2"/>
+<text x="760" y="139.5" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#FFFFFF">5</text>
+<circle cx="105" cy="424" r="13" fill="#0F766E" stroke="#FFFFFF" stroke-width="2"/>
+<text x="105" y="424.5" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#FFFFFF">3</text>
+<circle cx="285" cy="424" r="13" fill="#0F766E" stroke="#FFFFFF" stroke-width="2"/>
+<text x="285" y="424.5" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#FFFFFF">3</text>
+<circle cx="460" cy="424" r="13" fill="#0F766E" stroke="#FFFFFF" stroke-width="2"/>
+<text x="460" y="424.5" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#FFFFFF">3</text>
+<circle cx="630" cy="424" r="13" fill="#0F766E" stroke="#FFFFFF" stroke-width="2"/>
+<text x="630" y="424.5" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#FFFFFF">3</text>
+<circle cx="800" cy="424" r="13" fill="#0F766E" stroke="#FFFFFF" stroke-width="2"/>
+<text x="800" y="424.5" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="700" fill="#FFFFFF">3</text>
+<text x="22" y="603" text-anchor="start" dominant-baseline="central" font-size="13" font-weight="400" fill="#5F5E5A">Amber: people.  Purple: OpenAI agents, models and File Search.  Teal: customer data in the customer's AWS account.  Gray: public sources.</text>
 </svg>
