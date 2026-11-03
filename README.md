@@ -6,6 +6,8 @@ demonstration, not a medical device, and it does not give treatment advice.
 
 ![Architecture](docs/architecture.png)
 
+The architecture slide is also in `docs/architecture.pptx` (editable) and `docs/architecture.pdf`.
+
 ## What it does
 A tumor board agenda lists four synthetic cases across three tumor types: two breast, one lung and one colon. For the
 selected case, a case coordinator agent asks four specialists (patient data, clinical history, evidence from the
