@@ -33,6 +33,35 @@ const toolName = (t: string) => TOOL_LABEL[t] ?? `reads ${t.replace(/^get_/, "")
 
 const clock = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
+const ICONS: Record<string, string[]> = {
+  chevron: ["m6 9 6 6 6-6"],
+  send: ["m22 2-7 20-4-9-9-4Z", "M22 2 11 13"],
+  file: ["M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z", "M14 2v6h6", "M16 13H8", "M16 17H8", "M10 9H8"],
+  shield: ["M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z", "m9 12 2 2 4-4"],
+  printer: ["M6 9V2h12v7", "M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2", "M6 14h12v8H6z"],
+  chat: ["M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"],
+  activity: ["M22 12h-4l-3 9L9 3l-3 9H2"],
+  check: ["M20 6 9 17l-5-5"],
+};
+function Icon({ name, size = 16 }: { name: keyof typeof ICONS; size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {ICONS[name].map((d, i) => (
+        <path key={i} d={d} />
+      ))}
+    </svg>
+  );
+}
+
+const AGENT_COLOR: Record<string, string> = {
+  "Case coordinator": "#534AB7",
+  "Patient data specialist": "#1F5FBF",
+  "Clinical history specialist": "#0F7A5C",
+  "Evidence specialist": "#B4690E",
+  "Similar cases specialist": "#9A4FB0",
+  Verifier: "#B3382C",
+};
+
 type Doc = { title: string; text: string; mask?: Identifiers };
 function formatPatient(json: string): string {
   const entries = (JSON.parse(json).entry as { resource: any }[]).map((e) => e.resource);
@@ -241,20 +270,29 @@ function PacketView({ p }: { p: Packet }) {
 }
 
 function CaseBanner({ c, onReset, canReset }: { c: CaseMeta; onReset: () => void; canReset: boolean }) {
+  const initials = c.identifiers.name.split(" ").map((p) => p[0]).join("");
   return (
-    <div className="banner">
-      <div className="banner-main">
-        <div>
-          <b>{c.identifiers.name}</b> <span className="muted">{c.id.replace("case-", "Case ")} | MRN {c.identifiers.mrn}</span>{" "}
-          <span className="mask-badge" title="Names, record numbers and birth dates are replaced with a code before the agents see the record">
-            Agents see {maskCode(c.identifiers)}
-          </span>
+    <section className="banner card">
+      <div className="banner-top">
+        <div className="avatar" aria-hidden="true">
+          {initials}
         </div>
-        <button className="ghost" onClick={onReset} disabled={!canReset}>
+        <div className="banner-id">
+          <div className="banner-name">
+            {c.identifiers.name} <span className="site-pill">{c.site}</span>
+          </div>
+          <div className="muted">
+            {c.id.replace("case-", "Case ")} | MRN {c.identifiers.mrn}
+          </div>
+        </div>
+        <span className="mask-badge" title="Names, record numbers and birth dates are replaced with a code before the agents see the record">
+          <Icon name="shield" size={13} /> Agents see {maskCode(c.identifiers)}
+        </span>
+        <button className="btn ghost small-btn" onClick={onReset} disabled={!canReset}>
           Reset case
         </button>
       </div>
-      <div className="banner-facts">{c.banner.replace(/ \| /g, "  |  ")}</div>
+      <div className="banner-facts">{c.banner.replace(/ \| /g, "   |   ")}</div>
       <ol className="timeline">
         {c.timeline.map(([d, e]) => (
           <li key={d + e}>
@@ -264,7 +302,7 @@ function CaseBanner({ c, onReset, canReset }: { c: CaseMeta; onReset: () => void
           </li>
         ))}
       </ol>
-    </div>
+    </section>
   );
 }
 
@@ -280,7 +318,9 @@ function CaseWorkspace({ meta, active, onStatus }: { meta: CaseMeta; active: boo
   const [stats, setStats] = useState({ seconds: 0, inputTokens: 0, outputTokens: 0, costUsd: 0 });
   const [traceUrl, setTraceUrl] = useState("");
   const [audit, setAudit] = useState<{ at: string; event: string; reviewer?: string; feedback?: string }[]>([]);
-  const feedEnd = useRef<HTMLDivElement>(null);
+  const feedBox = useRef<HTMLDivElement>(null);
+  const chatBox = useRef<HTMLDivElement>(null);
+  const [tab, setTab] = useState<"ask" | "activity">("activity");
   const [doc, setDoc] = useState<Doc | null>(null);
   const [showMasked, setShowMasked] = useState(false);
   useEffect(() => onStatus(status), [status]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -297,8 +337,17 @@ function CaseWorkspace({ meta, active, onStatus }: { meta: CaseMeta; active: boo
   }, [status]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    feedEnd.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [events]);
+    if (feedBox.current) feedBox.current.scrollTop = feedBox.current.scrollHeight;
+  }, [events, tab]);
+
+  useEffect(() => {
+    if (chatBox.current) chatBox.current.scrollTop = chatBox.current.scrollHeight;
+  }, [qa, asking, tab]);
+
+  useEffect(() => {
+    if (status === "running") setTab("activity");
+    if (status === "review") setTab("ask");
+  }, [status]);
 
   useEffect(() => {
     if (!runId || (status !== "review" && status !== "done")) return;
@@ -426,198 +475,282 @@ function CaseWorkspace({ meta, active, onStatus }: { meta: CaseMeta; active: boo
 
   const feed = events.filter((e) => e.type === "tool_call" || (e.type === "tool_result" && SHOW_RESULT.has(e.tool)));
 
+  const recs: [string, string, string][] = [
+    ...meta.documents.map((d) => [d.title.replace(/^Synthetic /, "").replace(/^./, (m) => m.toUpperCase()), d.date, d.title] as [string, string, string]),
+    ["Problem list, medications, allergies", "current", "patient record"],
+  ];
+  const canAsk = !!packet && (status === "review" || status === "done");
+
   return (
     <SourceCtx.Provider value={(tag) => { setShowMasked(false); setDoc(resolveSource(tag, meta)); }}>
     <div className="workspace" style={{ display: active ? "block" : "none" }}>
       <CaseBanner c={meta} onReset={reset} canReset={status !== "running" && status !== "saving"} />
 
-      <main>
-        <aside className="panel">
-          <h2>{meta.title}</h2>
-          <p className="muted">Click any record to read it:</p>
-          <ul className="records">
-            {[...meta.documents.map((d) => [d.title.replace(/^Synthetic /, "").replace(/^./, (m) => m.toUpperCase()), d.date, d.title] as [string, string, string]), ["Problem list, medications, allergies", "current", "patient record"] as [string, string, string]].map(([name, date, key]) => (
-              <li key={name}>
-                <button className="rec" onClick={() => { setShowMasked(false); setDoc(resolveSource(key, meta)); }}>
-                  {name}
-                </button>
-                <span className="muted">{date}</span>
-              </li>
-            ))}
-          </ul>
-          <p className="muted small">Oncology Care Guidelines the evidence specialist searches:</p>
-          <ul className="records">
-            {guidelinesFor(meta.site).map((g) => (
-              <li key={g.file}>
-                <button className="rec" onClick={() => { setShowMasked(false); setDoc(guidelineDoc(g)); }}>
-                  {g.title.replace("Oncology Care Guidelines, ", "Care Guidelines: ")}
-                </button>
-                <span className="muted">
-                  v{g.version}, {g.status || "current"}
-                </span>
-              </li>
-            ))}
-          </ul>
-          <label htmlFor="q">Request from the oncologist</label>
-          <textarea id="q" rows={4} value={question} onChange={(e) => setQuestion(e.target.value)} disabled={status !== "idle"} />
-          <button className="primary" onClick={start} disabled={status !== "idle"}>
-            Prepare case
-          </button>
-          {(status === "running" || status === "saving") && <p className="timer">Working, {clock(elapsed)}</p>}
-          {stats.inputTokens > 0 && (
-            <div className="stats">
-              <h3>This run</h3>
-              <p>
-                {clock(stats.seconds)} of agent work
-                <br />
-                {Math.round(stats.inputTokens / 1000)}k tokens in, {Math.round(stats.outputTokens / 1000)}k out
-                <br />
-                About ${stats.costUsd.toFixed(2)} at list prices
-              </p>
-              {traceUrl && (
-                <a href={traceUrl} target="_blank" rel="noreferrer">
-                  View the trace in OpenAI
-                </a>
-              )}
-            </div>
-          )}
+      <main className="grid">
+        <aside className="col-left">
+          <section className="card">
+            <h2 className="card-title">
+              <Icon name="file" /> Case records
+            </h2>
+            <ul className="records">
+              {recs.map(([name, date, key]) => (
+                <li key={name}>
+                  <button className="rec" onClick={() => { setShowMasked(false); setDoc(resolveSource(key, meta)); }}>
+                    {name}
+                  </button>
+                  <span className="muted">{date}</span>
+                </li>
+              ))}
+            </ul>
+            <h3 className="sub-title">Oncology Care Guidelines</h3>
+            <ul className="records">
+              {guidelinesFor(meta.site).map((g) => (
+                <li key={g.file}>
+                  <button className="rec" onClick={() => { setShowMasked(false); setDoc(guidelineDoc(g)); }}>
+                    {g.title.replace("Oncology Care Guidelines, ", "").replace(/^./, (m) => m.toUpperCase())}
+                  </button>
+                  <span className={g.status === "superseded" ? "tag-old" : "muted"}>
+                    v{g.version}{g.status === "superseded" ? " superseded" : ""}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section className="card">
+            <h2 className="card-title">Request</h2>
+            <textarea id="q" rows={4} value={question} onChange={(e) => setQuestion(e.target.value)} disabled={status !== "idle"} aria-label="Request from the oncologist" />
+            <button className="btn primary full" onClick={start} disabled={status !== "idle"}>
+              Prepare brief
+            </button>
+            {(status === "running" || status === "saving") && (
+              <div className="progress" aria-live="polite">
+                <div className="bar" />
+                <span>Agents working, {clock(elapsed)}</span>
+              </div>
+            )}
+          </section>
         </aside>
 
-        <section className="panel feedpanel">
-          <h2>What the agents are doing</h2>
-          {feed.length === 0 && <p className="muted">Nothing yet. Start a run to see each specialist and tool call.</p>}
-          <ol className="feed">
-            {feed.map((e, i) =>
-              e.type === "tool_call" ? (
-                <li key={i} className="call">
-                  <span className="agent">{AGENT_LABEL[e.agent] ?? e.agent}</span>
-                  <span className="tool">{toolName(e.tool)}</span>
-                </li>
-              ) : e.type === "tool_result" ? (
-                <li key={i} className="result">
-                  {e.preview.slice(0, 110)}
-                </li>
-              ) : null,
-            )}
-          </ol>
-          <div ref={feedEnd} />
-          {verifier && (
-            <div className="verifier">
-              <h3>Verifier findings</h3>
-              {verifier.findings.length === 0 ? (
-                <p className="muted">No issues found.</p>
-              ) : (
-                <ul>
-                  {verifier.findings.map((f, i) => (
-                    <li key={i}>
-                      <b>{f.issue.replace(/_/g, " ")}</b>: {f.claim}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
-        </section>
-
-        <section className="panel packetpanel">
-          <div className="panel-head">
-            <h2>Evidence packet</h2>
+        <section className="col-center card brief">
+          <header className="card-head">
+            <h2 className="card-title">Case brief</h2>
+            <span className={`status ${status}`}>{STATUS_LABEL[status]}</span>
+            <span className="spacer" />
             {packet && (
               <button
-                className="ghost"
+                className="btn ghost small-btn"
                 onClick={() => {
                   document.querySelectorAll("details").forEach((d) => (d.open = true));
                   window.print();
                 }}
               >
-                Print board brief
+                <Icon name="printer" size={14} /> Print board brief
               </button>
             )}
+          </header>
+          <div className="brief-body">
+            {!packet && status !== "error" && (
+              <div className="empty">
+                <h3>{status === "running" ? "Preparing the brief" : "No brief yet"}</h3>
+                <p>
+                  {status === "running"
+                    ? "The agents are reading the record and guidelines. The brief appears here after the verifier has checked it."
+                    : "Select Prepare brief. The agents read the masked record, the Oncology Care Guidelines and past cases, then a verifier checks the draft."}
+                </p>
+              </div>
+            )}
+            {packet && <PacketView p={packet} />}
+            {status === "done" && (
+              <div className="done">
+                <Icon name="check" size={16} /> <b>Approved.</b> {message.replace(/\*\*/g, "")}
+              </div>
+            )}
+            {status === "error" && <div className="error">Something went wrong: {message}</div>}
           </div>
-          {!packet && status !== "done" && <p className="muted">The packet appears here when the verifier has checked it.</p>}
-          {packet && <PacketView p={packet} />}
-          {packet && (status === "review" || status === "done") && (
-            <div className="followup">
-              <h3>Ask a follow-up question</h3>
-              {qa.map((x, i) => (
-                <div key={i} className="qa">
-                  <p className="q">{x.q}</p>
-                  <p className="a">{x.a.replace(/\*\*/g, "")}</p>
+          {status === "review" && (
+            <div className="decision">
+              <div className="decision-text">
+                <b>Clinician review.</b> Nothing is saved until you approve.
+              </div>
+              <div className="decision-row">
+                <textarea id="fb" rows={2} value={feedback} onChange={(e) => setFeedback(e.target.value)} aria-label="Request changes" placeholder="Request changes, for example: add the safety checks to do before starting the first option" />
+                <div className="decision-buttons">
+                  <button className="btn ok" onClick={() => decide("approve")}>
+                    <Icon name="check" size={15} /> Approve and save
+                  </button>
+                  <button className="btn outline" disabled={!feedback.trim()} onClick={() => decide("request_changes")}>
+                    Send back for changes
+                  </button>
                 </div>
-              ))}
-              {asking && <p className="muted">Looking it up in the record and the Oncology Care Guidelines...</p>}
+              </div>
+            </div>
+          )}
+        </section>
+
+        <aside className="col-right card assistant">
+          <div className="tabs" role="tablist">
+            <button role="tab" aria-selected={tab === "ask"} className={tab === "ask" ? "tab on" : "tab"} onClick={() => setTab("ask")}>
+              <Icon name="chat" size={15} /> Ask about this case
+              {qa.length > 0 && <span className="count">{qa.length}</span>}
+            </button>
+            <button role="tab" aria-selected={tab === "activity"} className={tab === "activity" ? "tab on" : "tab"} onClick={() => setTab("activity")}>
+              <Icon name="activity" size={15} /> Agent activity
+              {feed.length > 0 && <span className="count">{feed.length}</span>}
+            </button>
+          </div>
+
+          {tab === "ask" ? (
+            <div className="chat">
+              <div className="chat-log" ref={chatBox}>
+                {qa.length === 0 && !asking && (
+                  <div className="empty small">
+                    <h3>{canAsk ? "Ask a follow-up" : "Available once the brief is ready"}</h3>
+                    <p>
+                      {canAsk
+                        ? "Answers come from the brief, the record and the Oncology Care Guidelines, with sources. They never change the brief."
+                        : "Prepare the brief first. Then ask about the options, safety checks or what would change under different assumptions."}
+                    </p>
+                  </div>
+                )}
+                {qa.map((x, i) => (
+                  <div key={i}>
+                    <div className="msg user">{x.q}</div>
+                    <div className="msg bot">
+                      <span className="who">Case assistant</span>
+                      {x.a.replace(/\*\*/g, "")}
+                    </div>
+                  </div>
+                ))}
+                {asking && (
+                  <div className="msg bot">
+                    <span className="who">Case assistant</span>
+                    <span className="typing">
+                      <i /> <i /> <i />
+                    </span>{" "}
+                    Looking it up in the record and the guidelines
+                  </div>
+                )}
+              </div>
               <div className="suggest">
                 {meta.followUps.map((q) => (
-                  <button key={q} className="chip-btn" disabled={asking} onClick={() => void ask(q)}>
+                  <button key={q} className="chip-btn" disabled={!canAsk || asking} onClick={() => void ask(q)}>
                     {q}
                   </button>
                 ))}
               </div>
-              <div className="askrow">
-                <input
+              <div className="composer">
+                <textarea
+                  rows={2}
                   value={followQ}
                   onChange={(e) => setFollowQ(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && void ask(followQ)}
-                  placeholder="Ask about this case"
-                  disabled={asking}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      void ask(followQ);
+                    }
+                  }}
+                  placeholder={canAsk ? "Ask about this case" : "Prepare the brief to start asking"}
+                  disabled={!canAsk || asking}
+                  aria-label="Ask about this case"
                 />
-                <button className="secondary" disabled={asking || !followQ.trim()} onClick={() => void ask(followQ)}>
-                  Ask
+                <button className="send" aria-label="Send question" disabled={!canAsk || asking || !followQ.trim()} onClick={() => void ask(followQ)}>
+                  <Icon name="send" size={18} />
                 </button>
               </div>
-              <p className="muted">Answers use the packet, the record and the Oncology Care Guidelines. They do not change the packet.</p>
+            </div>
+          ) : (
+            <div className="activity">
+              {stats.inputTokens > 0 && (
+                <div className="kpis">
+                  <div>
+                    <b>{clock(stats.seconds)}</b>
+                    <span>agent time</span>
+                  </div>
+                  <div>
+                    <b>
+                      {Math.round(stats.inputTokens / 1000)}k / {Math.round(stats.outputTokens / 1000)}k
+                    </b>
+                    <span>tokens in / out</span>
+                  </div>
+                  <div>
+                    <b>${stats.costUsd.toFixed(2)}</b>
+                    <span>at list prices</span>
+                  </div>
+                </div>
+              )}
+              {traceUrl && (
+                <a className="trace" href={traceUrl} target="_blank" rel="noreferrer">
+                  View the trace in OpenAI
+                </a>
+              )}
+              <div className="feed-box" ref={feedBox}>
+                {feed.length === 0 && <p className="muted">Nothing yet. Prepare the brief to see each agent and tool call.</p>}
+                <ol className="feed">
+                  {feed.map((e, i) =>
+                    e.type === "tool_call" ? (
+                      <li key={i} className="call">
+                        <span className="agent" style={{ color: AGENT_COLOR[e.agent] }}>
+                          <i style={{ background: AGENT_COLOR[e.agent] }} />
+                          {AGENT_LABEL[e.agent] ?? e.agent}
+                        </span>
+                        <span className="tool">{toolName(e.tool)}</span>
+                      </li>
+                    ) : e.type === "tool_result" ? (
+                      <li key={i} className="result">
+                        {e.preview.slice(0, 110)}
+                      </li>
+                    ) : null,
+                  )}
+                </ol>
+              </div>
+              {verifier && (
+                <div className="verifier">
+                  <h3>Verifier findings</h3>
+                  {verifier.findings.length === 0 ? (
+                    <p className="muted">No issues found.</p>
+                  ) : (
+                    <ul>
+                      {verifier.findings.map((f, i) => (
+                        <li key={i}>
+                          <b>{f.issue.replace(/_/g, " ")}</b>: {f.claim}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+              {audit.length > 0 && (
+                <div className="audit">
+                  <h3>Audit trail</h3>
+                  <ul>
+                    {audit.map((a, i) => (
+                      <li key={i}>
+                        <span className="muted">{new Date(a.at).toLocaleTimeString()}</span> {a.event.replace(/_/g, " ")}
+                        {a.reviewer ? ` by ${a.reviewer}` : ""}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           )}
-          {status === "review" && (
-            <div className="decision">
-              <p>
-                <b>Clinician review.</b> Nothing is saved until you approve.
-              </p>
-              <button className="primary" onClick={() => decide("approve")}>
-                Approve and save draft note
-              </button>
-              <label htmlFor="fb">Or request changes</label>
-              <textarea id="fb" rows={2} value={feedback} onChange={(e) => setFeedback(e.target.value)} placeholder="For example: add the safety checks to do before starting the first option" />
-              <button className="secondary" disabled={!feedback.trim()} onClick={() => decide("request_changes")}>
-                Send back for changes
-              </button>
-            </div>
-          )}
-          {status === "done" && (
-            <div className="done">
-              <b>Approved.</b> {message.replace(/\*\*/g, "")}
-            </div>
-          )}
-          {audit.length > 0 && (
-            <div className="audit">
-              <h3>Audit trail</h3>
-              <ul>
-                {audit.map((a, i) => (
-                  <li key={i}>
-                    <span className="muted">{new Date(a.at).toLocaleTimeString()}</span> {a.event.replace(/_/g, " ")}
-                    {a.reviewer ? ` by ${a.reviewer}` : ""}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {status === "error" && <div className="error">Something went wrong: {message}</div>}
-        </section>
+        </aside>
       </main>
       {doc && (
         <aside className="drawer" role="dialog" aria-label="Source text">
           <div className="drawer-head">
             <b>{doc.title}</b>
-            <button className="ghost" onClick={() => setDoc(null)}>
+            <button className="btn ghost small-btn" onClick={() => setDoc(null)}>
               Close
             </button>
           </div>
           {doc.mask && (
             <div className="maskbar">
-              <button className={showMasked ? "ghost" : "ghost on"} onClick={() => setShowMasked(false)}>
+              <button className={showMasked ? "btn ghost small-btn" : "btn ghost small-btn on"} onClick={() => setShowMasked(false)}>
                 Original
               </button>
-              <button className={showMasked ? "ghost on" : "ghost"} onClick={() => setShowMasked(true)}>
+              <button className={showMasked ? "btn ghost small-btn on" : "btn ghost small-btn"} onClick={() => setShowMasked(true)}>
                 What the agents see
               </button>
             </div>
@@ -639,45 +772,93 @@ const STATUS_LABEL: Record<Status, string> = {
   error: "Needs attention",
 };
 
+function CaseSelect({ selected, statuses, onSelect }: { selected: string; statuses: Record<string, Status>; onSelect: (id: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const close = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const esc = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", esc);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", esc);
+    };
+  }, []);
+  const idx = CASES.findIndex((c) => c.id === selected);
+  const cur = CASES[idx];
+  const st = statuses[cur.id] ?? "idle";
+  return (
+    <div className="select" ref={ref}>
+      <span className="select-label">Tumor board agenda, case {idx + 1} of {CASES.length}</span>
+      <button className="select-trigger" aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+        <span className="site-pill">{cur.site}</span>
+        <b>{cur.title}</b>
+        <span className={`status ${st}`}>{STATUS_LABEL[st]}</span>
+        <Icon name="chevron" size={16} />
+      </button>
+      {open && (
+        <ul className="select-menu" role="listbox">
+          {CASES.map((c, i) => {
+            const s2 = statuses[c.id] ?? "idle";
+            return (
+              <li key={c.id} role="option" aria-selected={c.id === selected}>
+                <button
+                  className={c.id === selected ? "opt on" : "opt"}
+                  onClick={() => {
+                    onSelect(c.id);
+                    setOpen(false);
+                  }}
+                >
+                  <span className="opt-num">{i + 1}</span>
+                  <span className="opt-main">
+                    <b>{c.title}</b>
+                    <span className="muted">
+                      {c.identifiers.name} | {c.site}
+                    </span>
+                  </span>
+                  <span className={`status ${s2}`}>{STATUS_LABEL[s2]}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 export default function App({ onSignOut }: { onSignOut?: () => void }) {
   const [selected, setSelected] = useState(CASES[0].id);
   const [statuses, setStatuses] = useState<Record<string, Status>>({});
   return (
-    <div className="app">
-      <header>
-        <div>
-          <h1>Tumor board case prep</h1>
-          <p className="sub">Synthetic data only. Prepares options and evidence for a clinician to review. It does not decide treatment.</p>
+    <div className="shell">
+      <header className="topbar">
+        <div className="brand">
+          <span className="logo" aria-hidden="true" />
+          <div>
+            <div className="brand-name">Tumor Board Case Prep</div>
+            <div className="brand-sub">Synthetic data only</div>
+          </div>
         </div>
-        <div className="head-actions">
+        <CaseSelect selected={selected} statuses={statuses} onSelect={setSelected} />
+        <div className="topbar-right">
           {onSignOut && (
-            <button className="ghost" onClick={onSignOut}>
+            <button className="btn topbar-btn" onClick={onSignOut}>
               Sign out
             </button>
           )}
         </div>
       </header>
+      <div className="notice">Prepares options and evidence for a clinician to review. It does not decide treatment.</div>
 
-      <nav className="agenda" aria-label="Tumor board agenda">
-        {CASES.map((c, i) => {
-          const st = statuses[c.id] ?? "idle";
-          return (
-            <button key={c.id} className={`agenda-item ${c.id === selected ? "selected" : ""}`} onClick={() => setSelected(c.id)}>
-              <span className="agenda-top">
-                <span className="site">{c.site}</span>
-                <span className={`status ${st}`}>{STATUS_LABEL[st]}</span>
-              </span>
-              <b>
-                {i + 1}. {c.title}
-              </b>
-            </button>
-          );
-        })}
-      </nav>
-
-      {CASES.map((c) => (
-        <CaseWorkspace key={c.id} meta={c} active={c.id === selected} onStatus={(st) => setStatuses((prev) => (prev[c.id] === st ? prev : { ...prev, [c.id]: st }))} />
-      ))}
+      <div className="content">
+        {CASES.map((c) => (
+          <CaseWorkspace key={c.id} meta={c} active={c.id === selected} onStatus={(st) => setStatuses((prev) => (prev[c.id] === st ? prev : { ...prev, [c.id]: st }))} />
+        ))}
+      </div>
     </div>
   );
 }
