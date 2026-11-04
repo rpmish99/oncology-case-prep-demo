@@ -1,6 +1,6 @@
 # Tumor board case prep demo
 
-A demonstration of how the OpenAI Platform (Responses API, Agents SDK, File Search, MCP) can help a breast
+A demonstration of how the OpenAI Platform (Responses API, Agents SDK, File Search, MCP) can help a 
 oncology team prepare a case for tumor board. All patient data and guideline documents are synthetic. This is a
 demonstration, not a medical device, and it does not give treatment advice.
 
