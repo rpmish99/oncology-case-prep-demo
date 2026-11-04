@@ -37,7 +37,7 @@ a link to the OpenAI trace, and a printable board brief.
 - `infra/` AWS CDK stack: Cognito, DynamoDB, the MCP Lambda, the AgentCore Runtime
 - `data/` synthetic cases (`cases/`), a synthetic registry of past cases (`registry/`), and synthetic institutional Oncology Care Guidelines (`guidelines/`)
 - `deck/` slide deck source and the built deck
-- `docs/` architecture diagram, value model, and the recording script
+- `docs/` architecture diagram, evaluation results and value model
 - `scripts/` helper scripts
 
 Run the evaluation with `cd agent && npm run eval` (needs the local setup below).

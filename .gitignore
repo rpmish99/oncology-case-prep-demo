@@ -12,3 +12,10 @@ cdk.out/
 *.log
 .runs/
 recording/
+# presenter material and local-only files
+docs/demo-script.*
+deck/notes.local.js
+tools/recording/
+recording/
+~$*
+*.local.*
